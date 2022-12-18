@@ -1,0 +1,6 @@
+# builds
+dist/
+build/
+.mf/
+.wrangler/
+.dev.vars

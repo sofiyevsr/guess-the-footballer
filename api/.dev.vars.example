@@ -1,0 +1,4 @@
+WEB_URL=http://localhost:8787
+ORIGIN=http://localhost:3000
+ENVIRONMENT=development
+PLAYERS_FILENAME=players-1713077307.json

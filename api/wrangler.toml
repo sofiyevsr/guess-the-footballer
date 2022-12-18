@@ -1,0 +1,28 @@
+name = "football-wordle-api"
+main = "src/index.ts"
+compatibility_date = "2024-04-03"
+
+kv_namespaces = [
+  { binding = "PLAYERSKV", id = "319677fc5b764528850e1b18d57f853c" }
+]
+
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer", database_id = "fe22a87a-83c3-48b7-a8bf-21088f126f75" }
+]
+
+[durable_objects]
+bindings = [
+  { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
+]
+
+[triggers]
+crons = ["0 0 * * *"]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ArenaRoom"]
+
+[env.production]
+kv_namespaces = [
+  { binding = "PLAYERSKV", id = "319677fc5b764528850e1b18d57f853c" }
+]
