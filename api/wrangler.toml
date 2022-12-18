@@ -1,0 +1,21 @@
+name = "football-wordle-api"
+main = "src/index.ts"
+compatibility_date = "2022-12-08"
+
+kv_namespaces = [
+  { binding = "Players", id = "af94eff6c1fb4ba7b207133a96b00dc8", preview_id = "af94eff6c1fb4ba7b207133a96b00dc8" }
+]
+vars = { ORIGIN = "*", ENVIRONMENT = "development" }
+
+[env.production]
+kv_namespaces = [
+  { binding = "Players", id = "319677fc5b764528850e1b18d57f853c" }
+]
+vars = { ORIGIN = "", ENVIRONMENT = "production" }
+
+[build]
+command = "node esbuild.js"
+
+[miniflare]
+kv_persist = true
+durable_objects_persist = true
