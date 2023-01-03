@@ -35,7 +35,7 @@ func AddImageToBulk(url string, filename string) string {
 
 func DownloadImages() {
 	if os.Getenv("UPLOAD_IMAGES") != "yes" {
-    fmt.Println("Skipping upload images phase...")
+		fmt.Println("Skipping upload images phase...")
 		return
 	}
 	pool := pond.New(50, len(imageTracker.store))

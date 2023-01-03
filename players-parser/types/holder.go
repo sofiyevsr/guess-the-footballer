@@ -44,9 +44,9 @@ func (holder *PlayersHolder) WriteToFile(filename string) {
 	if err != nil {
 		log.Fatalf("Cannot encode json: %s", err)
 	}
-  err = utils.EnsureDirExists("dist")
+	err = utils.EnsureDirExists("dist")
 	if err != nil {
-    log.Fatalf("Cannot create folder dist: %s", err)
+		log.Fatalf("Cannot create folder dist: %s", err)
 	}
 	err = ioutil.WriteFile(fmt.Sprintf("dist/%s-%d.json", filename, time.Now().Unix()), playersJSON, 0644)
 	if err != nil {
@@ -56,9 +56,9 @@ func (holder *PlayersHolder) WriteToFile(filename string) {
 }
 
 func (holder *PlayersHolder) WriteToZip() {
-  err := utils.EnsureDirExists("dist")
+	err := utils.EnsureDirExists("dist")
 	if err != nil {
-    log.Fatalf("Cannot create folder dist: %s", err)
+		log.Fatalf("Cannot create folder dist: %s", err)
 	}
 	archive, err := os.Create("dist/.mf.zip")
 	if err != nil {

@@ -73,5 +73,5 @@ type PlayerTransfer struct {
 	TransferFeeNumeral  string  `json:"transferFeeNumeral"`
 	Date                string  `json:"date"`
 	Season              string  `json:"season"`
-  IsLoan              bool    `json:"isLoan"`
+	IsLoan              bool    `json:"isLoan"`
 }
