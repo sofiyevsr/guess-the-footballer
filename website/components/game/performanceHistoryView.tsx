@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from "react";
 import clsx from "classnames";
-import Image from "next/image"
+import Image from "next/image";
 import { Transition } from "@headlessui/react";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { ASSET_URL } from "utils/constants";
@@ -19,7 +19,7 @@ function PerformanceHistoryView({ className, performances }: Props) {
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
-            <tr>
+            <tr className="text-center">
               <td>Competition</td>
               <td>🏟️</td>
               <td>⚽</td>
@@ -40,8 +40,9 @@ function PerformanceHistoryView({ className, performances }: Props) {
                   enterFrom="opacity-0 translate-x-[-2rem]"
                   enterTo="opacity-100 translate-x-0"
                   as="tr"
+                  className="text-center"
                 >
-                  <td>
+                  <td className="text-left">
                     <Image
                       src={ASSET_URL + "/" + performance.competition.image}
                       alt={performance.competition.shortName + "-image"}
@@ -49,7 +50,9 @@ function PerformanceHistoryView({ className, performances }: Props) {
                       height={20}
                       className="object-cover mx-1 inline"
                     />
-                    <span className="align-middle">{performance.competition.shortName}</span>
+                    <span className="align-middle">
+                      {performance.competition.shortName}
+                    </span>
                   </td>
                   <td>{performance.performance.matches}</td>
                   <td>{performance.performance.goals}</td>

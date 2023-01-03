@@ -19,7 +19,7 @@ function TransferHistoryView({ className, transfers }: Props) {
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
-            <tr>
+            <tr className="text-center">
               <td>Season</td>
               <td>From</td>
               <td>To</td>
@@ -39,6 +39,7 @@ function TransferHistoryView({ className, transfers }: Props) {
                   enterFrom="opacity-0 translate-x-[-2rem]"
                   enterTo="opacity-100 translate-x-0"
                   as="tr"
+                  className="text-center"
                 >
                   <td>{transfer.season}</td>
                   <td>
@@ -62,7 +63,13 @@ function TransferHistoryView({ className, transfers }: Props) {
                     <span className="align-middle">{transfer.newClubName}</span>
                   </td>
                   <td>€ {transfer.transferFeeValue}m</td>
-                  <td>{transfer.isLoan}</td>
+                  <td>
+                    {transfer.isLoan === true ? (
+                      <div className="badge badge-warning">LOAN</div>
+                    ) : (
+                      <div className="badge badge-success">TRANSFER</div>
+                    )}
+                  </td>
                 </Transition>
               );
             })}
