@@ -3,7 +3,7 @@ import type { CustomEnvironment } from "../types";
 import { difficultyMappings, playerCount } from "../utils/constants";
 import { customCache } from "../utils/middlewares/customCache";
 import { cors } from "../utils/middlewares/customCors";
-import { generateRandomArray } from "../utils/randomArray";
+import { generateRandomArray } from "../utils/random";
 import { mutateString } from "../utils/string";
 
 const playerRouter = new Hono<CustomEnvironment>();
@@ -36,7 +36,7 @@ playerRouter.get("/", customCache({ duration: 5 }), async (c) => {
 	return c.json(result);
 });
 
-playerRouter.get("/challenge", customCache({ duration: 10 }), async (c) => {
+playerRouter.get("/challenge", customCache({ duration: 30 }), async (c) => {
 	const result = await c.env.Players.get("challenge");
 	if (result == null) {
 		return c.notFound();

@@ -4,6 +4,7 @@ export interface Env {
   Players: KVNamespace;
   ENVIRONMENT: "development" | "production";
   ORIGIN: string;
+  URL: string;
 }
 
 export type WebClient = {

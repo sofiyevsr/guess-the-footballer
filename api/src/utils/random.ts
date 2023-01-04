@@ -1,17 +1,18 @@
+export function getRandomNumber(range: [number, number]) {
+	return Math.floor(Math.random() * (range[1] - range[0] + 1) + range[0]);
+}
+
 export function generateRandomArray(
 	count: number,
 	range: [number, number]
 ): number[] {
-	function getRandomNumber() {
-		return Math.floor(Math.random() * (range[1] - range[0] + 1) + range[0]);
-	}
 	const arr: number[] = Array(count);
 	for (let i = 0, len = arr.length; i < len; i++) {
-		let randomID = getRandomNumber();
+		let randomID = getRandomNumber(range);
 		while (arr.includes(randomID)) {
-			randomID = getRandomNumber();
+			randomID = getRandomNumber(range);
 		}
-    arr[i] = randomID;
+		arr[i] = randomID;
 	}
 	return arr;
 }
