@@ -54,7 +54,7 @@ export const getTips = (player: SinglePlayerData): SingleTip[] => [
   {
     id: "birthplace",
     title: "Birthplace",
-    text: `${player.birthplace}, ${player.birthplaceCountry}`,
+    text: `${player.birthplace}`,
   },
   {
     id: "country",

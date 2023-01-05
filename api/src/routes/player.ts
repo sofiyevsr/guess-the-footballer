@@ -4,7 +4,8 @@ import { difficultyMappings, playerCount } from "../utils/constants";
 import { customCache } from "../utils/middlewares/customCache";
 import { cors } from "../utils/middlewares/customCors";
 import { generateRandomArray } from "../utils/random";
-import { mutateString } from "../utils/string";
+import { compareStrings, mutateString } from "../utils/string";
+import { answerSchema } from "../utils/validation/answer";
 
 const playerRouter = new Hono<CustomEnvironment>();
 
@@ -47,10 +48,19 @@ playerRouter.get("/challenge", customCache({ duration: 30 }), async (c) => {
 	return c.json(parsedData);
 });
 
-// TODO implement
 playerRouter.post("/answer/:id{[0-9]+}", async (c) => {
 	const id = c.req.param("id");
-	return c.json({});
+	const player = await c.env.Players.get(`player:${id}`);
+	if (player == null) {
+		return c.notFound();
+	}
+	const { playerName } = JSON.parse(player);
+
+	const body = await c.req.json();
+	const { answer } = answerSchema.parse(body);
+	const corrections = compareStrings(playerName, answer);
+
+	return c.json({ corrections });
 });
 
 export default playerRouter;
