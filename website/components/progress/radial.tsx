@@ -1,9 +1,13 @@
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
   seconds: number;
   onEnd?: () => boolean;
 }
+
+const radius = 40;
+const circleLength = 2 * radius * Math.PI;
 
 const ProgressRadial = ({ seconds, onEnd }: Props) => {
   const [ticker, setTicker] = useState(seconds);
@@ -27,16 +31,40 @@ const ProgressRadial = ({ seconds, onEnd }: Props) => {
     return clearInterval.bind(undefined, timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seconds]);
+
   return (
-    <div
-      className="radial-progress my-2 font-bold text-xl"
-      style={
-        {
-          "--value": (100 / seconds) * ticker,
-        } as React.CSSProperties
-      }
-    >
-      <span className="countdown">
+    <div className="relative">
+      <svg
+        viewBox="0 0 100 100"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        width={100}
+        height={100}
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          strokeWidth={20}
+          stroke="white"
+          strokeOpacity={0.20}
+          fill="transparent"
+        />
+        <motion.circle
+          cx="50"
+          cy="50"
+          r={radius}
+          className="origin-center -rotate-90"
+          strokeWidth={10}
+          stroke="white"
+          fill="transparent"
+          strokeDasharray={circleLength}
+          strokeLinecap={"round"}
+          animate={{ strokeDashoffset: (circleLength * ticker) / seconds }}
+          transition={{ ease: "easeInOut" }}
+        />
+      </svg>
+      <span className="countdown font-bold text-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <span style={{ "--value": ticker } as React.CSSProperties}></span>
       </span>
     </div>

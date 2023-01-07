@@ -15,6 +15,7 @@ interface Props {
   defaultValue?: string;
   value?: string;
   onChange?: (arg0: string) => void;
+  compare?: string;
 }
 const SeparatedInput = ({
   defaultValue = "",
@@ -23,6 +24,7 @@ const SeparatedInput = ({
   value,
   onChange,
   length,
+  compare,
 }: Props) => {
   const [data, setData] = useState(defaultValue);
   const dataRef = useRef<string>(data);
@@ -132,6 +134,12 @@ const SeparatedInput = ({
           as="input"
           className={clsx(
             "input min-w-[3rem] max-w-[4rem] shrink text-white font-bold border-blue-400 border-2",
+            {
+              "border-red-500": compare?.charAt(index) === "*",
+              "border-green-500":
+                compare?.charAt(index) != null &&
+                compare?.charAt(index) !== "*",
+            },
             className
           )}
           maxLength={1}

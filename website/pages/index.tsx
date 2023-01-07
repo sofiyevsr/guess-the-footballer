@@ -18,7 +18,7 @@ function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {data && <GameView player={data} />}
+      {data && <GameView player={data} onSubmit={(answer) => {}} />}
     </>
   );
 }

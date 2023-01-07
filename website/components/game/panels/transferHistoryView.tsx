@@ -48,9 +48,11 @@ function TransferHistoryView({ className, transfers }: Props) {
                       alt={transfer.oldClubName + "-image"}
                       width={20}
                       height={20}
-                      className="object-cover mx-1 inline"
+                      className="mx-1 inline w-auto h-auto"
                     />
-                    <span className="align-middle">{transfer.oldClubName}</span>
+                    <span className="align-middle mx-2">
+                      {transfer.oldClubName}
+                    </span>
                   </td>
                   <td>
                     <Image
@@ -58,11 +60,16 @@ function TransferHistoryView({ className, transfers }: Props) {
                       alt={transfer.newClubName + "-image"}
                       width={20}
                       height={20}
-                      className="object-cover mx-1 inline"
+                      className="mx-1 inline w-auto h-auto"
                     />
-                    <span className="align-middle">{transfer.newClubName}</span>
+                    <span className="align-middle mx-2">
+                      {transfer.newClubName}
+                    </span>
                   </td>
-                  <td>€ {transfer.transferFeeValue}m</td>
+                  <td>
+                    <span className="font-bold">€</span>
+                    {transfer.transferFeeValue}m
+                  </td>
                   <td>
                     {transfer.isLoan === true ? (
                       <div className="badge badge-warning">LOAN</div>

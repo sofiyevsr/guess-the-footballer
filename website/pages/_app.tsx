@@ -1,10 +1,13 @@
 import "../styles/globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import { Oswald } from "@next/font/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { globalQueryClient } from "utils/queryClient";
+import RouterProgressBar from "@cmpt/progress/routerProgressBar";
+import { ToastContainer } from "react-toastify";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -20,14 +23,20 @@ const oswald = Oswald({
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page);
-  return getLayout(
+  return (
     <QueryClientProvider client={globalQueryClient}>
       <style jsx global>{`
         html {
           font-family: ${oswald.style.fontFamily};
         }
       `}</style>
-      <Component {...pageProps} />
+      <RouterProgressBar />
+      {getLayout(<Component {...pageProps} />)}
+      <ToastContainer
+        position="bottom-center"
+        theme="colored"
+        className="text-lg text-center font-bold"
+      />
     </QueryClientProvider>
   );
 }

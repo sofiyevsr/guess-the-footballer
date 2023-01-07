@@ -15,10 +15,10 @@ function TipCard({ title, children, text }: Props) {
       enter="transition-all duration-300"
       enterFrom="opacity-0 scale-75"
       enterTo="opacity-100 scale-100"
-      className="card bg-base-100 px-4 w-30 text-center items-center sm:w-40"
+      className="card bg-base-100 px-4 text-center items-center"
     >
-      <h1 className="my-2 font-bold">{title}</h1>
-      <div className="relative text-2xl w-full h-full my-2">
+      <h1 className="mt-2 font-bold">{title}</h1>
+      <div className="relative text-2xl w-full h-full">
         {children}
         {text != null && (
           <div className="text-white font-bold w-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">

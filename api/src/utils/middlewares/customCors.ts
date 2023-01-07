@@ -8,9 +8,14 @@ export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
 	const options = {
 		origin: c.env.ORIGIN,
 		allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
+		allowHeaders: ["Content-Type"],
 	};
 	c.res.headers.append("Access-Control-Allow-Origin", options["origin"]);
 	c.res.headers.append("Access-Control-Allow-Credentials", "true");
+	c.res.headers.append(
+		"Access-Control-Allow-Headers",
+		options["allowHeaders"].join(",")
+	);
 	c.res.headers.append("Vary", "Origin");
 
 	if (c.req.method !== "OPTIONS") {
@@ -30,4 +35,5 @@ export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
 		status: 204,
 		statusText: c.res.statusText,
 	});
+	return c.res;
 };
