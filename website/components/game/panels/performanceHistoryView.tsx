@@ -48,7 +48,7 @@ function PerformanceHistoryView({ className, performances }: Props) {
                       alt={performance.competition.shortName + "-image"}
                       width={20}
                       height={20}
-                      className="object-cover mx-1 inline h-auto w-auto"
+                      className="inline h-auto w-auto"
                     />
                     <span className="align-middle">
                       {performance.competition.shortName}

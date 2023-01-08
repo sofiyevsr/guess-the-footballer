@@ -16,7 +16,11 @@ function GameForm({ playerName, playerID, onSubmit }: Props) {
   const words = playerName.split(" ");
   const [answer, setAnswer] = useState(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
-  const { data:corrections, mutate, isLoading } = useMutation({
+  const {
+    data: corrections,
+    mutate,
+    isLoading,
+  } = useMutation({
     mutationFn: async (answer: string) => {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       onSubmit?.call(undefined, corrections === null);
@@ -59,7 +63,7 @@ function GameForm({ playerName, playerID, onSubmit }: Props) {
             }}
           />
         ))}
-        {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+        <div className="text-red-500 h-6">{errorMessage}</div>
         <button
           className={clsx("btn btn-wide btn-primary self-center my-2", {
             loading: corrections === null,
