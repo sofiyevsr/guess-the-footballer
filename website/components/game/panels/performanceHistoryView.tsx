@@ -10,22 +10,52 @@ interface Props {
   className?: HTMLAttributes<HTMLDivElement>["className"];
 }
 
+const tips = [
+  {
+    icon: "🏟️",
+    hint: "games",
+  },
+  {
+    icon: "⚽",
+    hint: "goals",
+  },
+  {
+    icon: "🎯",
+    hint: "assists",
+  },
+  {
+    icon: "🟡",
+    hint: "yellow cards",
+  },
+  {
+    icon: "🔴",
+    hint: "red cards",
+  },
+] as const;
+
 function PerformanceHistoryView({ className, performances }: Props) {
   return (
-    <div className={clsx("drop-shadow-2xl bg-base-100 rounded-xl", className)}>
+    <div
+      className={clsx(
+        "drop-shadow-2xl flex flex-col bg-base-100 rounded-xl",
+        className
+      )}
+    >
       <h1 className="font-bold text-lg text-center p-2 border-b">
         Performance history
       </h1>
-      <div className="overflow-x-auto">
+      <div className="overflow-auto">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
               <td>Competition</td>
-              <td>🏟️</td>
-              <td>⚽</td>
-              <td>🎯</td>
-              <td>🟡</td>
-              <td>🔴</td>
+              {tips.map(({ hint, icon }) => (
+                <td key={hint}>
+                  <div className="tooltip tooltip-left" data-tip={hint}>
+                    {icon}
+                  </div>
+                </td>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -42,15 +72,17 @@ function PerformanceHistoryView({ className, performances }: Props) {
                   as="tr"
                   className="text-center"
                 >
-                  <td className="text-left">
-                    <Image
-                      src={ASSET_URL + "/" + performance.competition.image}
-                      alt={performance.competition.shortName + "-image"}
-                      width={20}
-                      height={20}
-                      className="inline h-auto w-auto"
-                    />
-                    <span className="align-middle">
+                  <td className="text-left flex min-w-[12rem] items-center">
+                    <div className="rounded-full bg-blue-500 ring-4 relative inline-block w-10 h-10 mx-2 overflow-hidden">
+                      <Image
+                        src={ASSET_URL + "/" + performance.competition.image}
+                        alt={performance.competition.shortName + "-image"}
+                        fill
+                        sizes="70vw"
+                        className="inline-block h-full w-auto p-1 object-contain"
+                      />
+                    </div>
+                    <span className="font-bold align-middle">
                       {performance.competition.shortName}
                     </span>
                   </td>

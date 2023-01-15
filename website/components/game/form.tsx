@@ -64,23 +64,23 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
           />
         ))}
         <div className="text-red-500 h-6">{errorMessage}</div>
-        <button
-          className={clsx("btn btn-wide btn-primary self-center my-2", {
-            loading: corrections === null,
-          })}
-          disabled={isLoading || corrections === null}
-          onClick={() => {
-            const answerString = answer.join(" ");
-            if (answerString.length !== playerName.length) {
-              return setErrorMessage("Please enter an answer");
-            }
-            setErrorMessage(undefined);
-            mutate(answer.join(" "));
-          }}
-        >
-          Submit
-        </button>
       </div>
+      <button
+        className={clsx("btn btn-wide btn-primary self-center my-2", {
+          loading: corrections === null,
+        })}
+        disabled={isLoading || corrections === null}
+        onClick={() => {
+          const answerString = answer.join(" ");
+          if (answerString.length !== playerName.length) {
+            return setErrorMessage("Please enter an answer");
+          }
+          setErrorMessage(undefined);
+          mutate(answer.join(" "));
+        }}
+      >
+        Submit
+      </button>
     </>
   );
 }
