@@ -4,9 +4,10 @@ import PublicLayout from "@cmpt/layout/public";
 import GameView from "@cmpt/game/view";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
+import LoadingLayout from "@cmpt/layout/loading";
 
 function Home() {
-  const { data } = useQuery({
+  const { data, isError, refetch,isLoading } = useQuery({
     queryKey: ["challenge"],
     queryFn: GameService.getTodaysChallenge,
   });
@@ -18,7 +19,9 @@ function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {data && <GameView player={data} onSubmit={(answer) => {}} />}
+      <LoadingLayout isLoading={isLoading} isError={isError} refetch={refetch}>
+        <GameView player={data!} onCorrectAnswer={() => {}} />
+      </LoadingLayout>
     </>
   );
 }

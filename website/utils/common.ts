@@ -1,3 +1,8 @@
+import dayjs from "dayjs";
+import UTC from "dayjs/plugin/utc";
+
+dayjs.extend(UTC);
+
 export function shuffleArray<T>(array: T[]) {
   const newArr: T[] = [...array];
   for (let i = array.length - 1; i > 0; i--) {
@@ -5,4 +10,8 @@ export function shuffleArray<T>(array: T[]) {
     [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
   }
   return newArr;
+}
+
+export function getTodayInUTC() {
+  return dayjs().utc().format("DD-MM-YYYY");
 }

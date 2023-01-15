@@ -9,10 +9,10 @@ import { GameService } from "utils/services/game";
 interface Props {
   playerName: string;
   playerID: number;
-  onSubmit?: (status: boolean) => void;
+  onCorrectAnswer?: (answer: string) => void;
 }
 
-function GameForm({ playerName, playerID, onSubmit }: Props) {
+function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
   const words = playerName.split(" ");
   const [answer, setAnswer] = useState(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -23,8 +23,8 @@ function GameForm({ playerName, playerID, onSubmit }: Props) {
   } = useMutation({
     mutationFn: async (answer: string) => {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
-      onSubmit?.call(undefined, corrections === null);
       if (corrections === null) {
+        onCorrectAnswer?.call(undefined, answer);
         toast("Correct answer", { type: "success" });
       } else {
         toast(`Wrong answer`, { type: "error" });

@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, CSSProperties } from "react";
 
-function GameTimer() {
-  const [ticker, setTicker] = useState(0);
+interface Props {
+  defaultValue?: number;
+}
+
+function GameTimer({ defaultValue }: Props) {
+  const [ticker, setTicker] = useState(defaultValue ?? 0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -11,9 +15,13 @@ function GameTimer() {
   }, []);
   return (
     <div className="ring bg-base-300 p-4 rounded-full fixed bottom-6 right-6 z-10 countdown font-mono text-4xl">
-      <span style={{ "--value": Math.floor(ticker / 3600) } as React.CSSProperties}></span>:
-      <span style={{ "--value": Math.floor(ticker / 60) } as React.CSSProperties}></span>:
-      <span style={{ "--value": ticker % 60 } as React.CSSProperties}></span>
+      <span style={{ "--value": Math.floor(ticker / 3600) } as CSSProperties} />
+      <>:</>
+      <span
+        style={{ "--value": Math.floor(ticker / 60) % 60 } as CSSProperties}
+      />
+      <>:</>
+      <span style={{ "--value": ticker % 60 } as CSSProperties} />
     </div>
   );
 }

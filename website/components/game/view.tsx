@@ -12,10 +12,12 @@ import TransferHistoryView from "./panels/transferHistoryView";
 
 interface Props {
   player: SinglePlayerData;
-  onSubmit: (answer: string) => void;
+  onCorrectAnswer: (answer: string) => void;
+  // TODO
+  defaultState?: any
 }
 
-const GameView = ({ player, onSubmit }: Props) => {
+const GameView = ({ player, onCorrectAnswer }: Props) => {
   const [playerTips] = useState({
     general: shuffleArray(getTips(player)),
     performances: shuffleArray(player.performanceData),
@@ -75,7 +77,7 @@ const GameView = ({ player, onSubmit }: Props) => {
         <GameForm
           playerID={player.id}
           playerName={player.playerName}
-          onSubmit={onSubmit}
+          onCorrectAnswer={onCorrectAnswer}
         />
         <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-scroll sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
           {playerTips.general
