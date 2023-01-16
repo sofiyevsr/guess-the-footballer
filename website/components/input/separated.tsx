@@ -38,7 +38,7 @@ const SeparatedInput = ({
   useEffect(() => {
     const newData = dataRef.current.substring(0, length);
     setData(newData);
-    onChange?.call(undefined, newData);
+    onChange?.(newData);
   }, [length, onChange]);
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -90,7 +90,7 @@ const SeparatedInput = ({
     arr[index] = value;
     newData = arr.join("");
     setData(newData);
-    onChange?.call(undefined, newData);
+    onChange?.(newData);
     if (value === "") {
       focusPreviousElement(currentTarget);
     } else {

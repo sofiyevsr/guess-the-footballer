@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { runInDev } from "utils/common";
+import { ZodSchema } from "zod";
 
 function getStorage() {
   if (typeof window === "undefined") {
@@ -7,28 +9,33 @@ function getStorage() {
   return localStorage;
 }
 
-export function useLocalStorage<T>(key: string) {
+export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
   let storage: Storage | undefined = getStorage();
   const [state, setState] = useState<T | undefined>(() => getStoredValue());
 
   function getStoredValue(): T | undefined {
     try {
       const raw = storage?.getItem(key);
-      if (raw) {
-        return JSON.parse(raw);
-      }
+      if (!raw) return;
+
+      const parsed = JSON.parse(raw);
+      return schema?.parse(parsed);
     } catch (e) {
-      console.error(e);
+      runInDev(() => {
+        console.error(e);
+      });
     }
   }
 
-  const updateValue = (value: T) => {
-    setState(value);
+  const updateValue = (value: T, skipUpdate?: boolean) => {
+    if (skipUpdate !== true) setState(value);
     try {
       storage?.setItem(key, JSON.stringify(value));
       return true;
     } catch (e) {
-      console.error(e);
+      runInDev(() => {
+        console.error(e);
+      });
       return false;
     }
   };

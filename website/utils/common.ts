@@ -15,3 +15,8 @@ export function shuffleArray<T>(array: T[]) {
 export function getTodayInUTC() {
   return dayjs().utc().format("DD-MM-YYYY");
 }
+
+export function runInDev(callback: () => void) {
+  if (process.env.NODE_ENV === "production") return;
+  callback();
+}

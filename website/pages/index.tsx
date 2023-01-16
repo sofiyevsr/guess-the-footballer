@@ -1,16 +1,9 @@
 import Head from "next/head";
 import type { ReactElement } from "react";
 import PublicLayout from "@cmpt/layout/public";
-import GameView from "@cmpt/game/view";
-import { GameService } from "utils/services/game";
-import { useQuery } from "@tanstack/react-query";
-import LoadingLayout from "@cmpt/layout/loading";
+import TodaysChallenge from "@cmpt/pages/todaysChallenge";
 
 function Home() {
-  const { data, isError, refetch,isLoading } = useQuery({
-    queryKey: ["challenge"],
-    queryFn: GameService.getTodaysChallenge,
-  });
   return (
     <>
       <Head>
@@ -19,9 +12,7 @@ function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <LoadingLayout isLoading={isLoading} isError={isError} refetch={refetch}>
-        <GameView player={data!} onCorrectAnswer={() => {}} />
-      </LoadingLayout>
+      <TodaysChallenge />
     </>
   );
 }

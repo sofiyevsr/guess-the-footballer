@@ -1,39 +1,85 @@
 import TipCard from "@cmpt/card/tipCard";
 import ProgressRadial from "@cmpt/progress/radial";
 import { produce } from "immer";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
 import { SinglePlayerData } from "utils/services/game/types/game";
-import { getTips } from "utils/tips";
+import { getTips, SingleTip } from "utils/tips";
 import GameForm from "./form";
 import GameTimer from "./misc/timer";
 import PerformanceHistoryView from "./panels/performanceHistoryView";
 import TransferHistoryView from "./panels/transferHistoryView";
 
+export interface GameState {
+  startedAt: string;
+  finishedAt?: string;
+  currentProgress: ProgressState;
+}
+
+interface TipsState {
+  general: SingleTip[];
+  performances: SinglePlayerData["performanceData"];
+  transfers: SinglePlayerData["transferHistory"];
+}
+
+type ProgressState = {
+  [key in keyof TipsState]: number;
+};
+
 interface Props {
   player: SinglePlayerData;
   onCorrectAnswer: (answer: string) => void;
-  // TODO
-  defaultState?: any
+  syncState?: ({ currentProgress }: { currentProgress: ProgressState }) => void;
+  defaultState?: GameState;
 }
 
-const GameView = ({ player, onCorrectAnswer }: Props) => {
-  const [playerTips] = useState({
+const STATE_SYNC_INTERVAL = 3000;
+
+const GameView = ({
+  player,
+  onCorrectAnswer,
+  defaultState,
+  syncState,
+}: Props) => {
+  const [playerTips] = useState<TipsState>({
     general: shuffleArray(getTips(player)),
     performances: shuffleArray(player.performanceData),
     transfers: shuffleArray(player.transferHistory),
   });
 
-  const [currentProgress, setCurrentProgress] = useState({
-    general: 1,
-    performances: 0,
-    transfers: 0,
-  });
+  const [currentProgress, setCurrentProgress] = useState<ProgressState>(
+    defaultState?.currentProgress ?? {
+      general: 1,
+      performances: 0,
+      transfers: 0,
+    }
+  );
 
-  const [shouldRevealTip, setShouldRevealTip] = useState(true);
+  const timerInSeconds =
+    defaultState == null
+      ? 0
+      : Math.floor(
+          (Date.now() - new Date(defaultState.startedAt).getTime()) / 1000
+        );
+
+  const shouldRevealTip =
+    currentProgress.general < playerTips.general.length ||
+    currentProgress.transfers < playerTips.transfers.length ||
+    currentProgress.performances < playerTips.performances.length;
 
   const stateRef = useRef({ currentProgress, playerTips });
   stateRef.current = { currentProgress, playerTips };
+
+  useEffect(() => {
+    if (syncState == null) return;
+    const timer = setInterval(() => {
+      syncState({
+        currentProgress: stateRef.current.currentProgress,
+      });
+    }, STATE_SYNC_INTERVAL);
+
+    return clearInterval.bind(undefined, timer);
+  }, [syncState]);
 
   return (
     <div className="flex flex-col mb-20 h-full lg:flex-row lg:mb-0">
@@ -42,6 +88,7 @@ const GameView = ({ player, onCorrectAnswer }: Props) => {
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
         <ProgressRadial
+          defaultValue={shouldRevealTip ? 3 : 0}
           seconds={3}
           onEnd={() => {
             const newProgress = produce(
@@ -68,8 +115,6 @@ const GameView = ({ player, onCorrectAnswer }: Props) => {
                 stateRef.current.playerTips.transfers.length ||
               newProgress.performances <
                 stateRef.current.playerTips.performances.length;
-
-            setShouldRevealTip(shouldRestart);
 
             return shouldRestart;
           }}
@@ -100,7 +145,7 @@ const GameView = ({ player, onCorrectAnswer }: Props) => {
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
         className="order-3 m-2 lg:order-3 lg:w-96"
       />
-      <GameTimer />
+      <GameTimer defaultValue={timerInSeconds} />
     </div>
   );
 };

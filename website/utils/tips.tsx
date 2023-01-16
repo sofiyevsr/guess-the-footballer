@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ASSET_URL } from "./constants";
 import { SinglePlayerData } from "./services/game/types/game";
 
-interface SingleTip {
+export interface SingleTip {
   id: string;
   title: string;
   text?: string | JSX.Element;

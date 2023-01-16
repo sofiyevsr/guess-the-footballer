@@ -3,24 +3,23 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
   seconds: number;
-  disabled?: boolean;
+  defaultValue?: number;
   onEnd?: () => boolean;
 }
 
 const radius = 40;
 const circleLength = 2 * radius * Math.PI;
 
-const ProgressRadial = ({ seconds, onEnd, disabled }: Props) => {
-  const [ticker, setTicker] = useState(seconds);
+const ProgressRadial = ({ defaultValue, seconds, onEnd }: Props) => {
+  const [ticker, setTicker] = useState(defaultValue ?? seconds);
   const currentTicker = useRef(ticker);
   currentTicker.current = ticker;
   useEffect(() => {
-    if (disabled === true) return;
     setTicker(seconds);
     const timer = setInterval(() => {
       currentTicker.current--;
       if (currentTicker.current < 0) {
-        const restart = onEnd?.call(undefined);
+        const restart = onEnd?.();
         if (restart === true) {
           setTicker(seconds);
         } else {
@@ -32,7 +31,7 @@ const ProgressRadial = ({ seconds, onEnd, disabled }: Props) => {
     }, 1000);
     return clearInterval.bind(undefined, timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seconds, disabled]);
+  }, [seconds]);
 
   return (
     <div className="relative">

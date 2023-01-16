@@ -24,7 +24,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
     mutationFn: async (answer: string) => {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       if (corrections === null) {
-        onCorrectAnswer?.call(undefined, answer);
+        onCorrectAnswer?.(answer);
         toast("Correct answer", { type: "success" });
       } else {
         toast(`Wrong answer`, { type: "error" });
