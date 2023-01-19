@@ -88,7 +88,7 @@ const GameView = ({
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
         <ProgressRadial
-          defaultValue={shouldRevealTip ? 3 : 0}
+          disabled={!shouldRevealTip}
           seconds={3}
           onEnd={() => {
             const newProgress = produce(

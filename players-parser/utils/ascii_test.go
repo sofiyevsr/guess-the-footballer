@@ -11,3 +11,12 @@ func TestNormalCase(t *testing.T) {
 		t.Fatalf("Expected %s, got %s", expected, res)
 	}
 }
+
+func TestNorwayLetter(t *testing.T) {
+	const input = "Øødegaard"
+  const expected = "Oodegaard"
+	res := ToAscii(input)
+	if res != expected {
+		t.Fatalf("Expected %s, got %s", expected, res)
+	}
+}
