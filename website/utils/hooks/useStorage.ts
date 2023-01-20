@@ -28,7 +28,7 @@ export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
         });
       }
     },
-    [key, schema, storage]
+    [key, schema]
   );
 
   useEffect(() => {
