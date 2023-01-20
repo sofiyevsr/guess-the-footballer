@@ -6,7 +6,7 @@ import type {
 } from "react";
 import clsx from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { Transition } from "@headlessui/react";
+import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
   length: number;
@@ -17,6 +17,25 @@ interface Props {
   onChange?: (arg0: string) => void;
   compare?: string;
 }
+
+const container: AnimationProps["variants"] = {
+  hidden: {
+    transition: {
+      duration: 0.2,
+    },
+  },
+  show: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const item: AnimationProps["variants"] = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1 },
+};
+
 const SeparatedInput = ({
   defaultValue = "",
   className,
@@ -121,19 +140,18 @@ const SeparatedInput = ({
   }
 
   return (
-    <div className={clsx("flex max-w-full", containerClassName)}>
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={container}
+      className={clsx("flex max-w-full", containerClassName)}
+    >
       {new Array(length).fill(0).map((_, index) => (
-        <Transition
+        <motion.input
           key={index}
-          appear
-          show
-          style={{ transitionDelay: `${(index + 1) * 50}ms` }}
-          enter="transition-all duration-200"
-          enterFrom="opacity-0 translate-x-[-2rem]"
-          enterTo="opacity-100 translate-x-0"
-          as="input"
+          variants={item}
           className={clsx(
-            "input min-w-[3rem] max-w-[4rem] shrink text-white font-bold border-blue-400 border-2",
+            "input max-w-[3.5rem] shrink text-white font-bold border-blue-400 border-2",
             {
               "border-red-500": compare?.charAt(index) === "*",
               "border-green-500":
@@ -151,7 +169,7 @@ const SeparatedInput = ({
           }
         />
       ))}
-    </div>
+    </motion.div>
   );
 };
 

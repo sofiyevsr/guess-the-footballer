@@ -2,13 +2,31 @@ import React, { HTMLAttributes } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types/game";
-import { Transition } from "@headlessui/react";
 import { ASSET_URL } from "utils/constants";
+import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
   transfers: SinglePlayerData["transferHistory"];
   className?: HTMLAttributes<HTMLDivElement>["className"];
 }
+
+const container: AnimationProps["variants"] = {
+  hidden: {
+    transition: {
+      duration: 0.2,
+    },
+  },
+  show: {
+    transition: {
+      staggerChildren: 0.25,
+    },
+  },
+};
+
+const item: AnimationProps["variants"] = {
+  hidden: { opacity: 0, translateX: "-2rem" },
+  show: { opacity: 1, translateX: 0 },
+};
 
 function TransferHistoryView({ className, transfers }: Props) {
   return (
@@ -32,18 +50,12 @@ function TransferHistoryView({ className, transfers }: Props) {
               <td>Type</td>
             </tr>
           </thead>
-          <tbody>
+          <motion.tbody initial="hidden" animate="show" variants={container}>
             {transfers.map((transfer, index) => {
               return (
-                <Transition
+                <motion.tr
                   key={index}
-                  appear
-                  show
-                  style={{ transitionDelay: `${(index + 1) * 50}ms` }}
-                  enter="transition-all duration-200"
-                  enterFrom="opacity-0 translate-x-[-2rem]"
-                  enterTo="opacity-100 translate-x-0"
-                  as="tr"
+                  variants={item}
                   className="text-center"
                 >
                   <td>{transfer.season}</td>
@@ -85,10 +97,10 @@ function TransferHistoryView({ className, transfers }: Props) {
                       <div className="badge badge-success">TRANSFER</div>
                     )}
                   </td>
-                </Transition>
+                </motion.tr>
               );
             })}
-          </tbody>
+          </motion.tbody>
         </table>
       </div>
     </div>

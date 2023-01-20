@@ -1,5 +1,6 @@
 import TipCard from "@cmpt/card/tipCard";
 import ProgressRadial from "@cmpt/progress/radial";
+import dayjs from "dayjs";
 import { produce } from "immer";
 import { useEffect, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
@@ -58,9 +59,7 @@ const GameView = ({
   const timerInSeconds =
     defaultState == null
       ? 0
-      : Math.floor(
-          (Date.now() - new Date(defaultState.startedAt).getTime()) / 1000
-        );
+      : dayjs().diff(dayjs(defaultState.startedAt), "second");
 
   const shouldRevealTip =
     currentProgress.general < playerTips.general.length ||

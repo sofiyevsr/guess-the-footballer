@@ -1,14 +1,32 @@
 import React, { HTMLAttributes } from "react";
 import clsx from "classnames";
 import Image from "next/image";
-import { Transition } from "@headlessui/react";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { ASSET_URL } from "utils/constants";
+import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
   performances: SinglePlayerData["performanceData"];
   className?: HTMLAttributes<HTMLDivElement>["className"];
 }
+
+const container: AnimationProps["variants"] = {
+  hidden: {
+    transition: {
+      duration: 0.2,
+    },
+  },
+  show: {
+    transition: {
+      staggerChildren: 0.25,
+    },
+  },
+};
+
+const item: AnimationProps["variants"] = {
+  hidden: { opacity: 0, translateX: "-2rem" },
+  show: { opacity: 1, translateX: 0 },
+};
 
 const tips = [
   {
@@ -58,20 +76,10 @@ function PerformanceHistoryView({ className, performances }: Props) {
               ))}
             </tr>
           </thead>
-          <tbody>
+          <motion.tbody initial="hidden" animate="show" variants={container}>
             {performances.map((performance, index) => {
               return (
-                <Transition
-                  key={index}
-                  appear
-                  show
-                  style={{ transitionDelay: `${(index + 1) * 50}ms` }}
-                  enter="transition-all duration-200"
-                  enterFrom="opacity-0 translate-x-[-2rem]"
-                  enterTo="opacity-100 translate-x-0"
-                  as="tr"
-                  className="text-center"
-                >
+                <motion.tr key={index} variants={item} className="text-center">
                   <td className="text-left flex min-w-[12rem] items-center">
                     <div className="rounded-full bg-blue-500 ring-4 relative inline-block w-10 h-10 mx-2 overflow-hidden">
                       <Image
@@ -91,10 +99,10 @@ function PerformanceHistoryView({ className, performances }: Props) {
                   <td>{performance.performance.assists}</td>
                   <td>{performance.performance.yellowCards}</td>
                   <td>{performance.performance.redCards}</td>
-                </Transition>
+                </motion.tr>
               );
             })}
-          </tbody>
+          </motion.tbody>
         </table>
       </div>
     </div>

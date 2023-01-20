@@ -5,51 +5,71 @@ import { useQuery } from "@tanstack/react-query";
 import LoadingLayout from "@cmpt/layout/loading";
 import { useTodaysChallenge } from "utils/hooks/requests/useTodaysChallenge";
 import produce from "immer";
+import dayjs from "dayjs";
+import CompletedIcon from "@cmpt/icons/completed";
 
 const defaultState: GameState = {
   currentProgress: { general: 1, performances: 0, transfers: 0 },
-  startedAt: new Date().toISOString(),
+  startedAt: dayjs().format(),
 };
 
 function TodaysChallenge() {
-  const [gameState, setGameState] = useTodaysChallenge();
+  const [{ state: gameState, isLoading: isLoadingState }, setGameState] =
+    useTodaysChallenge();
   const { data, isError, refetch, isLoading } = useQuery({
     queryKey: ["challenge"],
     queryFn: GameService.getTodaysChallenge,
   });
-  const gameStateRef = useRef(gameState);
+  const gameStateRef = useRef<GameState>();
 
-  // TODO
-  if (gameState?.finishedAt != null) {
-    return <div>You have finished todays challenge before</div>;
-  }
+  if (!isLoadingState && gameStateRef.current == null)
+    gameStateRef.current = gameState;
 
   return (
-    <LoadingLayout isLoading={isLoading} isError={isError} refetch={refetch}>
-      <GameView
-        player={data!}
-        onCorrectAnswer={() => {
-          const newState = produce(
-            gameStateRef.current ?? defaultState,
-            (current) => {
-              current.finishedAt = new Date().toISOString();
-            }
-          );
-          setGameState(newState);
-          gameStateRef.current = newState;
-        }}
-        syncState={({ currentProgress }) => {
-          const newState = produce(
-            gameStateRef.current ?? defaultState,
-            (current) => {
-              current.currentProgress = currentProgress;
-            }
-          );
-          setGameState(newState, true);
-          gameStateRef.current = newState;
-        }}
-        defaultState={gameState}
-      />
+    <LoadingLayout
+      isLoading={isLoading || isLoadingState}
+      isError={isError}
+      refetch={refetch}
+    >
+      {gameState?.finishedAt != null ? (
+        <div className="min-h-[16rem] full flex flex-col items-center justify-center px-4 text-center">
+          <CompletedIcon width={200} height={200} />
+          <h1 className="text-4xl my-4">
+            {"You have completed today's challenge"}
+          </h1>
+          <button
+            className="btn btn-error text-white my-4"
+            onClick={() => setGameState(undefined)}
+          >
+            Replay
+          </button>
+        </div>
+      ) : (
+        <GameView
+          player={data!}
+          onCorrectAnswer={() => {
+            const newState = produce(
+              gameStateRef.current ?? defaultState,
+              (current) => {
+                current.finishedAt = dayjs().format();
+              }
+            );
+            setGameState(newState);
+            gameStateRef.current = newState;
+          }}
+          syncState={({ currentProgress }) => {
+            const newState = produce(
+              gameStateRef.current ?? defaultState,
+              (current) => {
+                current.currentProgress = currentProgress;
+              }
+            );
+            setGameState(newState, true);
+            gameStateRef.current = newState;
+          }}
+          defaultState={gameState}
+        />
+      )}
     </LoadingLayout>
   );
 }

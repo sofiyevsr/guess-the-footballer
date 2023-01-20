@@ -12,7 +12,7 @@ func (player *Player) FromTransfers(transfers response.TransfersResponse) {
 	player.TransferHistory = []PlayerTransfer{}
 	for _, v := range transfers.TransferHistory {
 		transferValue := utils.ParseTransferValue(v.TransferFeeValue)
-		if v.TransferFeeNumeral != "m" || transferValue < 3 {
+		if v.TransferFeeNumeral != "m" || transferValue < 1 {
 			continue
 		}
 		player.TransferHistory = append(player.TransferHistory, PlayerTransfer{

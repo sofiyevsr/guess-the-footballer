@@ -1,7 +1,6 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@headlessui/react': ^1.7.7
   '@heroicons/react': ^2.0.13
   '@next/font': ^13.1.2
   '@tailwindcss/typography': ^0.5.9
@@ -28,7 +27,6 @@ specifiers:
   zod: ^3.20.2
 
 dependencies:
-  '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
   '@heroicons/react': 2.0.13_react@18.2.0
   '@next/font': 13.1.2
   '@tanstack/react-query': 4.22.0_biqbaboplfbrettd7655fr4n2y
@@ -101,18 +99,6 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /@headlessui/react/1.7.7_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-BqDOd/tB9u2tA0T3Z0fn18ktw+KbVwMnkxxsGPIH2hzssrQhKB5n/6StZOyvLYP/FsYtvuXfi9I0YowKPv2c1w==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: ^16 || ^17 || ^18
-      react-dom: ^16 || ^17 || ^18
-    dependencies:
-      client-only: 0.0.1
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@heroicons/react/2.0.13_react@18.2.0:

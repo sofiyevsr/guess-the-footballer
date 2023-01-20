@@ -1,4 +1,4 @@
-import { Transition } from "@headlessui/react";
+import { FadeIn } from "@cmpt/animation/fadeIn";
 import { ReactNode } from "react";
 
 interface Props {
@@ -9,12 +9,8 @@ interface Props {
 
 function TipCard({ title, children, text }: Props) {
   return (
-    <Transition
-      show
-      appear
-      enter="transition-all duration-300"
-      enterFrom="opacity-0 scale-75"
-      enterTo="opacity-100 scale-100"
+    <FadeIn
+      duration={.3}
       className="card bg-base-100 px-4 text-center items-center"
     >
       <h1 className="mt-2 font-bold">{title}</h1>
@@ -26,7 +22,7 @@ function TipCard({ title, children, text }: Props) {
           </div>
         )}
       </div>
-    </Transition>
+    </FadeIn>
   );
 }
 

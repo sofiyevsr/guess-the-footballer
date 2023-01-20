@@ -3,8 +3,8 @@ import z from "zod";
 import { getTodayInUTC } from "utils/common";
 
 const schema = z.object({
-  startedAt: z.string().datetime(),
-  finishedAt: z.string().datetime().optional(),
+  startedAt: z.string().datetime({ offset: true }),
+  finishedAt: z.string().datetime({ offset: true }).optional(),
   currentProgress: z.object({
     general: z.number(),
     performances: z.number(),
