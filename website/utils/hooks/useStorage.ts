@@ -28,7 +28,7 @@ export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
         });
       }
     },
-    [key, schema]
+    [key, schema, storage]
   );
 
   useEffect(() => {
@@ -49,13 +49,9 @@ export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
       runInDev(() => {
         console.error(e);
       });
-      return false;
     }
+    return false;
   };
-
-  useEffect(() => {
-    setState(getStoredValue());
-  }, [key, getStoredValue]);
 
   return [{ state, isLoading }, updateValue] as const;
 }

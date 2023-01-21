@@ -9,34 +9,35 @@ function RouterProgressBar() {
   const resetTimeoutRef = useRef<NodeJS.Timeout>();
   const control = useAnimation();
 
-  const animate = (width: string, duration: number, delay?: number) => {
-    control.stop();
-    control.start({ width, transition: { duration, delay } });
-  };
-
   const resetTimeouts = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
   };
 
-  const work = () => {
-    if (valueRef.current + 15 >= 100) {
-      valueRef.current = 100;
-      animate("100vw", 0.6);
-    } else {
-      valueRef.current += 15;
-      animate(valueRef.current + "vw", 0.6);
-      timeoutRef.current = setTimeout(() => {
-        work();
-      }, 300);
-    }
-  };
-
   useEffect(() => {
+    const animate = (width: string, duration: number, delay?: number) => {
+      control.stop();
+      control.start({ width, transition: { duration, delay } });
+    };
+
+    const work = () => {
+      if (valueRef.current + 15 >= 100) {
+        valueRef.current = 100;
+        animate("100vw", 0.6);
+      } else {
+        valueRef.current += 15;
+        animate(valueRef.current + "vw", 0.6);
+        timeoutRef.current = setTimeout(() => {
+          work();
+        }, 300);
+      }
+    };
+
     const handleStart = () => {
       resetTimeouts();
       work();
     };
+
     const handleStop = () => {
       resetTimeouts();
       if (valueRef.current !== 100) {
@@ -57,7 +58,7 @@ function RouterProgressBar() {
       router.events.off("routeChangeComplete", handleStop);
       router.events.off("routeChangeError", handleStop);
     };
-  }, [router]);
+  }, [router, control]);
 
   return (
     <motion.div

@@ -2,7 +2,7 @@ import SeparatedInput from "@cmpt/input/separated";
 import { useMutation } from "@tanstack/react-query";
 import produce from "immer";
 import clsx from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { GameService } from "utils/services/game";
 
@@ -13,7 +13,8 @@ interface Props {
 }
 
 function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
-  const words = playerName.split(" ");
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const words = useMemo(() => playerName.split(" "), [playerName]);
   const [answer, setAnswer] = useState(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
   const {
@@ -25,9 +26,9 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       if (corrections === null) {
         onCorrectAnswer?.(answer);
-        toast("Correct answer", { type: "success" });
+        toast("Correct answer", { toastId: "correct_answer", type: "success" });
       } else {
-        toast(`Wrong answer`, { type: "error" });
+        toast(`Wrong answer`, { toastId: "wrong_answer", type: "error" });
       }
       return corrections;
     },
@@ -35,7 +36,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
 
   useEffect(() => {
     setAnswer(Array(words.length).fill(""));
-  }, [playerName]);
+  }, [words]);
 
   return (
     <>
@@ -43,6 +44,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
         {words.map((name, index) => (
           <SeparatedInput
             key={index}
+            buttonRef={buttonRef}
             length={name.length}
             containerClassName="my-2"
             className="mx-1"
@@ -66,6 +68,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
         <div className="text-red-500 h-6">{errorMessage}</div>
       </div>
       <button
+        ref={buttonRef}
         className={clsx("btn btn-wide btn-primary self-center my-2", {
           loading: corrections === null,
         })}

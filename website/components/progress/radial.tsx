@@ -32,8 +32,7 @@ const ProgressRadial = ({ disabled, seconds, onEnd }: Props) => {
       }
     }, 1000);
     return clearInterval.bind(undefined, timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seconds, disabled]);
+  }, [seconds, disabled, onEnd]);
 
   return (
     <div className="relative">

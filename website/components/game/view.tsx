@@ -2,7 +2,7 @@ import TipCard from "@cmpt/card/tipCard";
 import ProgressRadial from "@cmpt/progress/radial";
 import dayjs from "dayjs";
 import { produce } from "immer";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { getTips, SingleTip } from "utils/tips";
@@ -34,7 +34,7 @@ interface Props {
   defaultState?: GameState;
 }
 
-const STATE_SYNC_INTERVAL = 3000;
+const STATE_SYNC_INTERVAL = 2000;
 
 const GameView = ({
   player,
@@ -80,44 +80,32 @@ const GameView = ({
     return clearInterval.bind(undefined, timer);
   }, [syncState]);
 
+  const onEnd = useCallback(() => {
+    const newProgress = produce(stateRef.current.currentProgress, (draft) => {
+      if (draft.general < stateRef.current.playerTips.general.length)
+        draft.general++;
+      if (draft.transfers < stateRef.current.playerTips.transfers.length)
+        draft.transfers++;
+      if (draft.performances < stateRef.current.playerTips.performances.length)
+        draft.performances++;
+    });
+    setCurrentProgress(newProgress);
+    const shouldRestart =
+      newProgress.general < stateRef.current.playerTips.general.length ||
+      newProgress.transfers < stateRef.current.playerTips.transfers.length ||
+      newProgress.performances <
+        stateRef.current.playerTips.performances.length;
+
+    return shouldRestart;
+  }, []);
+
   return (
     <div className="flex flex-col mb-20 h-full lg:flex-row lg:mb-0">
       <div className="mx-8 order-1 flex-1 flex items-center flex-col lg:order-2">
         <div className="my-2 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
-        <ProgressRadial
-          disabled={!shouldRevealTip}
-          seconds={3}
-          onEnd={() => {
-            const newProgress = produce(
-              stateRef.current.currentProgress,
-              (draft) => {
-                if (draft.general < stateRef.current.playerTips.general.length)
-                  draft.general++;
-                if (
-                  draft.transfers < stateRef.current.playerTips.transfers.length
-                )
-                  draft.transfers++;
-                if (
-                  draft.performances <
-                  stateRef.current.playerTips.performances.length
-                )
-                  draft.performances++;
-              }
-            );
-            setCurrentProgress(newProgress);
-            const shouldRestart =
-              newProgress.general <
-                stateRef.current.playerTips.general.length ||
-              newProgress.transfers <
-                stateRef.current.playerTips.transfers.length ||
-              newProgress.performances <
-                stateRef.current.playerTips.performances.length;
-
-            return shouldRestart;
-          }}
-        />
+        <ProgressRadial disabled={!shouldRevealTip} seconds={3} onEnd={onEnd} />
         <GameForm
           playerID={player.id}
           playerName={player.playerName}

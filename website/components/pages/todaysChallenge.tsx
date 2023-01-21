@@ -7,6 +7,7 @@ import { useTodaysChallenge } from "utils/hooks/requests/useTodaysChallenge";
 import produce from "immer";
 import dayjs from "dayjs";
 import CompletedIcon from "@cmpt/icons/completed";
+import { getTimeDifference } from "utils/common";
 
 const defaultState: GameState = {
   currentProgress: { general: 1, performances: 0, transfers: 0 },
@@ -35,11 +36,22 @@ function TodaysChallenge() {
         <div className="min-h-[16rem] full flex flex-col items-center justify-center px-4 text-center">
           <CompletedIcon width={200} height={200} />
           <h1 className="text-4xl my-4">
-            {"You have completed today's challenge"}
+            <span>{"You have completed today's challenge in "}</span>
+            <span className="font-bold">
+              {
+                getTimeDifference(
+                  dayjs(gameState.startedAt),
+                  dayjs(gameState.finishedAt)
+                ) as string
+              }
+            </span>
           </h1>
           <button
             className="btn btn-error text-white my-4"
-            onClick={() => setGameState(undefined)}
+            onClick={() => {
+              setGameState(undefined);
+              gameStateRef.current = undefined;
+            }}
           >
             Replay
           </button>

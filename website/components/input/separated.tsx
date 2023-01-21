@@ -3,6 +3,7 @@ import type {
   HTMLAttributes,
   FocusEvent,
   KeyboardEvent,
+  RefObject,
 } from "react";
 import clsx from "classnames";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ interface Props {
   value?: string;
   onChange?: (arg0: string) => void;
   compare?: string;
+  buttonRef?: RefObject<HTMLButtonElement>;
 }
 
 const container: AnimationProps["variants"] = {
@@ -43,6 +45,7 @@ const SeparatedInput = ({
   value,
   onChange,
   length,
+  buttonRef,
   compare,
 }: Props) => {
   const [data, setData] = useState(defaultValue);
@@ -63,6 +66,7 @@ const SeparatedInput = ({
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const { currentTarget, key } = event;
     const { selectionStart, value } = currentTarget;
+    const isEnter = key === "Enter";
     const isBackspace = key === "Backspace" || key === "Delete";
     const isBack = key === "ArrowLeft" || key === "ArrowDown";
     const isForward = key === "ArrowRight" || key === "ArrowUp";
@@ -83,6 +87,11 @@ const SeparatedInput = ({
     // Move cursor if current key press is same as input text
     if (value === key) {
       focusNextElement(currentTarget);
+      event.preventDefault();
+    }
+    // Click submit button if enter received
+    if (isEnter && buttonRef) {
+      buttonRef.current?.click();
       event.preventDefault();
     }
   }

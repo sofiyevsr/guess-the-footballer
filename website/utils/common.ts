@@ -1,7 +1,11 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import UTC from "dayjs/plugin/utc";
+import relativeTime from "dayjs/plugin/relativeTime";
+import duration from "dayjs/plugin/duration";
 
 dayjs.extend(UTC);
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 export function shuffleArray<T>(array: T[]) {
   const newArr: T[] = [...array];
@@ -14,6 +18,16 @@ export function shuffleArray<T>(array: T[]) {
 
 export function getTodayInUTC() {
   return dayjs().utc().format("DD-MM-YYYY");
+}
+
+export function getTimeDifference(
+  from: Dayjs,
+  to: Dayjs,
+  raw: boolean = false
+) {
+  const diff = dayjs.duration(from.diff(to));
+  if (raw === true) return diff;
+  return diff.humanize();
 }
 
 export function runInDev(callback: () => void) {

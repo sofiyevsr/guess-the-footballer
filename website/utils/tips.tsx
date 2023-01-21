@@ -49,8 +49,8 @@ export const getTips = (player: SinglePlayerData): SingleTip[] => {
           <Image
             src="/shirt-black.png"
             alt="t-shirt"
-            width={123}
-            height={107}
+            sizes="50vw"
+            fill
             className="object-cover rounded-full w-auto h-auto"
           />
         </div>
