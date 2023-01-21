@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { runInDev } from "utils/common";
 import { ZodSchema } from "zod";
 
@@ -10,7 +10,7 @@ function getStorage() {
 }
 
 export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
-  let storage: Storage | undefined = getStorage();
+  let storage: Storage | undefined = useMemo(() => getStorage(), []);
   const [state, setState] = useState<T | undefined>();
   const [isLoading, setIsLoading] = useState(true);
 
