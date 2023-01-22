@@ -21,7 +21,7 @@ playerRouter.get("/", customCache({ duration: 5 }), async (c) => {
 		maxRange =
 			difficultyMappings[difficulty as keyof typeof difficultyMappings];
 	}
-	const randomArr = generateRandomArray(20, [1, maxRange]);
+	const randomArr = generateRandomArray(10, [1, maxRange]);
 	const promises = randomArr.map((id) => c.env.Players.get(`player:${id}`));
 	const result = await Promise.all(promises);
 	for (let i = 0, len = result.length; i < len; i++) {

@@ -6,6 +6,16 @@ export const gameDifficulties = [
   "very-hard",
 ] as const;
 
+export const gameDifficultyNames: {
+  [K in (typeof gameDifficulties)[number]]: string;
+} = {
+  "very-easy": "Very Easy",
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  "very-hard": "Very Hard",
+} as const;
+
 export interface SinglePlayerData {
   id: number;
   playerName: string;

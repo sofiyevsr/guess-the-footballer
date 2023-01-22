@@ -12,7 +12,7 @@ export const GameService = {
     const response = await api
       .query({ difficulty })
       .get("/player")
-      .json<SinglePlayerData>();
+      .json<SinglePlayerData[]>();
     return response;
   },
   submitAnswer: async (id: number, answer: string) => {

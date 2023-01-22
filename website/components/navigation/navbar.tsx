@@ -22,7 +22,7 @@ const Navbar = () => {
         </label>
       </div>
       <div className="flex-1">
-        <a className="btn btn-ghost normal-case text-xl">daisyUI</a>
+        <a className="btn btn-ghost normal-case text-xl">Wordle</a>
       </div>
       <div className="flex-none">
         <button className="btn btn-square btn-ghost">

@@ -8,6 +8,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { globalQueryClient } from "utils/queryClient";
 import RouterProgressBar from "@cmpt/progress/routerProgressBar";
 import { ToastContainer } from "react-toastify";
+import { DefaultSeo } from "next-seo";
+import seoDefaultConfig from "utils/seo";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -31,11 +33,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         }
       `}</style>
       <RouterProgressBar />
+      <DefaultSeo {...seoDefaultConfig} />
       {getLayout(<Component {...pageProps} />)}
       <ToastContainer
-        position="bottom-center"
+        position="bottom-left"
         theme="colored"
         className="text-lg text-center font-bold"
+        autoClose={2000}
       />
     </QueryClientProvider>
   );

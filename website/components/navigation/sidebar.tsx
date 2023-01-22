@@ -49,7 +49,7 @@ const Sidebar = ({ children }: Props) => {
           <li className="my-1">
             <Link
               className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname === "/",
+                "bg-primary": pathname === "/" || pathname === "/challenge",
               })}
               href="/"
             >
@@ -62,7 +62,7 @@ const Sidebar = ({ children }: Props) => {
           <li className="my-1">
             <Link
               className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname === "/play",
+                "bg-primary": pathname.startsWith("/play"),
               })}
               href="/play"
             >

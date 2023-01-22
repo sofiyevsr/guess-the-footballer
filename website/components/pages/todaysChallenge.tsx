@@ -47,7 +47,7 @@ function TodaysChallenge() {
             </span>
           </h1>
           <button
-            className="btn btn-error text-white my-4"
+            className="btn btn-error text-white my-4 md:btn-wide"
             onClick={() => {
               setGameState(undefined);
               gameStateRef.current = undefined;
