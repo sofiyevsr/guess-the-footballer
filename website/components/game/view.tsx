@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { produce } from "immer";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
-import useIsFirstRender from "utils/hooks/useFirstRender";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { getTips, SingleTip } from "utils/tips";
 import GameForm from "./form";
