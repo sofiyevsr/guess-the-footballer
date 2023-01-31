@@ -42,7 +42,7 @@ const GameView = ({
   defaultState,
   syncState,
 }: Props) => {
-  const [playerTips, setPlayerTips] = useState<TipsState>(() => ({
+  const [playerTips] = useState<TipsState>(() => ({
     general: shuffleArray(getTips(player)),
     performances: shuffleArray(player.performanceData),
     transfers: shuffleArray(player.transferHistory),
@@ -68,28 +68,6 @@ const GameView = ({
 
   const stateRef = useRef({ currentProgress, playerTips });
   stateRef.current = { currentProgress, playerTips };
-
-  const isFirstRenderRef = useRef(true);
-
-  if (isFirstRenderRef.current === true) {
-    isFirstRenderRef.current = false;
-  }
-
-  useEffect(() => {
-    if (isFirstRenderRef.current === true) return;
-    setCurrentProgress(
-      defaultState?.currentProgress ?? {
-        general: 1,
-        performances: 0,
-        transfers: 0,
-      }
-    );
-    setPlayerTips({
-      general: shuffleArray(getTips(player)),
-      performances: shuffleArray(player.performanceData),
-      transfers: shuffleArray(player.transferHistory),
-    });
-  }, [player, defaultState]);
 
   useEffect(() => {
     if (syncState == null) return;

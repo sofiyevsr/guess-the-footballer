@@ -2,13 +2,7 @@ import SeparatedInput from "@cmpt/input/separated";
 import { useMutation } from "@tanstack/react-query";
 import produce from "immer";
 import clsx from "classnames";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { GameService } from "utils/services/game";
 
@@ -20,16 +14,12 @@ interface Props {
 
 function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const words = useMemo(
-    () => playerName.split(" ").map((name) => ({ name, id: playerID })),
-    [playerName, playerID]
-  );
+  const words = useMemo(() => playerName.split(" "), [playerName]);
   const [answer, setAnswer] = useState<string[]>(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
   const {
     data: corrections,
     mutate,
-    reset,
     isLoading,
   } = useMutation({
     mutationFn: async (answer: string) => {
@@ -44,39 +34,32 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
     },
   });
 
-  const onChange = useCallback(
-    (index: number) => (value: string) => {
-      setAnswer(
-        produce((draft) => {
-          draft[index] = value;
-        })
-      );
-      const answerString = answer.join(" ");
-      if (answerString.length !== playerName.length || errorMessage == null)
-        return;
-      setErrorMessage(undefined);
-    },
-    [answer, errorMessage, playerName]
-  );
-
-  useEffect(() => {
-    setAnswer(Array(words.length).fill(""));
-    reset();
-  }, [words, reset]);
-
   return (
     <>
       <div className="flex flex-col w-full items-center overflow-x-auto">
-        {words.map(({ name, id }, index) => (
+        {words.map((name, index) => (
           <SeparatedInput
-            key={id + "_" + index}
+            key={index}
             buttonRef={buttonRef}
             length={name.length}
             containerClassName="my-2"
             className="mx-1"
             compare={corrections?.split(" ")[index]}
             value={answer[index]}
-            onChange={onChange(index)}
+            onChange={(value: string) => {
+              setAnswer(
+                produce((draft) => {
+                  draft[index] = value;
+                })
+              );
+              const answerString = answer.join(" ");
+              if (
+                answerString.length !== playerName.length ||
+                errorMessage == null
+              )
+                return;
+              setErrorMessage(undefined);
+            }}
           />
         ))}
         <div className="text-red-500 h-6">{errorMessage}</div>

@@ -6,7 +6,7 @@ import type {
   RefObject,
 } from "react";
 import clsx from "classnames";
-import { useEffect, useRef, useState } from "react";
+import {  useRef, useState } from "react";
 import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
@@ -42,7 +42,6 @@ const SeparatedInput = ({
   defaultValue = "",
   className,
   containerClassName,
-  value,
   onChange,
   length,
   buttonRef,
@@ -52,16 +51,16 @@ const SeparatedInput = ({
   const dataRef = useRef<string>(data);
   dataRef.current = data;
 
-  useEffect(() => {
-    if (value == null) return;
-    setData(value);
-  }, [value]);
+  // useEffect(() => {
+  //   if (value == null) return;
+  //   setData(value);
+  // }, [value]);
 
-  useEffect(() => {
-    const newData = dataRef.current.substring(0, length);
-    setData(newData);
-    onChange?.(newData);
-  }, [length, onChange]);
+  // useEffect(() => {
+  //   const newData = dataRef.current.substring(0, length);
+  //   setData(newData);
+  //   onChange?.(newData);
+  // }, [length, onChange]);
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const { currentTarget, key } = event;

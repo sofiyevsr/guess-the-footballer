@@ -36,22 +36,25 @@ export function useLocalStorage<T>(key: string, schema?: ZodSchema) {
     setIsLoading(false);
   }, [getStoredValue]);
 
-  const updateValue = (value: T | undefined, skipUpdate?: boolean) => {
-    if (skipUpdate !== true) setState(value);
-    try {
-      if (typeof value === "undefined") {
-        storage?.removeItem(key);
-      } else {
-        storage?.setItem(key, JSON.stringify(value));
+  const updateValue = useCallback(
+    (value: T | undefined, skipUpdate?: boolean) => {
+      if (skipUpdate !== true) setState(value);
+      try {
+        if (typeof value === "undefined") {
+          storage?.removeItem(key);
+        } else {
+          storage?.setItem(key, JSON.stringify(value));
+        }
+        return true;
+      } catch (e) {
+        runInDev(() => {
+          console.error(e);
+        });
       }
-      return true;
-    } catch (e) {
-      runInDev(() => {
-        console.error(e);
-      });
-    }
-    return false;
-  };
+      return false;
+    },
+    [key, storage]
+  );
 
   return [{ state, isLoading }, updateValue] as const;
 }

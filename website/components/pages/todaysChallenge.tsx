@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { ComponentProps, useCallback, useRef } from "react";
 import GameView, { GameState } from "@cmpt/game/view";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +25,22 @@ function TodaysChallenge() {
 
   if (!isLoadingState && gameStateRef.current == null)
     gameStateRef.current = gameState;
+
+  const syncState = useCallback<
+    NonNullable<ComponentProps<typeof GameView>["syncState"]>
+  >(
+    ({ currentProgress }) => {
+      const newState = produce(
+        gameStateRef.current ?? defaultState,
+        (current) => {
+          current.currentProgress = currentProgress;
+        }
+      );
+      setGameState(newState, true);
+      gameStateRef.current = newState;
+    },
+    [setGameState]
+  );
 
   return (
     <LoadingLayout
@@ -69,16 +85,7 @@ function TodaysChallenge() {
             setGameState(newState);
             gameStateRef.current = newState;
           }}
-          syncState={({ currentProgress }) => {
-            const newState = produce(
-              gameStateRef.current ?? defaultState,
-              (current) => {
-                current.currentProgress = currentProgress;
-              }
-            );
-            setGameState(newState, true);
-            gameStateRef.current = newState;
-          }}
+          syncState={syncState}
           defaultState={gameState}
         />
       )}

@@ -28,6 +28,7 @@ function LocalPlayView({ players }: Props) {
 
   return (
     <GameView
+      key={progress}
       player={players[progress]}
       onCorrectAnswer={() => {
         if (progress >= players.length - 1) {

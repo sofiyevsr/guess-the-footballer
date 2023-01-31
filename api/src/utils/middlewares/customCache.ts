@@ -12,7 +12,7 @@ export function customCache({
 }: Options): MiddlewareHandler<string, CustomEnvironment> {
 	return async (c: Context<string, CustomEnvironment>, next: Next) => {
 		let key = c.req.url;
-		if (keepQueries === true) {
+		if (keepQueries === false) {
 			key = c.req.url.split("?")[0];
 		}
 		const cache = caches.default;
