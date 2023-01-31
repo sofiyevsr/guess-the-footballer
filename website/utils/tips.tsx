@@ -28,7 +28,7 @@ export const getTips = (player: SinglePlayerData): SingleTip[] => {
                 alt="club_tip_image"
                 width={80}
                 height={80}
-                className="object-cover rounded-full brightness-[.4] w-full h-full"
+                className="object-contain brightness-[.4] w-full h-full"
               />
             </div>
           ),

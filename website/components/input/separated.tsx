@@ -14,7 +14,6 @@ interface Props {
   className?: HTMLAttributes<HTMLInputElement>["className"];
   containerClassName?: HTMLAttributes<HTMLDivElement>["className"];
   defaultValue?: string;
-  value?: string;
   onChange?: (arg0: string) => void;
   compare?: string;
   buttonRef?: RefObject<HTMLButtonElement>;
@@ -48,19 +47,6 @@ const SeparatedInput = ({
   compare,
 }: Props) => {
   const [data, setData] = useState(defaultValue);
-  const dataRef = useRef<string>(data);
-  dataRef.current = data;
-
-  // useEffect(() => {
-  //   if (value == null) return;
-  //   setData(value);
-  // }, [value]);
-
-  // useEffect(() => {
-  //   const newData = dataRef.current.substring(0, length);
-  //   setData(newData);
-  //   onChange?.(newData);
-  // }, [length, onChange]);
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const { currentTarget, key } = event;

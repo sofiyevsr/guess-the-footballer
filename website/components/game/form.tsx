@@ -45,7 +45,6 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
             containerClassName="my-2"
             className="mx-1"
             compare={corrections?.split(" ")[index]}
-            value={answer[index]}
             onChange={(value: string) => {
               setAnswer(
                 produce((draft) => {
