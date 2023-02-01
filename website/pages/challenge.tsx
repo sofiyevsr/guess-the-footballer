@@ -17,6 +17,8 @@ function Challenge() {
   );
 }
 
-Challenge.getLayout = (page: ReactElement) => <PublicLayout>{page}</PublicLayout>;
+Challenge.getLayout = (page: ReactElement) => (
+  <PublicLayout>{page}</PublicLayout>
+);
 
 export default Challenge;

@@ -7,7 +7,7 @@ import {
 
 function DifficultyButtons() {
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       {gameDifficulties.map((diff) => (
         <Link
           key={diff}

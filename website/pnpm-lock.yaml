@@ -16,6 +16,7 @@ specifiers:
   eslint-config-next: ^13.1.2
   framer-motion: ^8.4.3
   immer: ^9.0.17
+  lottie-web: ^5.10.2
   next: ^13.1.2
   next-seo: ^5.15.0
   postcss: ^8.4.21
@@ -41,6 +42,7 @@ dependencies:
   eslint-config-next: 13.1.2_7uibuqfxkfaozanbtbziikiqje
   framer-motion: 8.4.3_biqbaboplfbrettd7655fr4n2y
   immer: 9.0.17
+  lottie-web: 5.10.2
   next: 13.1.2_biqbaboplfbrettd7655fr4n2y
   next-seo: 5.15.0_7jnwqgtpcnwg4nzft4b6xlzlfi
   react: 18.2.0
@@ -1730,6 +1732,10 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
+    dev: false
+
+  /lottie-web/5.10.2:
+    resolution: {integrity: sha512-d0PFIGiwuMsJYaF4uPo+qG8dEorlI+xFI2zrrFtE1bGO4WoLIz+NjremxEq1swpR7juR10aeOtmNh3d6G3ub0A==}
     dev: false
 
   /lru-cache/6.0.0:

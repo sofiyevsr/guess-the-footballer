@@ -22,6 +22,7 @@
     "eslint-config-next": "^13.1.2",
     "framer-motion": "^8.4.3",
     "immer": "^9.0.17",
+    "lottie-web": "^5.10.2",
     "next": "^13.1.2",
     "next-seo": "^5.15.0",
     "react": "^18.2.0",

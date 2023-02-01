@@ -2,6 +2,7 @@ import Head from "next/head";
 import type { ReactElement } from "react";
 import PublicLayout from "@cmpt/layout/public";
 import Link from "next/link";
+import Image from "next/image";
 
 function Home() {
   return (
@@ -13,13 +14,20 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <section className="flex flex-col items-center lg:mt-8">
-        <h1 className="mx-2 text-center text-md mb-4 lg:my-4 lg:mx-0 lg:max-w-[50%] lg:text-2xl">
+        <Image
+          src="/player-vector.png"
+          alt="football player illustration"
+          width={350}
+          height={350}
+          className="object-contain w-auto"
+        />
+        <h1 className="mx-2 text-center text-md my-4 lg:mx-0 lg:max-w-[65%] lg:text-2xl xl:max-w-[50%]">
           Footballer Name Puzzle is an online game that tests your knowledge of
           the world&apos;s top footballers. Players must guess their names from
           the clues provided. With an intuitive interface and lots of levels to
           choose from, Footballer Name Puzzle is the ideal game for football
-          fans and puzzle enthusiasts alike. You can find it online and start
-          playing right away!
+          fans and puzzle enthusiasts alike. Get ready for a daily dose of
+          football fun! Guess the name of today&apos;s player right away!
         </h1>
         <Link
           href={"/challenge"}
