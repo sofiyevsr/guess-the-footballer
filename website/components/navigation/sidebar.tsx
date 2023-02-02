@@ -13,10 +13,16 @@ interface Props {
 }
 const Sidebar = ({ children }: Props) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { pathname } = useRouter();
+  const { events, pathname } = useRouter();
   useEffect(() => {
-    setDrawerOpen(false);
-  }, [pathname]);
+    const handleStart = () => {
+      setDrawerOpen(false);
+    };
+    events.on("routeChangeStart", handleStart);
+    return () => {
+      events.off("routeChangeStart", handleStart);
+    };
+  }, [events]);
   return (
     <div className="drawer drawer-mobile">
       <input
@@ -26,7 +32,7 @@ const Sidebar = ({ children }: Props) => {
         checked={drawerOpen}
         onChange={({ currentTarget: { checked } }) => setDrawerOpen(checked)}
       />
-      <div className="drawer-content">{children}</div>
+      <div className="drawer-content flex flex-col">{children}</div>
       <div className="drawer-side">
         <label htmlFor="sidebar" className="drawer-overlay" />
         <ul className="menu bg-base-300 p-4 w-90">

@@ -36,7 +36,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
 
   return (
     <>
-      <div className="flex flex-col w-full items-center overflow-x-auto">
+      <div className="flex flex-col items-center overflow-x-auto">
         {words.map((name, index) => (
           <SeparatedInput
             key={index}

@@ -4,3 +4,6 @@
 * {
   box-sizing: border-box;
 }
+.lg\:mockup-window {
+  overflow-x: hidden !important;
+}
