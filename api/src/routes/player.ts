@@ -22,7 +22,7 @@ playerRouter.get("/", customCache({ duration: 5 }), async (c) => {
 			difficultyMappings[difficulty as keyof typeof difficultyMappings];
 	}
 	const randomArr = generateRandomArray(10, [1, maxRange]);
-	const promises = randomArr.map((id) => c.env.Players.get(`player:${id}`));
+	const promises = randomArr.map((id) => c.env.PLAYERSKV.get(`player:${id}`));
 	const result = await Promise.all(promises);
 	for (let i = 0, len = result.length; i < len; i++) {
 		const data = result[i];
@@ -38,7 +38,7 @@ playerRouter.get("/", customCache({ duration: 5 }), async (c) => {
 });
 
 playerRouter.get("/challenge", customCache({ duration: 30 }), async (c) => {
-	const result = await c.env.Players.get("challenge");
+	const result = await c.env.PLAYERSKV.get("challenge");
 	if (result == null) {
 		return c.notFound();
 	}
@@ -50,7 +50,7 @@ playerRouter.get("/challenge", customCache({ duration: 30 }), async (c) => {
 
 playerRouter.post("/answer/:id{[0-9]+}", async (c) => {
 	const id = c.req.param("id");
-	const player = await c.env.Players.get(`player:${id}`);
+	const player = await c.env.PLAYERSKV.get(`player:${id}`);
 	if (player == null) {
 		return c.notFound();
 	}

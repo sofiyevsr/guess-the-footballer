@@ -1,10 +1,12 @@
-import { Environment } from "hono/dist/types";
-
 export interface Env {
-  Players: KVNamespace;
+  PLAYERSKV: KVNamespace;
+  ARENA_ROOM_DO: DurableObjectNamespace;
   ENVIRONMENT: "development" | "production";
   ORIGIN: string;
-  URL: string;
+  WEB_URL: string;
+  DATABASE_HOST: string;
+  DATABASE_USERNAME: string;
+  DATABASE_PASSWORD: string;
 }
 
 export type WebClient = {
@@ -12,7 +14,7 @@ export type WebClient = {
   pass: string;
 };
 
-export interface CustomEnvironment extends Environment {
+export interface CustomEnvironment {
   Bindings: Env;
   Variables: { user?: WebClient };
 }

@@ -11,9 +11,7 @@ const PublicLayout = ({ children }: Props) => {
   return (
     <Sidebar>
       <Navbar />
-      <main className="bg-base-300 py-8 flex-1 lg:border lg:mockup-window">
-        <PageTransition>{children}</PageTransition>
-      </main>
+      <PageTransition>{children}</PageTransition>
     </Sidebar>
   );
 };

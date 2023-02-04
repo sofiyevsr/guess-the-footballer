@@ -2,6 +2,7 @@ package database
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/sofiyevsr/transfer-parser/types/response"
 	"github.com/sofiyevsr/transfer-parser/utils"
@@ -79,6 +80,7 @@ func (player *Player) FromProfile(profile response.ProfileResponse) {
 	}
 	player.ForeignID = profile.PlayerProfile.PlayerID
 	player.PlayerName = utils.ToAscii(profile.PlayerProfile.PlayerName)
+	player.PlayerName = strings.ReplaceAll(player.PlayerName, "-", " ")
 	player.Birthplace = profile.PlayerProfile.Birthplace
 	player.BirthplaceCountry = profile.PlayerProfile.BirthplaceCountry
 	player.DateOfBirth = profile.PlayerProfile.DateOfBirth

@@ -1,27 +1,22 @@
 import React, { ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, Variant } from "framer-motion";
 import { useRouter } from "next/router";
 
-const variants = {
-  center: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
+const variants: { [K: string]: Variant } = {
   in: {
-    opacity: 0,
-    x: "100%",
+    opacity: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.3,
+      type: "spring",
+      stiffness: 100,
     },
   },
   out: {
     opacity: 0,
-    x: "-100%",
     transition: {
-      duration: 0.5,
+      duration: 0.3,
+      type: "spring",
+      stiffness: 100,
     },
   },
 };
@@ -33,17 +28,17 @@ interface Props {
 function PageTransition({ children }: Props) {
   const { asPath } = useRouter();
   return (
-    <AnimatePresence initial={false} mode="popLayout">
-      <motion.div
-        className="h-full"
+    <AnimatePresence mode="popLayout">
+      <motion.main
+        className="bg-base-300 py-8 flex-1 lg:border lg:mockup-window h-full"
         key={asPath}
         variants={variants}
-        initial="in"
-        animate="center"
+        initial="out"
+        animate="in"
         exit="out"
       >
         {children}
-      </motion.div>
+      </motion.main>
     </AnimatePresence>
   );
 }
