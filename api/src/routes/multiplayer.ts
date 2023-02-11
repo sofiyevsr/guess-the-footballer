@@ -1,30 +1,33 @@
 import { Hono } from "hono";
-import db from "../storage/db";
 import { CustomEnvironment } from "../types";
+import { session } from "../utils/middlewares/session";
+import { cast } from "../utils/transform/cast";
 import { roomSchema } from "../utils/validation/room";
 
 const multiplayerRouter = new Hono<CustomEnvironment>();
 
 multiplayerRouter.get("/rooms", async (c) => {
-  const result = await db(c).execute(
-    "select * from Room",
-  );
-  return c.json({ rows: result.rows });
+  const result = await c.env.__D1_BETA__ARENA_DB
+    .prepare("select * from room")
+    .all();
+  return c.json(result);
 });
 
-multiplayerRouter.post("/rooms", async (c) => {
+multiplayerRouter.post("/rooms", session, async (c) => {
   const body = await c.req.json();
   const { size, private: nonPublic } = roomSchema.parse(body);
   const roomID = c.env.ARENA_ROOM_DO.newUniqueId();
   const id = roomID.toString();
-  await db(c).execute(
-    "INSERT INTO Room(id, private, size) VALUES(:id, :private, :size)",
-    { id, private: nonPublic, size }
-  );
+  const stm = c.env.__D1_BETA__ARENA_DB
+    .prepare(
+      "INSERT INTO room(id, private, size, created_at) VALUES(?, ?, ?, ?)"
+    )
+    .bind(id, cast(nonPublic), size, new Date().toISOString());
+  await stm.run();
   return c.json({ id });
 });
 
-multiplayerRouter.get("/", (c) => {
+multiplayerRouter.get("/", session, (c) => {
   const upgradeHeader = c.req.headers.get("Upgrade");
   if (upgradeHeader !== "websocket") {
     return c.body("Expected Upgrade: websocket", 426);

@@ -6,6 +6,10 @@ kv_namespaces = [
   { binding = "PLAYERSKV", id = "<ignored>", preview_id = "<ignored>" }
 ]
 
+d1_databases = [
+  { binding = "__D1_BETA__ARENA_DB", database_name = "<ignored>", database_id = "<ignored>" }
+]
+
 [durable_objects]
 bindings = [
   { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
@@ -16,6 +20,7 @@ command = "node esbuild.js"
 
 [miniflare]
 kv_persist = true
+d1_persist = true
 durable_objects_persist = true
 
 [triggers]

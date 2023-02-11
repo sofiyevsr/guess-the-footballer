@@ -100,8 +100,8 @@ const GameView = ({
   }, []);
 
   return (
-    <div className="flex flex-col mb-20 h-full lg:flex-row lg:mb-0">
-      <div className="mx-8 order-1 flex-1 flex items-center flex-col lg:order-2">
+    <div className="flex flex-col pb-20 h-full lg:flex-row lg:pb-0">
+      <div className="mx-4 order-1 flex-1 flex items-center flex-col lg:order-2">
         <div className="my-2 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
@@ -126,11 +126,11 @@ const GameView = ({
           0,
           currentProgress.performances
         )}
-        className="order-2 m-2 lg:order-1 lg:w-96"
+        className="order-2 m-2 lg:order-1 lg:w-[26rem]"
       />
       <TransferHistoryView
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
-        className="order-3 m-2 lg:order-3 lg:w-96"
+        className="order-3 m-2 lg:order-3 lg:w-[26rem]"
       />
       <GameTimer defaultValue={timerInSeconds} />
     </div>

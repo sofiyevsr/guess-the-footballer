@@ -5,18 +5,18 @@ import { useRouter } from "next/router";
 const variants: { [K: string]: Variant } = {
   in: {
     opacity: 1,
+    scale: 1,
     transition: {
       duration: 0.3,
-      type: "spring",
-      stiffness: 100,
+      ease: "easeInOut",
     },
   },
   out: {
     opacity: 0,
+    scale: .75,
     transition: {
       duration: 0.3,
-      type: "spring",
-      stiffness: 100,
+      ease: "easeInOut",
     },
   },
 };
@@ -30,7 +30,7 @@ function PageTransition({ children }: Props) {
   return (
     <AnimatePresence mode="popLayout">
       <motion.main
-        className="bg-base-300 py-8 flex-1 lg:border lg:mockup-window h-full"
+        className="bg-base-300 py-8 flex-1 lg:border lg:mockup-window"
         key={asPath}
         variants={variants}
         initial="out"
