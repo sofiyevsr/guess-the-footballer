@@ -2,14 +2,11 @@ import { Hono } from "hono";
 import type { CustomEnvironment } from "../types";
 import { difficultyMappings, playerCount } from "../utils/constants";
 import { customCache } from "../utils/middlewares/customCache";
-import { cors } from "../utils/middlewares/customCors";
 import { generateRandomArray } from "../utils/random";
 import { compareStrings, mutateString } from "../utils/string";
 import { answerSchema } from "../utils/validation/answer";
 
 const playerRouter = new Hono<CustomEnvironment>();
-
-playerRouter.use("*", cors);
 
 playerRouter.get("/", customCache({ duration: 5 }), async (c) => {
 	let maxRange = playerCount;

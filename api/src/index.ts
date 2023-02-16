@@ -3,8 +3,11 @@ import { ZodError } from "zod";
 import routes from "./routes";
 import { scheduled } from "./scheduler";
 import { CustomEnvironment } from "./types";
+import { cors } from "./utils/middlewares/customCors";
 
 const app = new Hono<CustomEnvironment>();
+
+app.use("*", cors);
 
 app.route("/player", routes.playerRouter);
 app.route("/arena", routes.multiplayerRouter);

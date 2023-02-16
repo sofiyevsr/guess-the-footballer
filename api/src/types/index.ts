@@ -10,12 +10,23 @@ export interface Env {
 	DATABASE_PASSWORD: string;
 }
 
-export type Session = {
+export interface Session {
 	username: string;
 	created_at: string;
-};
+}
 
 export interface CustomEnvironment {
 	Bindings: Env;
 	Variables: { user?: Session };
+}
+
+export interface DatabaseRoom {
+	id: string;
+	private: number;
+	size: number;
+	current_size: number;
+	creator_username: string;
+	started_at?: string;
+	finished_at?: string;
+	created_at: number;
 }

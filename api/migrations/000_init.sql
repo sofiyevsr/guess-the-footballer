@@ -10,7 +10,7 @@ CREATE TABLE room (
     creator_username         TEXT NOT NULL,
     started_at               TEXT,
     finished_at              TEXT,
-    created_at               TEXT NOT NULL,
+    created_at               INTEGER NOT NULL,
     FOREIGN KEY (creator_username) REFERENCES session (username)
 );
 
