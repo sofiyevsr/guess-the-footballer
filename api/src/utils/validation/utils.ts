@@ -11,4 +11,5 @@ export const roomIdValidator = z
 		required_error: "Room ID is required",
 		invalid_type_error: "Room ID must be a string",
 	})
+	.min(16, { message: "Room ID can have minimum 16 characters" })
 	.max(128, { message: "Room ID can have maximum 128 characters" });

@@ -22,8 +22,7 @@ app.onError((error, c) => {
 			`Following error occured: ${error.message}, stack: \n${error.stack}`
 		);
 	}
-	c.status(500);
-	return c.json({ error: "error_occured" });
+	return c.json({ error: "error_occured" }, 500);
 });
 
 export { ArenaRoom } from "./storage/room.do";

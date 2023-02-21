@@ -5,30 +5,31 @@ export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
 	c,
 	next
 ) => {
+  const res = c.res.clone();
 	const options = {
 		origin: c.env.ORIGIN,
 		allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
 		allowHeaders: ["Content-Type"],
 	};
-	c.res.headers.append("Access-Control-Allow-Origin", options["origin"]);
-	c.res.headers.append("Access-Control-Allow-Credentials", "true");
-	c.res.headers.append(
+	res.headers.append("Access-Control-Allow-Origin", options["origin"]);
+	res.headers.append("Access-Control-Allow-Credentials", "true");
+	res.headers.append(
 		"Access-Control-Allow-Headers",
 		options["allowHeaders"].join(",")
 	);
-	c.res.headers.append("Vary", "Origin");
+	res.headers.append("Vary", "Origin");
 
 	if (c.req.method !== "OPTIONS") {
 		return await next();
 	}
 	// Preflight
-	c.res.headers.append(
+	res.headers.append(
 		"Access-Control-Allow-Methods",
 		options.allowMethods.join(",")
 	);
 
-	c.res.headers.delete("Content-Length");
-	c.res.headers.delete("Content-Type");
+	res.headers.delete("Content-Length");
+	res.headers.delete("Content-Type");
 
 	c.res = new Response(null, {
 		headers: c.res.headers,

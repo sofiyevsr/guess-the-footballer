@@ -1,14 +1,12 @@
-export function parseTokenFromHeader(
-	header: string | undefined
-): string | undefined {
-	if (header == null) return;
-	const authHeader = header.split(" ");
-	const token = authHeader[1];
-	if (
-		(authHeader[0].toUpperCase() !== "BEARER",
-		token == null || typeof token !== "string" || token.length !== 32)
-	) {
-		return;
-	}
-	return token;
+import { Context } from "hono";
+
+export function setTokenCookie(c: Context, token: string) {
+	const yearFromNow = new Date();
+	yearFromNow.setFullYear(new Date().getFullYear() + 1);
+	c.cookie("token", token, {
+		path: "/",
+		secure: c.env.ENVIRONMENT === "production",
+		httpOnly: true,
+		expires: yearFromNow,
+	});
 }
