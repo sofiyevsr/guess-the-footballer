@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import {
   CalendarDaysIcon,
   PuzzlePieceIcon,
+  UserGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
@@ -74,6 +75,17 @@ const Sidebar = ({ children }: Props) => {
             >
               <PuzzlePieceIcon className="h-10 w-10 text-green-500" />
               <span className="uppercase ml-3 font-bold text-xl">Play</span>
+            </Link>
+          </li>
+          <li className="my-1">
+            <Link
+              className={clsx("flex items-center w-full h-full", {
+                "bg-primary": pathname.startsWith("/arena"),
+              })}
+              href="/arena"
+            >
+              <UserGroupIcon className="h-10 w-10 text-yellow-500" />
+              <span className="uppercase ml-3 font-bold text-xl">Multiplayer</span>
             </Link>
           </li>
         </ul>

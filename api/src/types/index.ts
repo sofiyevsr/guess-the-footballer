@@ -12,7 +12,7 @@ export interface Env {
 
 export interface Session {
 	username: string;
-	created_at: string;
+	created_at: number;
 }
 
 export interface CustomEnvironment {
@@ -26,7 +26,7 @@ export interface DatabaseRoom {
 	size: number;
 	current_size: number;
 	creator_username: string;
-	started_at?: string;
-	finished_at?: string;
+	started_at?: number;
+	finished_at?: number;
 	created_at: number;
 }

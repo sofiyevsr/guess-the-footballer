@@ -19,7 +19,7 @@ app.onError((error, c) => {
 		return c.json({ error: error.issues.map(({ message }) => message) });
 	} else {
 		console.log(
-			`Following error occured: ${error.message}, stack: \n${error.stack}`
+			`Following error occured: ${error.message}`
 		);
 	}
 	return c.json({ error: "error_occured" }, 500);
