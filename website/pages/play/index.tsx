@@ -2,7 +2,7 @@ import Head from "next/head";
 import type { ReactElement } from "react";
 import PublicLayout from "@cmpt/layout/public";
 import DifficultyButtons from "@cmpt/containers/difficultyButtons";
-import { Lottie } from "@cmpt/misc/Lottie";
+import { Lottie } from "@cmpt/misc/lottie";
 
 function PreLocalPlay() {
   return (

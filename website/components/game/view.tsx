@@ -100,7 +100,7 @@ const GameView = ({
   }, []);
 
   return (
-    <div className="flex flex-col pb-20 h-full lg:flex-row lg:pb-0">
+    <div className="flex flex-col pb-20 min-h-full lg:flex-row lg:pb-0">
       <div className="mx-4 order-1 flex-1 flex items-center flex-col lg:order-2">
         <div className="my-2 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}

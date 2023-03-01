@@ -13,9 +13,9 @@ const variants: { [K: string]: Variant } = {
   },
   out: {
     opacity: 0,
-    scale: .75,
+    scale: .85,
     transition: {
-      duration: 0.3,
+      duration: 0.2,
       ease: "easeInOut",
     },
   },
@@ -30,7 +30,7 @@ function PageTransition({ children }: Props) {
   return (
     <AnimatePresence mode="popLayout">
       <motion.main
-        className="bg-base-300 py-8 flex-1 lg:border lg:mockup-window"
+        className="bg-base-300 py-8 flex-1 overflow-scroll rounded-2xl lg:border"
         key={asPath}
         variants={variants}
         initial="out"

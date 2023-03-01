@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { AppProps } from "next/app";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
@@ -41,6 +42,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         className="text-lg text-center font-bold"
         autoClose={2000}
       />
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }

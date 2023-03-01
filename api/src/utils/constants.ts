@@ -7,3 +7,5 @@ export const difficultyMappings = {
 } as const;
 
 export const playerCount = 850;
+
+export const defaultPaginationLimit = 20;

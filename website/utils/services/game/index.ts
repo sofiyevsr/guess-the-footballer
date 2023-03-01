@@ -18,7 +18,6 @@ export const GameService = {
   submitAnswer: async (id: number, answer: string) => {
     const response = await api
       .headers({
-        Accept: "application/json",
         "Content-Type": "application/json",
       })
       .post({ answer }, `/player/answer/${id}`)

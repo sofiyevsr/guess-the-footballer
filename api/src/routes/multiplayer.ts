@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import type { CustomEnvironment } from "../types";
+import type { CustomEnvironment, DatabaseRoom } from "../types";
+import { defaultPaginationLimit } from "../utils/constants";
 import { session } from "../utils/middlewares/session";
 import { cast } from "../utils/transform/cast";
 import { roomSchema } from "../utils/validation/room";
@@ -10,38 +11,64 @@ const multiplayerRouter = new Hono<CustomEnvironment>();
 multiplayerRouter.get("/rooms", async (c) => {
 	const cursor = cursorValidator.parse(c.req.query("cursor"));
 	const { statement, binds } =
-		cursor == null
-			? { statement: "", binds: [] }
-			: { statement: "AND created_at < ?1", binds: [cursor] };
+		cursor == null || cursor === 0
+			? { statement: "", binds: [defaultPaginationLimit + 1] }
+			: {
+					statement: "AND created_at < ?",
+					binds: [cursor, defaultPaginationLimit + 1],
+			  };
 	const { results } = await c.env.__D1_BETA__ARENA_DB
 		.prepare(
-			`SELECT id, creator_username, size, current_size, created_at
+			`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
        FROM room WHERE private = 0 AND current_size < size AND started_at IS NULL ${statement}
-       ORDER BY created_at DESC LIMIT 20`
+       ORDER BY created_at DESC LIMIT ?`
 		)
 		.bind(...binds)
-		.all();
-	return c.json({ rooms: results });
+		.all<DatabaseRoom>();
+	if (results == null) {
+		return c.json({ error: "error_occured" }, 500);
+	}
+	const response: { rooms: DatabaseRoom[]; cursor?: number } = {
+		rooms: results,
+	};
+	if (results.length === defaultPaginationLimit + 1) {
+		response.rooms = response.rooms.slice(0, -1);
+		response.cursor = response.rooms[response.rooms.length - 1].created_at;
+	}
+	return c.json(response);
 });
 
 multiplayerRouter.get("/my-rooms", session, async (c) => {
 	const cursor = cursorValidator.parse(c.req.query("cursor"));
 	const { statement, binds } =
-		cursor == null
-			? { statement: "", binds: [c.get("user")!.username] }
+		cursor == null || cursor === 0
+			? {
+					statement: "",
+					binds: [c.get("user")!.username, defaultPaginationLimit + 1],
+			  }
 			: {
-					statement: "AND created_at < ?2",
-					binds: [c.get("user")!.username, cursor],
+					statement: "AND created_at < ?",
+					binds: [c.get("user")!.username, cursor, defaultPaginationLimit + 1],
 			  };
 	const { results } = await c.env.__D1_BETA__ARENA_DB
 		.prepare(
 			`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
-       FROM room WHERE creator_username = ?1 ${statement}
-       ORDER BY created_at DESC LIMIT 20`
+       FROM room WHERE creator_username = ? ${statement}
+       ORDER BY created_at DESC LIMIT ?`
 		)
 		.bind(...binds)
-		.all();
-	return c.json({ rooms: results });
+		.all<DatabaseRoom>();
+	if (results == null) {
+		return c.json({ error: "error_occured" }, 500);
+	}
+	const response: { rooms: DatabaseRoom[]; cursor?: number } = {
+		rooms: results,
+	};
+	if (results.length === defaultPaginationLimit + 1) {
+		response.rooms = response.rooms.slice(0, -1);
+		response.cursor = response.rooms[response.rooms.length - 1].created_at;
+	}
+	return c.json(response);
 });
 
 multiplayerRouter.post("/rooms", session, async (c) => {
@@ -52,11 +79,12 @@ multiplayerRouter.post("/rooms", session, async (c) => {
 	const stm = c.env.__D1_BETA__ARENA_DB
 		.prepare(
 			`INSERT INTO room(id, creator_username, private, size, created_at, current_size)
-       VALUES(?1, ?2, ?3, ?4, ?5, 0)`
+       VALUES(?1, ?2, ?3, ?4, ?5, 0)
+       RETURNING id, creator_username, private, size, current_size, started_at, finished_at, created_at`
 		)
 		.bind(id, c.get("user")!.username, cast(nonPublic), size, Date.now());
-	await stm.run();
-	return c.json({ id });
+	const room = await stm.first();
+	return c.json({ room });
 });
 
 multiplayerRouter.get("/join/:id", session, async (c) => {

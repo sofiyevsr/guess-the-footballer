@@ -2,10 +2,12 @@ import dayjs, { Dayjs } from "dayjs";
 import UTC from "dayjs/plugin/utc";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
 dayjs.extend(UTC);
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(localizedFormat);
 
 export function shuffleArray<T>(array: T[]) {
   const newArr: T[] = [...array];
@@ -20,6 +22,10 @@ export function getTodayInUTC() {
   return dayjs().utc().format("DD-MM-YYYY");
 }
 
+export function formatUnixTimestamp(date: number, format: string) {
+  return dayjs(date).format(format);
+}
+
 export function getTimeDifference(
   from: Dayjs,
   to: Dayjs,
@@ -28,6 +34,10 @@ export function getTimeDifference(
   const diff = dayjs.duration(from.diff(to));
   if (raw === true) return diff;
   return diff.humanize();
+}
+
+export function getRelativeTimeFromUnix(date: number) {
+  return dayjs(date).from(dayjs());
 }
 
 export function runInDev(callback: () => void) {
