@@ -24,7 +24,7 @@ export const NewRoomModal = ({ room, reset }: Props) => {
         <p className="py-4">Do you want to join the room now?</p>
         <Clipboard
           text={`${process.env.NEXT_PUBLIC_URL}/arena/${room?.id ?? ""}`}
-          label="Copy room's url to clipboard"
+          label="Click to copy room's url"
         />
         <div className="modal-action">
           <button

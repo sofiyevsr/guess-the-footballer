@@ -38,7 +38,7 @@ export const SessionForm = () => {
         </p>
         <p>
           <span className="font-bold">Joined: </span>
-          {formatUnixTimestamp(user.created_at, "LLLL")}
+          {formatUnixTimestamp(user.created_at, "LLL")}
         </p>
       </div>
     );

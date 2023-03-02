@@ -19,8 +19,9 @@ export default function Clipboard({ text, label }: Props) {
   }, []);
   return (
     <div
-      className="flex items-center justify-between bg-black p-4 rounded-xl cursor-pointer"
+      className="flex items-center justify-between bg-black p-4 rounded-xl cursor-pointer hover:outline hover:outline-primary"
       onClick={async () => {
+        if (timerRef.current != null) return;
         try {
           await navigator.clipboard.writeText(text);
           setMessage("Copied!");
@@ -29,6 +30,7 @@ export default function Clipboard({ text, label }: Props) {
         }
         timerRef.current = setTimeout(() => {
           setMessage(label);
+          timerRef.current = undefined;
         }, 3000);
       }}
     >
