@@ -1,2 +1,4 @@
-export const API_URL = "http://localhost:8787";
-export const ASSET_URL = "https://pub-49f25329739f45528f8e9b0f9fa93fd8.r2.dev";
+export const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL;
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export const STORAGE_URL = process.env.NEXT_PUBLIC_STORAGE_URL;
+export const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;

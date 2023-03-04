@@ -14,10 +14,12 @@ app.route("/arena", routes.multiplayerRouter);
 app.route("/session", routes.sessionRouter);
 
 app.onError((error, c) => {
-	console.log(`Following error occured: ${error.message}`);
+	console.log(
+		`Following error occured: ${error.message}, stack: ${error.stack}`
+	);
+	// TODO correct error messages sent
 	if (error instanceof ZodError) {
-		c.status(400);
-		return c.json({ error: error.issues.map(({ message }) => message) });
+		return c.json({ error: error.issues.map(({ message }) => message) }, 400);
 	}
 	return c.json({ error: "error_occured" }, 500);
 });

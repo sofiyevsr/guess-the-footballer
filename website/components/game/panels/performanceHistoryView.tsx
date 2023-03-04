@@ -2,7 +2,7 @@ import React, { HTMLAttributes } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types/game";
-import { ASSET_URL } from "utils/constants";
+import { STORAGE_URL } from "utils/constants";
 import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
@@ -83,7 +83,7 @@ function PerformanceHistoryView({ className, performances }: Props) {
                   <td className="text-left flex min-w-[12rem] items-center">
                     <div className="rounded-full bg-blue-500 ring-4 relative inline-block w-10 h-10 mx-2 overflow-hidden">
                       <Image
-                        src={ASSET_URL + "/" + performance.competition.image}
+                        src={STORAGE_URL + "/" + performance.competition.image}
                         alt={performance.competition.shortName + "-image"}
                         fill
                         sizes="70vw"

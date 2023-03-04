@@ -68,6 +68,9 @@ export const SessionForm = () => {
             "input-error": !!errors.username,
           })}
         />
+        {
+          // TODO here should be live username status meaning is available
+        }
         {errors.username && (
           <p role="alert" className="label py-0 text-error text-sm">
             {errors.username.message}

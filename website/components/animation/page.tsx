@@ -30,7 +30,7 @@ function PageTransition({ children }: Props) {
   return (
     <AnimatePresence mode="popLayout">
       <motion.main
-        className="bg-base-300 py-8 flex-1 overflow-scroll rounded-2xl lg:border"
+        className="bg-base-300 py-8 flex-1 overflow-auto rounded-2xl lg:border"
         key={asPath}
         variants={variants}
         initial="out"

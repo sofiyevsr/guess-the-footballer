@@ -1,7 +1,8 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { produce } from "immer";
 import { DatabaseRoom, Env } from "../types";
 import { playerCount } from "../utils/constants";
+import { handleWebSocketError } from "../utils/misc/websocket";
 import { getRandomNumber } from "../utils/random";
 import { retry } from "../utils/retry";
 import { compareStrings, mutateString } from "../utils/string";
@@ -72,23 +73,26 @@ export class ArenaRoom {
 			this.roomData = await this.env.__D1_BETA__ARENA_DB
 				.prepare(
 					`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
-           FROM room WHERE id = ?1`
+           FROM room WHERE id = ?`
 				)
 				.bind(c.req.param("id"))
 				.first<DatabaseRoom | null>();
 			if (this.roomData == null) {
-				return c.notFound();
+				return handleWebSocketError(c as Context, "Room not found");
 			}
 			const isUserNewcomer = !this.gameState.users.includes(username);
 			if (this.roomData.finished_at != null) {
-				return c.json({ error: "Game in the room is finished" }, 500);
+				return handleWebSocketError(
+					c as Context,
+					"Game in the room is finished"
+				);
 			} else if (
 				this.roomData.current_size >= this.roomData.size &&
 				isUserNewcomer
 			) {
-				return c.json({ error: "Room is full" }, 500);
+				return handleWebSocketError(c as Context, "Room is full");
 			} else if (this.roomData.started_at != null && isUserNewcomer) {
-				return c.json({ error: "Game already started" }, 403);
+				return handleWebSocketError(c as Context, "Game already started");
 			}
 
 			const { 0: client, 1: server } = new WebSocketPair();
@@ -141,12 +145,15 @@ export class ArenaRoom {
 			this.sendMessage("joined_room", this.getLatestState(), username);
 			this.broadcastMessage("user_joined", this.getLatestState(), username);
 
-			return new Response(null, { status: 101, webSocket: client });
+			return new Response(null, {
+				status: 101,
+				webSocket: client,
+			});
 		});
 
 		this.router.onError((error, c) => {
 			console.log(
-				`Following error occured: ${error.message}`
+				`Following error occured in room do: ${error.message}, stack: ${error.stack}`
 			);
 			return c.json({ error: "error_occured" }, 500);
 		});
@@ -283,6 +290,7 @@ export class ArenaRoom {
 		this.sockets[username] = socket;
 	}
 
+	// TODO Drop user if game hasn't started
 	removeSocket(
 		username: string,
 		closeSocket = true,
@@ -310,7 +318,7 @@ export class ArenaRoom {
 		});
 		const result = await this.env.__D1_BETA__ARENA_DB
 			.prepare(
-				"UPDATE room SET current_size = current_size + 1 WHERE current_size < size AND id = ?1 RETURNING id"
+				"UPDATE room SET current_size = current_size + 1 WHERE current_size < size AND id = ? RETURNING id"
 			)
 			.bind(roomID)
 			.first();

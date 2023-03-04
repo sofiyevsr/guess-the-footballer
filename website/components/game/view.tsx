@@ -111,7 +111,7 @@ const GameView = ({
           playerName={player.playerName}
           onCorrectAnswer={onCorrectAnswer}
         />
-        <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-scroll sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
+        <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
           {playerTips.general
             .slice(0, currentProgress.general)
             .map(({ id, title, text, children }) => (

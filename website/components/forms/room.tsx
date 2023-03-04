@@ -25,9 +25,11 @@ export const RoomForm = () => {
     async onSuccess() {
       globalQueryClient.invalidateQueries({
         queryKey: ["rooms"],
+        exact: true,
       });
       globalQueryClient.invalidateQueries({
         queryKey: ["my_rooms"],
+        exact: true,
       });
     },
   });

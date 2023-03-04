@@ -1,11 +1,11 @@
 import Spinner from "@cmpt/progress/spinner";
-import React from "react";
+import React, { ReactElement } from "react";
 
 interface Props {
   isError: boolean;
   isLoading: boolean;
-  refetch: () => void;
-  children: JSX.Element | undefined;
+  children: ReactElement | undefined;
+  refetch?: () => void;
 }
 
 function LoadingLayout({
@@ -28,9 +28,11 @@ function LoadingLayout({
           <div className="my-2 text-xl font-bold">
             Error occured while fetching data
           </div>
-          <button className="btn btn-outline btn-error" onClick={refetch}>
-            Retry
-          </button>
+          {refetch != null && (
+            <button className="btn btn-outline btn-error" onClick={refetch}>
+              Retry
+            </button>
+          )}
         </div>
       </div>
     );

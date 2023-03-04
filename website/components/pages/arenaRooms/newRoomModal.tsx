@@ -3,6 +3,7 @@ import clsx from "classnames";
 import { SingleRoom } from "utils/services/arena/types";
 import Clipboard from "@cmpt/misc/clipboard";
 import { useRouter } from "next/router";
+import { WEBSITE_URL } from "utils/constants";
 
 interface Props {
   room: SingleRoom | undefined;
@@ -23,7 +24,7 @@ export const NewRoomModal = ({ room, reset }: Props) => {
         </h3>
         <p className="py-4">Do you want to join the room now?</p>
         <Clipboard
-          text={`${process.env.NEXT_PUBLIC_URL}/arena/${room?.id ?? ""}`}
+          text={`${WEBSITE_URL}/arena/${room?.id ?? ""}`}
           label="Click to copy room's url"
         />
         <div className="modal-action">
