@@ -20,7 +20,7 @@ function LocalPlayView({ players }: Props) {
           Congratulations, you have successfully completed current level!
         </h1>
         <h1 className="text-lg text-gray-400 my-4">
-          Questions for each difficulty is updated every 5 minutes, choose a difficulty to replay:
+          Questions for each difficulty are updated every 5 minutes, choose a difficulty to replay:
         </h1>
         <DifficultyButtons />
       </div>

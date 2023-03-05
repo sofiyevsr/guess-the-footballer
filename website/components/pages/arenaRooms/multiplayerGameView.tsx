@@ -21,6 +21,7 @@ export const MultiplayerGameView = () => {
       console.log("open: ", e);
     };
     socketRef.current.onclose = (e) => {
+      delete socketRef.current;
       console.log("close: ", e);
     };
     socketRef.current.onmessage = (e) => {
@@ -28,7 +29,6 @@ export const MultiplayerGameView = () => {
     };
     return () => {
       socketRef.current?.close();
-      socketRef.current = undefined;
     };
   }, [isReady]);
   return <div>{message}</div>;

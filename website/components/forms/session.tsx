@@ -6,6 +6,7 @@ import { SessionService } from "utils/services/session";
 import { globalQueryClient } from "utils/queryClient";
 import { formatUnixTimestamp } from "utils/common";
 import { useMe } from "utils/hooks/requests/useMe";
+import UsernameChecker from "./usernameChecker";
 
 interface IFormInput {
   username: string;
@@ -24,8 +25,11 @@ export const SessionForm = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<IFormInput>();
+
+  const username = watch("username");
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => mutate(data.username);
 
@@ -61,6 +65,8 @@ export const SessionForm = () => {
               message: "Username length size can be maximum 32",
             },
           })}
+          maxLength={32}
+          autoComplete="off"
           aria-invalid={errors.username ? "true" : "false"}
           type="text"
           placeholder="Type username here..."
@@ -68,9 +74,7 @@ export const SessionForm = () => {
             "input-error": !!errors.username,
           })}
         />
-        {
-          // TODO here should be live username status meaning is available
-        }
+        <UsernameChecker username={username} />
         {errors.username && (
           <p role="alert" className="label py-0 text-error text-sm">
             {errors.username.message}

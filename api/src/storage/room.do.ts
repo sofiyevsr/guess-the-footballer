@@ -100,6 +100,9 @@ export class ArenaRoom {
 			server.addEventListener("close", () => {
 				this.removeSocket(username, false);
 				this.broadcastMessage("user_dropped", this.getLatestState());
+				this.state.blockConcurrencyWhile(
+					this.deleteUsersFromStorage.bind(this, [username])
+				);
 			});
 			server.addEventListener("error", () => {
 				this.sendMessage("error_occured", {}, username);
@@ -175,13 +178,13 @@ export class ArenaRoom {
 		}
 		const startedAt = Date.now();
 		await Promise.all([
-			await this.setGameState(
+			this.setGameState(
 				produce(this.gameState, (state) => {
 					state.progress = { current_level: 1, current_player: player };
 				})
 			),
-			await this.env.__D1_BETA__ARENA_DB
-				.prepare("UPDATE room SET started_at = ?1 WHERE id = ?2")
+			this.env.__D1_BETA__ARENA_DB
+				.prepare("UPDATE room SET started_at = ? WHERE id = ?")
 				.bind(startedAt, roomID)
 				.run(),
 		]);
@@ -191,19 +194,22 @@ export class ArenaRoom {
 		});
 		this.broadcastMessage("game_started", this.getLatestState());
 		setTimeout(() => {
-			retry(() => this.scheduleNextRound(roomID), 2);
+			this.scheduleNextRound(roomID);
 		}, durationBetweenLevels);
 	}
 
 	async finishGame(roomID: string) {
 		const finishedAt = Date.now();
 		await this.env.__D1_BETA__ARENA_DB
-			.prepare("UPDATE room SET finished_at = ?1 WHERE id = ?2")
+			.prepare("UPDATE room SET finished_at = ? WHERE id = ?")
 			.bind(finishedAt, roomID)
 			.run();
 		this.roomData = produce(this.roomData, (room) => {
 			if (room == null) return;
 			room.finished_at = finishedAt;
+		});
+		this.gameState = produce(this.gameState, (game) => {
+			game.progress = null;
 		});
 		this.broadcastMessage("game_finished", this.getLatestState());
 		for (const socketUsername in this.sockets) {
@@ -290,7 +296,6 @@ export class ArenaRoom {
 		this.sockets[username] = socket;
 	}
 
-	// TODO Drop user if game hasn't started
 	removeSocket(
 		username: string,
 		closeSocket = true,
@@ -306,6 +311,33 @@ export class ArenaRoom {
 		}
 		if (closeSocket === true) this.sockets[username].close(code, reason);
 		delete this.sockets[username];
+	}
+
+	async deleteUsersFromStorage(users: string[]) {
+		// Drop user only if the game hasn't started
+		if (this.roomData == null || this.roomData.started_at != null) return;
+		await Promise.all([
+			this.env.__D1_BETA__ARENA_DB
+				.prepare(
+					"UPDATE room SET current_size = current_size - 1 WHERE current_size > 0 AND id = ?"
+				)
+				.bind(this.roomData.id)
+				.run(),
+			this.setGameState(
+				produce(this.gameState, (game) => {
+					game.users = game.users.filter((user) => !users.includes(user));
+					for (const key of game.users) {
+						if (users.includes(key)) {
+							delete game.users_progress[key];
+						}
+					}
+				})
+			),
+		]);
+		this.roomData = produce(this.roomData, (room) => {
+			if (room == null || room.current_size === 0) return;
+			room.current_size--;
+		});
 	}
 
 	async persistUser(username: string, roomID: string) {
@@ -325,6 +357,7 @@ export class ArenaRoom {
 		if (result == null) {
 			// TODO Probably failed to guard race condition, handle better
 			// Because no row is changed
+			// TODO rethink retries
 			throw Error("Race condition");
 		}
 		this.roomData = produce(this.roomData, (data) => {

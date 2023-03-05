@@ -41,18 +41,7 @@ const ArenaRooms = () => {
             </a>
           )}
         </div>
-        <div>
-          <PublicRooms
-            className={clsx({
-              hidden: currentTab !== "public",
-            })}
-          />
-          <MyRooms
-            className={clsx({
-              hidden: currentTab !== "my",
-            })}
-          />
-        </div>
+        <div>{currentTab === "public" ? <PublicRooms /> : <MyRooms />}</div>
       </div>
     </div>
   );

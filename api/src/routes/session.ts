@@ -7,7 +7,7 @@ import { sessionSchema } from "../utils/validation/session";
 
 const sessionRouter = new Hono<CustomEnvironment>();
 
-sessionRouter.get("/me", session, async (c) => {
+sessionRouter.get("/me", session(), async (c) => {
 	const user = c.get("user");
 	return c.json(user);
 });

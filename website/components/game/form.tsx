@@ -3,8 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import produce from "immer";
 import clsx from "classnames";
 import React, { useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import { GameService } from "utils/services/game";
+import { throttledToast } from "utils/common";
 
 interface Props {
   playerName: string;
@@ -26,9 +26,9 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       if (corrections === null) {
         onCorrectAnswer?.(answer);
-        toast("Correct answer", { toastId: "correct_answer", type: "success" });
+        throttledToast("Correct answer", { toastId: "correct_answer", type: "success" });
       } else {
-        toast(`Wrong answer`, { toastId: "wrong_answer", type: "error" });
+        throttledToast(`Wrong answer`, { toastId: "wrong_answer", type: "error" });
       }
       return corrections;
     },

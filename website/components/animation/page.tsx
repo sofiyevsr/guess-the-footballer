@@ -7,16 +7,16 @@ const variants: { [K: string]: Variant } = {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.3,
-      ease: "easeInOut",
+      duration: 0.25,
+      ease: "backIn",
     },
   },
   out: {
     opacity: 0,
-    scale: .85,
+    scale: .8,
     transition: {
-      duration: 0.2,
-      ease: "easeInOut",
+      duration: 0.25,
+      ease: "backOut",
     },
   },
 };

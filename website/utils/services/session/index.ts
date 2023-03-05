@@ -1,3 +1,4 @@
+import AbortAddon from "wretch/addons/abort";
 import { api } from "../abstractions/api";
 import { Session } from "./types";
 
@@ -6,12 +7,14 @@ export const SessionService = {
     const response = await api.get("/session/me").json<Session>();
     return response;
   },
-  checkUsername: async (username: string) => {
-    const response = await api
+  checkUsername: (username: string) => {
+    const [controller, request] = api
+      .addon(AbortAddon())
       .query({ username })
       .get("/session/check-username")
-      .json<{ available: boolean }>();
-    return response;
+      .controller();
+    const fetch = request.json<{ available: boolean }>();
+    return [controller as AbortController, fetch] as const;
   },
   createSession: async (body: { username: string }) => {
     const response = await api

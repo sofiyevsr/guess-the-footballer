@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import type { CustomEnvironment, DatabaseRoom } from "../types";
 import { defaultPaginationLimit } from "../utils/constants";
 import { session } from "../utils/middlewares/session";
@@ -39,7 +39,7 @@ multiplayerRouter.get("/rooms", async (c) => {
 	return c.json(response);
 });
 
-multiplayerRouter.get("/my-rooms", session, async (c) => {
+multiplayerRouter.get("/my-rooms", session(), async (c) => {
 	const cursor = cursorValidator.parse(c.req.query("cursor"));
 	const { statement, binds } =
 		cursor == null || cursor === 0
@@ -72,7 +72,7 @@ multiplayerRouter.get("/my-rooms", session, async (c) => {
 	return c.json(response);
 });
 
-multiplayerRouter.post("/rooms", session, async (c) => {
+multiplayerRouter.post("/rooms", session(), async (c) => {
 	const body = await c.req.json();
 	const { size, private: nonPublic } = roomSchema.parse(body);
 	const roomID = c.env.ARENA_ROOM_DO.newUniqueId();
@@ -88,8 +88,7 @@ multiplayerRouter.post("/rooms", session, async (c) => {
 	return c.json({ room });
 });
 
-multiplayerRouter.get("/join/:id", session, async (c) => {
-	// TODO reason is not here if room not found and etc.
+multiplayerRouter.get("/join/:id", session("ws"), async (c) => {
 	const upgradeHeader = c.req.headers.get("Upgrade");
 	if (upgradeHeader !== "websocket") {
 		return c.json({ error: "Expected websocket connection" }, 426);
@@ -100,7 +99,7 @@ multiplayerRouter.get("/join/:id", session, async (c) => {
 		.bind(roomID)
 		.first<{ id: number } | null>();
 	if (roomData == null) {
-		return handleWebSocketError(c, "Room not found");
+		return handleWebSocketError(c as Context, "Room not found");
 	}
 	const roomDoID = c.env.ARENA_ROOM_DO.idFromName(roomID);
 	const roomDo = c.env.ARENA_ROOM_DO.get(roomDoID);

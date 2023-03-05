@@ -30,6 +30,7 @@ type ProgressState = {
 interface Props {
   player: SinglePlayerData;
   onCorrectAnswer: (answer: string) => void;
+  tipDuration?: number;
   syncState?: ({ currentProgress }: { currentProgress: ProgressState }) => void;
   defaultState?: GameState;
 }
@@ -41,6 +42,7 @@ const GameView = ({
   onCorrectAnswer,
   defaultState,
   syncState,
+  tipDuration = 3,
 }: Props) => {
   const [playerTips] = useState<TipsState>(() => ({
     general: shuffleArray(getTips(player)),
@@ -105,7 +107,7 @@ const GameView = ({
         <div className="my-2 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
-        <ProgressRadial disabled={!shouldRevealTip} seconds={3} onEnd={onEnd} />
+        <ProgressRadial disabled={!shouldRevealTip} seconds={tipDuration} onEnd={onEnd} />
         <GameForm
           playerID={player.id}
           playerName={player.playerName}
