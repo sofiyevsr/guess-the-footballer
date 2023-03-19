@@ -2,6 +2,7 @@ import GameForm from "@cmpt/game/form";
 import GameStatusView from "@cmpt/game/multiplayer/gameStatusView";
 import GameView from "@cmpt/game/view";
 import type { CONNECTION_STATUS, JOIN_STATUS, Payload } from "@typ/multiplayer";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { throttledToast } from "utils/common";
@@ -71,15 +72,15 @@ export const MultiplayerGameView = () => {
       />
     );
 
-  const { current_player: player } = state.game_state.progress;
+  const { current_player: player, current_level_started_at: levelStartedAt } =
+    state.game_state.progress;
 
   return (
     <GameView
       key={player.id}
       player={player}
       tipDuration={2}
-      // TODO add game state and default timer
-      defaultState={{ startedAt: 1 }}
+      defaultState={{ startedAt: dayjs(levelStartedAt).format() }}
       form={
         <GameForm
           playerID={player.id}

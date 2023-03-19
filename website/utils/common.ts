@@ -23,7 +23,7 @@ export function getTodayInUTC() {
   return dayjs().utc().format("DD-MM-YYYY");
 }
 
-export function formatUnixTimestamp(date: number, format: string) {
+export function formatDate(date: dayjs.ConfigType, format: string) {
   return dayjs(date).format(format);
 }
 

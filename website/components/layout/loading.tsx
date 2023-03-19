@@ -1,10 +1,10 @@
 import Spinner from "@cmpt/progress/spinner";
-import React, { ReactElement } from "react";
+import React, { ReactNode } from "react";
 
 interface Props {
   isError: boolean;
   isLoading: boolean;
-  children: ReactElement | undefined;
+  children?: ReactNode;
   refetch?: () => void;
 }
 
@@ -37,7 +37,7 @@ function LoadingLayout({
       </div>
     );
   }
-  return children ?? <></>;
+  return <>{children}</>;
 }
 
 export default LoadingLayout;

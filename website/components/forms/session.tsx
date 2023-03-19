@@ -4,7 +4,7 @@ import clsx from "classnames";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { SessionService } from "utils/services/session";
 import { globalQueryClient } from "utils/queryClient";
-import { formatUnixTimestamp } from "utils/common";
+import { formatDate } from "utils/common";
 import { useMe } from "utils/hooks/requests/useMe";
 import UsernameChecker from "./usernameChecker";
 
@@ -42,7 +42,7 @@ export const SessionForm = () => {
         </p>
         <p>
           <span className="font-bold">Joined: </span>
-          {formatUnixTimestamp(user.created_at, "LLL")}
+          {formatDate(user.created_at, "LLL")}
         </p>
       </div>
     );

@@ -34,6 +34,7 @@ export type Payload = {
     progress: {
       current_level: number;
       current_player: SinglePlayerData;
+      current_level_started_at: number;
     } | null;
     users_progress: {
       [K in string]: {

@@ -2,7 +2,7 @@ import SeparatedInput from "@cmpt/input/separated";
 import { useMutation } from "@tanstack/react-query";
 import produce from "immer";
 import clsx from "classnames";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GameService } from "utils/services/game";
 import { throttledToast } from "utils/common";
 
@@ -23,6 +23,7 @@ function GameForm({
   correctionsProp,
   onAnswer,
 }: Props) {
+  const firstInputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const words = useMemo(() => playerName.split(" "), [playerName]);
   const [answer, setAnswer] = useState<string[]>(Array(words.length).fill(""));
@@ -50,6 +51,10 @@ function GameForm({
     },
   });
 
+  useEffect(() => {
+    firstInputRef.current?.focus();
+  }, []);
+
   const corrections = correctionsProp ?? mutationCorrections;
   const isLoading = isLoadingProp ?? mutationIsLoading;
 
@@ -59,6 +64,7 @@ function GameForm({
         {words.map((name, index) => (
           <SeparatedInput
             key={index}
+            firstInputRef={index === 0 ? firstInputRef : undefined}
             buttonRef={buttonRef}
             length={name.length}
             containerClassName="my-2"

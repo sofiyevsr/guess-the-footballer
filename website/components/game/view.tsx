@@ -1,8 +1,8 @@
-import TipCard from "@cmpt/card/tipCard";
+import TipsContainer from "@cmpt/containers/tipsContainer";
 import ProgressRadial from "@cmpt/progress/radial";
 import dayjs from "dayjs";
 import { produce } from "immer";
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { getTips, SingleTip } from "utils/tips";
@@ -12,8 +12,8 @@ import PerformanceHistoryView from "./panels/performanceHistoryView";
 import TransferHistoryView from "./panels/transferHistoryView";
 
 export interface GameState {
-  startedAt: dayjs.ConfigType;
-  currentProgress: ProgressState;
+  startedAt: string;
+  finishedAt?: string;
 }
 
 interface TipsState {
@@ -31,19 +31,15 @@ interface Props {
   form?: ReactNode;
   onCorrectAnswer?: (answer: string) => void;
   tipDuration?: number;
-  syncState?: ({ currentProgress }: { currentProgress: ProgressState }) => void;
   defaultState?: GameState;
   leftComponent?: ReactNode;
   rightComponent?: ReactNode;
 }
 
-const STATE_SYNC_INTERVAL = 2000;
-
 const GameView = ({
   player,
   onCorrectAnswer,
   defaultState,
-  syncState,
   form,
   leftComponent,
   rightComponent,
@@ -55,13 +51,22 @@ const GameView = ({
     transfers: shuffleArray(player.transferHistory),
   }));
 
-  const [currentProgress, setCurrentProgress] = useState<ProgressState>(
-    defaultState?.currentProgress ?? {
-      general: 1,
-      performances: 0,
-      transfers: 0,
-    }
-  );
+  const [currentProgress, setCurrentProgress] = useState<ProgressState>(() => {
+    if (defaultState == null)
+      return {
+        general: 1,
+        performances: 0,
+        transfers: 0,
+      };
+    const progress = Math.floor(
+      dayjs().diff(dayjs(defaultState.startedAt), "second") / tipDuration
+    );
+    return {
+      general: Math.min(Math.max(1, progress), playerTips.general.length),
+      performances: Math.min(progress, playerTips.performances.length),
+      transfers: Math.min(progress, playerTips.transfers.length),
+    };
+  });
 
   const timerInSeconds =
     defaultState == null
@@ -75,17 +80,6 @@ const GameView = ({
 
   const stateRef = useRef({ currentProgress, playerTips });
   stateRef.current = { currentProgress, playerTips };
-
-  useEffect(() => {
-    if (syncState == null) return;
-    const timer = setInterval(() => {
-      syncState({
-        currentProgress: stateRef.current.currentProgress,
-      });
-    }, STATE_SYNC_INTERVAL);
-
-    return clearInterval.bind(undefined, timer);
-  }, [syncState]);
 
   const onEnd = useCallback(() => {
     const newProgress = produce(stateRef.current.currentProgress, (draft) => {
@@ -124,15 +118,9 @@ const GameView = ({
             onCorrectAnswer={onCorrectAnswer}
           />
         )}
-        <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
-          {playerTips.general
-            .slice(0, currentProgress.general)
-            .map(({ id, title, text, children }) => (
-              <TipCard title={title} key={id} text={text}>
-                {children}
-              </TipCard>
-            ))}
-        </div>
+        <TipsContainer
+          tips={playerTips.general.slice(0, currentProgress.general)}
+        />
       </div>
       <PerformanceHistoryView
         performances={playerTips.performances.slice(

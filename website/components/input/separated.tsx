@@ -1,12 +1,13 @@
-import type {
+import {
   ChangeEvent,
   HTMLAttributes,
   FocusEvent,
   KeyboardEvent,
   RefObject,
+  useEffect,
 } from "react";
 import clsx from "classnames";
-import {  useRef, useState } from "react";
+import { useState } from "react";
 import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
   onChange?: (arg0: string) => void;
   compare?: string;
   buttonRef?: RefObject<HTMLButtonElement>;
+  firstInputRef?: RefObject<HTMLInputElement>;
 }
 
 const container: AnimationProps["variants"] = {
@@ -43,8 +45,9 @@ const SeparatedInput = ({
   containerClassName,
   onChange,
   length,
-  buttonRef,
   compare,
+  buttonRef,
+  firstInputRef,
 }: Props) => {
   const [data, setData] = useState(defaultValue);
 
@@ -143,6 +146,7 @@ const SeparatedInput = ({
       {new Array(length).fill(0).map((_, index) => (
         <motion.input
           key={index}
+          ref={index === 0 ? firstInputRef : undefined}
           variants={item}
           className={clsx(
             "input max-w-[3.5rem] shrink text-white font-bold border-blue-400 border-2",

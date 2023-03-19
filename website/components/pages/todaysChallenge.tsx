@@ -1,5 +1,6 @@
-import React, { ComponentProps, useCallback, useRef } from "react";
-import GameView, { GameState } from "@cmpt/game/view";
+import React, { useEffect, useRef } from "react";
+import GameView from "@cmpt/game/view";
+import clsx from "classnames";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
 import LoadingLayout from "@cmpt/layout/loading";
@@ -7,12 +8,7 @@ import { useTodaysChallenge } from "utils/hooks/requests/useTodaysChallenge";
 import produce from "immer";
 import dayjs from "dayjs";
 import CompletedIcon from "@cmpt/icons/completed";
-import { getTimeDifference } from "utils/common";
-
-const defaultState: GameState = {
-  currentProgress: { general: 1, performances: 0, transfers: 0 },
-  startedAt: dayjs().format(),
-};
+import { formatDate } from "utils/common";
 
 function TodaysChallenge() {
   const [{ state: gameState, isLoading: isLoadingState }, setGameState] =
@@ -21,74 +17,56 @@ function TodaysChallenge() {
     queryKey: ["challenge"],
     queryFn: GameService.getTodaysChallenge,
   });
-  const gameStateRef = useRef<GameState>();
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
 
-  if (!isLoadingState && gameStateRef.current == null)
-    gameStateRef.current = gameState;
+  useEffect(() => {
+    if (isLoadingState || gameState != null) return;
+    const newState = { startedAt: dayjs().format() };
+    setGameState(newState);
+  }, [gameState, isLoadingState]);
 
-  const syncState = useCallback<
-    NonNullable<ComponentProps<typeof GameView>["syncState"]>
-  >(
-    ({ currentProgress }) => {
-      const newState = produce(
-        gameStateRef.current ?? defaultState,
-        (current) => {
-          current.currentProgress = currentProgress;
-        }
-      );
-      setGameState(newState, true);
-      gameStateRef.current = newState;
-    },
-    [setGameState]
-  );
+  if (gameState?.finishedAt != null)
+    return (
+      <div className="min-h-[16rem] full flex flex-col items-center justify-center px-4 text-center">
+        <CompletedIcon width={200} height={200} />
+        <h1 className="text-4xl my-4">
+          <span>{"You have completed today's challenge at "}</span>
+          <span className="font-bold">
+            {formatDate(gameState.finishedAt, "LT")}
+          </span>
+        </h1>
+        <button
+          disabled={gameState == null}
+          className={clsx("btn btn-error text-white my-4 md:btn-wide", {
+            loading: gameState == null,
+          })}
+          onClick={() => {
+            setGameState(undefined);
+          }}
+        >
+          Replay
+        </button>
+      </div>
+    );
 
   return (
     <LoadingLayout
-      isLoading={isLoading || isLoadingState}
+      isLoading={isLoading || isLoadingState || gameState == null}
       isError={isError}
       refetch={refetch}
     >
-      {gameState?.finishedAt != null ? (
-        <div className="min-h-[16rem] full flex flex-col items-center justify-center px-4 text-center">
-          <CompletedIcon width={200} height={200} />
-          <h1 className="text-4xl my-4">
-            <span>{"You have completed today's challenge in "}</span>
-            <span className="font-bold">
-              {
-                getTimeDifference(
-                  dayjs(gameState.startedAt),
-                  dayjs(gameState.finishedAt)
-                ) as string
-              }
-            </span>
-          </h1>
-          <button
-            className="btn btn-error text-white my-4 md:btn-wide"
-            onClick={() => {
-              setGameState(undefined);
-              gameStateRef.current = undefined;
-            }}
-          >
-            Replay
-          </button>
-        </div>
-      ) : (
-        <GameView
-          player={data!}
-          onCorrectAnswer={() => {
-            const newState = produce(
-              gameStateRef.current ?? defaultState,
-              (current) => {
-                current.finishedAt = dayjs().format();
-              }
-            );
-            setGameState(newState);
-            gameStateRef.current = newState;
-          }}
-          syncState={syncState}
-          defaultState={gameState}
-        />
-      )}
+      <GameView
+        player={data!}
+        onCorrectAnswer={() => {
+          if (gameStateRef.current == null) return;
+          const newState = produce(gameStateRef.current, (current) => {
+            current.finishedAt = dayjs().format();
+          });
+          setGameState(newState);
+        }}
+        defaultState={gameState}
+      />
     </LoadingLayout>
   );
 }

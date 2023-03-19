@@ -25,6 +25,7 @@ interface GameState {
 	progress: {
 		current_level: number;
 		current_player: string;
+		current_level_started_at: number;
 	} | null;
 	users_progress: {
 		[K in string]: {
@@ -181,7 +182,11 @@ export class ArenaRoom {
 		await Promise.all([
 			this.setGameState(
 				produce(this.gameState, (state) => {
-					state.progress = { current_level: 1, current_player: player };
+					state.progress = {
+						current_level: 1,
+						current_player: player,
+						current_level_started_at: Date.now(),
+					};
 				})
 			),
 			this.env.__D1_BETA__ARENA_DB
@@ -242,6 +247,7 @@ export class ArenaRoom {
 				state.progress = {
 					current_level: state.progress.current_level + 1,
 					current_player: player,
+					current_level_started_at: Date.now(),
 				};
 			})
 		);
