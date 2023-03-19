@@ -11,14 +11,18 @@ interface Props {
   playerID: number;
   onCorrectAnswer?: (answer: string) => void;
   correctionsProp?: string | null;
+  correctAnswerText?: string;
   isLoadingProp?: boolean;
   onAnswer?: (answer: string) => void;
+  disabled?: boolean;
 }
 
 function GameForm({
   playerName,
   playerID,
   onCorrectAnswer,
+  correctAnswerText,
+  disabled,
   isLoadingProp,
   correctionsProp,
   onAnswer,
@@ -55,7 +59,10 @@ function GameForm({
     firstInputRef.current?.focus();
   }, []);
 
-  const corrections = correctionsProp ?? mutationCorrections;
+  const corrections =
+    typeof correctionsProp === "undefined"
+      ? mutationCorrections
+      : correctionsProp;
   const isLoading = isLoadingProp ?? mutationIsLoading;
 
   return (
@@ -90,10 +97,10 @@ function GameForm({
       </div>
       <button
         ref={buttonRef}
-        className={clsx("btn btn-primary self-center my-2 md:btn-wide", {
+        className={clsx("btn btn-primary self-center my-2 disabled:text-white md:btn-wide", {
           loading: corrections === null,
         })}
-        disabled={isLoading || corrections === null}
+        disabled={isLoading || corrections === null || disabled}
         onClick={() => {
           const answerString = answer.join(" ");
           if (answerString.length !== playerName.length) {
@@ -107,7 +114,9 @@ function GameForm({
           }
         }}
       >
-        Submit
+        {corrections === null && correctAnswerText != null
+          ? correctAnswerText
+          : "Submit"}
       </button>
     </>
   );

@@ -11,6 +11,7 @@ const PAYLOADTYPES = [
 	"game_started",
 	"game_finished",
 	"wrong_answer",
+	"correct_answer",
 	"new_correct_answer",
 	"new_round",
 	"user_dropped",
@@ -136,6 +137,7 @@ export class ArenaRoom {
 							state.users_progress[username].points += pointsOnRightAnswer;
 						})
 					);
+					this.sendMessage("correct_answer", {}, username);
 					return this.broadcastMessage(
 						"new_correct_answer",
 						this.getLatestState()

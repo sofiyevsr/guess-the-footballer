@@ -7,6 +7,7 @@ export const PAYLOADTYPES = [
   "game_started",
   "game_finished",
   "wrong_answer",
+  "correct_answer",
   "new_correct_answer",
   "new_round",
   "user_dropped",

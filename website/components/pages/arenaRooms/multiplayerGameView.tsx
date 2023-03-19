@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { throttledToast } from "utils/common";
 import { API_WS } from "utils/constants";
+import { useMe } from "utils/hooks/requests/useMe";
 
 export const MultiplayerGameView = () => {
   const {
@@ -15,6 +16,7 @@ export const MultiplayerGameView = () => {
   } = useRouter();
   const socketRef = useRef<WebSocket>();
   const startupConnectionRef = useRef(false);
+  const { data } = useMe();
   const [corrections, setCorrections] = useState<string | null>();
   const [socketStatus, setSocketStatus] = useState<CONNECTION_STATUS>("idle");
   const [joinStatus, setJoinStatus] = useState<JOIN_STATUS>("joining");
@@ -38,13 +40,17 @@ export const MultiplayerGameView = () => {
       const { type, ...payload }: Payload = JSON.parse(e.data);
       if (type === "error_occured") {
         return throttledToast("Unexpected error occured");
-      } else if (type === "joined_room") {
-        setJoinStatus("joined");
       } else if (type === "wrong_answer") {
         const { corrections } = payload as unknown as {
           corrections: string | null;
         };
-        setCorrections(corrections);
+        return setCorrections(corrections);
+      } else if (type === "joined_room") {
+        setJoinStatus("joined");
+      } else if (type === "new_round") {
+        setCorrections(undefined);
+      } else if (type === "correct_answer") {
+        return setCorrections(null);
       }
       setState(payload);
     };
@@ -72,8 +78,18 @@ export const MultiplayerGameView = () => {
       />
     );
 
-  const { current_player: player, current_level_started_at: levelStartedAt } =
-    state.game_state.progress;
+  const {
+    current_level,
+    current_player: player,
+    current_level_started_at: levelStartedAt,
+  } = state.game_state.progress;
+
+  const forbidAnswering = () => {
+    if (data == null) return true;
+    return state.game_state.users_progress[data.username].answers.some(
+      (answer) => answer.level === current_level
+    );
+  };
 
   return (
     <GameView
@@ -86,6 +102,8 @@ export const MultiplayerGameView = () => {
           playerID={player.id}
           playerName={player.playerName}
           correctionsProp={corrections}
+          disabled={forbidAnswering()}
+          correctAnswerText="Correct! Waiting for new round..."
           onAnswer={(answer) => {
             socketRef.current?.send(JSON.stringify({ answer }));
           }}
