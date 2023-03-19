@@ -6,12 +6,15 @@ import Spinner from "@cmpt/animation/spinner";
 import { getRelativeTimeFromUnix } from "utils/common";
 import { useMe } from "utils/hooks/requests/useMe";
 import { useRouter } from "next/router";
+import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
 
 interface Props {
   rooms: SingleRoom[];
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;
   hasNextPage: boolean | undefined;
+  isRefetching: boolean;
+  refetch: () => void;
   className?: string;
 }
 
@@ -21,6 +24,8 @@ export default function RoomsTable({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
+  refetch,
+  isRefetching,
 }: Props) {
   const { data: user } = useMe();
   const { push } = useRouter();
@@ -29,7 +34,19 @@ export default function RoomsTable({
       <table className="table w-full">
         <thead>
           <tr>
-            <th></th>
+            <th className="flex justify-center">
+              <button
+                onClick={refetch}
+                data-tip="Refresh"
+                className="tooltip tooltip-right btn btn-sm btn-circle p-1"
+              >
+                <ArrowPathIcon
+                  className={clsx({
+                    "animate-spin": isRefetching,
+                  })}
+                />
+              </button>
+            </th>
             <th>Creator&apos;s username</th>
             <th>Room size</th>
             <th>Visibility</th>

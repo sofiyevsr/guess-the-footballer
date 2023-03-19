@@ -10,29 +10,48 @@ interface Props {
   playerName: string;
   playerID: number;
   onCorrectAnswer?: (answer: string) => void;
+  correctionsProp?: string | null;
+  isLoadingProp?: boolean;
+  onAnswer?: (answer: string) => void;
 }
 
-function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
+function GameForm({
+  playerName,
+  playerID,
+  onCorrectAnswer,
+  isLoadingProp,
+  correctionsProp,
+  onAnswer,
+}: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const words = useMemo(() => playerName.split(" "), [playerName]);
   const [answer, setAnswer] = useState<string[]>(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
   const {
-    data: corrections,
+    data: mutationCorrections,
     mutate,
-    isLoading,
+    isLoading: mutationIsLoading,
   } = useMutation({
     mutationFn: async (answer: string) => {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       if (corrections === null) {
         onCorrectAnswer?.(answer);
-        throttledToast("Correct answer", { toastId: "correct_answer", type: "success" });
+        throttledToast("Correct answer", {
+          toastId: "correct_answer",
+          type: "success",
+        });
       } else {
-        throttledToast(`Wrong answer`, { toastId: "wrong_answer", type: "error" });
+        throttledToast(`Wrong answer`, {
+          toastId: "wrong_answer",
+          type: "error",
+        });
       }
       return corrections;
     },
   });
+
+  const corrections = correctionsProp ?? mutationCorrections;
+  const isLoading = isLoadingProp ?? mutationIsLoading;
 
   return (
     <>
@@ -75,7 +94,11 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
             return setErrorMessage("Please enter an answer");
           }
           setErrorMessage(undefined);
-          mutate(answer.join(" "));
+          if (onAnswer != null) {
+            onAnswer(answerString);
+          } else {
+            mutate(answerString);
+          }
         }}
       >
         Submit

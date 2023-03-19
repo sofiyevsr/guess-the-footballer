@@ -13,10 +13,6 @@ func (player *Player) FromTransfers(transfers response.TransfersResponse) {
 	player.TransferHistory = []PlayerTransfer{}
 	for _, v := range transfers.TransferHistory {
 		transferValue := utils.ParseTransferValue(v.TransferFeeValue)
-    // TODO reconsider
-		if v.TransferFeeNumeral != "m" || transferValue < 1 {
-			continue
-		}
 		player.TransferHistory = append(player.TransferHistory, PlayerTransfer{
 			OldClubID:           utils.ParseInt(v.OldClubID),
 			OldClubName:         v.OldClubName,

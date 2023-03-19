@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from "react";
+import React, { HTMLAttributes, ReactNode } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types/game";
@@ -8,6 +8,7 @@ import { AnimationProps, motion } from "framer-motion";
 interface Props {
   transfers: SinglePlayerData["transferHistory"];
   className?: HTMLAttributes<HTMLDivElement>["className"];
+  children?: ReactNode;
 }
 
 const container: AnimationProps["variants"] = {
@@ -28,18 +29,13 @@ const item: AnimationProps["variants"] = {
   show: { opacity: 1, translateX: 0 },
 };
 
-function TransferHistoryView({ className, transfers }: Props) {
+function TransferHistoryView({ className, transfers, children }: Props) {
   return (
-    <div
-      className={clsx(
-        "flex flex-col drop-shadow-2xl bg-base-100 rounded-xl",
-        className
-      )}
-    >
-      <h1 className="font-bold text-lg text-center p-2 border-b">
+    <div className={clsx("flex flex-col drop-shadow-xl", className)}>
+      <h1 className="font-bold text-lg text-center bg-base-100 p-2 border-b rounded-t-xl">
         Transfer history
       </h1>
-      <div className="overflow-auto">
+      <div className="overflow-auto rounded-b-xl bg-base-100">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
@@ -53,11 +49,7 @@ function TransferHistoryView({ className, transfers }: Props) {
           <motion.tbody initial="hidden" animate="show" variants={container}>
             {transfers.map((transfer, index) => {
               return (
-                <motion.tr
-                  key={index}
-                  variants={item}
-                  className="text-center"
-                >
+                <motion.tr key={index} variants={item} className="text-center">
                   <td>{transfer.season}</td>
                   <td>
                     <div className="relative inline-block w-10 h-10 mx-2 overflow-hidden">
@@ -85,16 +77,24 @@ function TransferHistoryView({ className, transfers }: Props) {
                   </td>
                   <td>
                     <div className="mx-1">
-                      <span className="font-bold">
-                        €{transfer.transferFeeValue}m
-                      </span>
+                      {transfer.transferFeeValue === -1 ? (
+                        <div className="badge badge-info font-bold">FREE</div>
+                      ) : (
+                        <span className="font-bold">
+                          {transfer.transferFeeCurrency}
+                          {transfer.transferFeeValue}
+                          {transfer.transferFeeNumeral}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td>
                     {transfer.isLoan === true ? (
-                      <div className="badge badge-warning">LOAN</div>
+                      <div className="badge badge-warning font-bold">LOAN</div>
                     ) : (
-                      <div className="badge badge-success">TRANSFER</div>
+                      <div className="badge badge-success font-bold">
+                        TRANSFER
+                      </div>
                     )}
                   </td>
                 </motion.tr>
@@ -103,6 +103,7 @@ function TransferHistoryView({ className, transfers }: Props) {
           </motion.tbody>
         </table>
       </div>
+      {children}
     </div>
   );
 }

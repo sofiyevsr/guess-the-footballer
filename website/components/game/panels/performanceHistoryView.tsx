@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from "react";
+import React, { HTMLAttributes, ReactNode } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types/game";
@@ -8,6 +8,7 @@ import { AnimationProps, motion } from "framer-motion";
 interface Props {
   performances: SinglePlayerData["performanceData"];
   className?: HTMLAttributes<HTMLDivElement>["className"];
+  children?: ReactNode;
 }
 
 const container: AnimationProps["variants"] = {
@@ -51,18 +52,13 @@ const tips = [
   },
 ] as const;
 
-function PerformanceHistoryView({ className, performances }: Props) {
+function PerformanceHistoryView({ className, performances, children }: Props) {
   return (
-    <div
-      className={clsx(
-        "drop-shadow-2xl flex flex-col bg-base-100 rounded-xl",
-        className
-      )}
-    >
-      <h1 className="font-bold text-lg text-center p-2 border-b">
+    <div className={clsx("drop-shadow-xl flex flex-col", className)}>
+      <h1 className="font-bold text-lg bg-base-100 text-center p-2 border-b rounded-t-xl">
         Performance history
       </h1>
-      <div className="overflow-auto">
+      <div className="overflow-auto rounded-b-xl bg-base-100">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
@@ -105,6 +101,7 @@ function PerformanceHistoryView({ className, performances }: Props) {
           </motion.tbody>
         </table>
       </div>
+      {children}
     </div>
   );
 }

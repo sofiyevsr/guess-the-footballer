@@ -2,7 +2,7 @@ import TipCard from "@cmpt/card/tipCard";
 import ProgressRadial from "@cmpt/progress/radial";
 import dayjs from "dayjs";
 import { produce } from "immer";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { getTips, SingleTip } from "utils/tips";
@@ -12,8 +12,7 @@ import PerformanceHistoryView from "./panels/performanceHistoryView";
 import TransferHistoryView from "./panels/transferHistoryView";
 
 export interface GameState {
-  startedAt: string;
-  finishedAt?: string;
+  startedAt: dayjs.ConfigType;
   currentProgress: ProgressState;
 }
 
@@ -29,10 +28,13 @@ type ProgressState = {
 
 interface Props {
   player: SinglePlayerData;
-  onCorrectAnswer: (answer: string) => void;
+  form?: ReactNode;
+  onCorrectAnswer?: (answer: string) => void;
   tipDuration?: number;
   syncState?: ({ currentProgress }: { currentProgress: ProgressState }) => void;
   defaultState?: GameState;
+  leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
 }
 
 const STATE_SYNC_INTERVAL = 2000;
@@ -42,6 +44,9 @@ const GameView = ({
   onCorrectAnswer,
   defaultState,
   syncState,
+  form,
+  leftComponent,
+  rightComponent,
   tipDuration = 3,
 }: Props) => {
   const [playerTips] = useState<TipsState>(() => ({
@@ -102,17 +107,23 @@ const GameView = ({
   }, []);
 
   return (
-    <div className="flex flex-col pb-20 min-h-full lg:flex-row lg:pb-0">
+    <div className="flex flex-col lg:flex-row lg:max-h-full">
       <div className="mx-4 order-1 flex-1 flex items-center flex-col lg:order-2">
-        <div className="my-2 h-6 text-center font-bold text-lg">
+        <div className="my-1 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
-        <ProgressRadial disabled={!shouldRevealTip} seconds={tipDuration} onEnd={onEnd} />
-        <GameForm
-          playerID={player.id}
-          playerName={player.playerName}
-          onCorrectAnswer={onCorrectAnswer}
+        <ProgressRadial
+          disabled={!shouldRevealTip}
+          seconds={tipDuration}
+          onEnd={onEnd}
         />
+        {form ?? (
+          <GameForm
+            playerID={player.id}
+            playerName={player.playerName}
+            onCorrectAnswer={onCorrectAnswer}
+          />
+        )}
         <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
           {playerTips.general
             .slice(0, currentProgress.general)
@@ -129,11 +140,15 @@ const GameView = ({
           currentProgress.performances
         )}
         className="order-2 m-2 lg:order-1 lg:w-[26rem]"
-      />
+      >
+        {leftComponent}
+      </PerformanceHistoryView>
       <TransferHistoryView
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
-        className="order-3 m-2 lg:order-3 lg:w-[26rem]"
-      />
+        className="order-3 m-2 mb-20 lg:order-3 lg:w-[26rem]"
+      >
+        {rightComponent}
+      </TransferHistoryView>
       <GameTimer defaultValue={timerInSeconds} />
     </div>
   );

@@ -15,7 +15,9 @@ export const MyRooms = (props: { className?: string }) => {
     isLoading,
     isError,
     refetch,
+    isRefetching,
   } = useInfiniteQuery(["my_rooms"], {
+    refetchInterval: 15 * 1000,
     queryFn: ({ pageParam }) => ArenaService.getMyRooms(pageParam),
     getNextPageParam: (data) => data.cursor,
     enabled: user != null,
@@ -27,6 +29,8 @@ export const MyRooms = (props: { className?: string }) => {
   return (
     <LoadingLayout isLoading={isLoading} isError={isError} refetch={refetch}>
       <RoomsTable
+        refetch={refetch}
+        isRefetching={isRefetching}
         rooms={allRooms!}
         isFetchingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}

@@ -37,8 +37,9 @@ interface GameState {
 const defaultGameState: GameState = {
 	users: [],
 	progress: null,
-	users_progress: {},
+	users_progress: Object.create(null),
 };
+
 const maxLevels = 5;
 // Time to wait before incrementing level, in ms
 const durationBetweenLevels = 45 * 1000;
@@ -48,7 +49,7 @@ export class ArenaRoom {
 	private env: Env;
 	private state: DurableObjectState;
 	private storage: DurableObjectStorage;
-	private sockets: { [K in string]: WebSocket } = {};
+	private sockets: { [K in string]: WebSocket } = Object.create(null);
 	// This variable should hold latest state ideally
 	private gameState: GameState = defaultGameState;
 	private roomData: DatabaseRoom | null = null;
@@ -97,12 +98,12 @@ export class ArenaRoom {
 
 			const { 0: client, 1: server } = new WebSocketPair();
 			server.accept();
-			server.addEventListener("close", () => {
+			server.addEventListener("close", async () => {
 				this.removeSocket(username, false);
-				this.broadcastMessage("user_dropped", this.getLatestState());
-				this.state.blockConcurrencyWhile(
+				await this.state.blockConcurrencyWhile(
 					this.deleteUsersFromStorage.bind(this, [username])
 				);
+				this.broadcastMessage("user_dropped", this.getLatestState());
 			});
 			server.addEventListener("error", () => {
 				this.sendMessage("error_occured", {}, username);
@@ -110,8 +111,8 @@ export class ArenaRoom {
 			server.addEventListener("message", async (message) => {
 				// Check if game started, user is known and hasn't gave right answer before
 				if (
-					!this.gameState.users_progress.hasOwnProperty(username) ||
 					this.gameState.progress == null ||
+					this.gameState.users_progress[username] == null ||
 					this.gameState.users_progress[username].answers.some(
 						(answer) => answer.level === this.gameState.progress!.current_level
 					)
@@ -200,20 +201,24 @@ export class ArenaRoom {
 
 	async finishGame(roomID: string) {
 		const finishedAt = Date.now();
-		await this.env.__D1_BETA__ARENA_DB
-			.prepare("UPDATE room SET finished_at = ? WHERE id = ?")
-			.bind(finishedAt, roomID)
-			.run();
+		await Promise.all([
+			this.env.__D1_BETA__ARENA_DB
+				.prepare("UPDATE room SET finished_at = ? WHERE id = ?")
+				.bind(finishedAt, roomID)
+				.run(),
+			this.setGameState(
+				produce(this.gameState, (game) => {
+					game.progress = null;
+				})
+			),
+		]);
 		this.roomData = produce(this.roomData, (room) => {
 			if (room == null) return;
 			room.finished_at = finishedAt;
 		});
-		this.gameState = produce(this.gameState, (game) => {
-			game.progress = null;
-		});
 		this.broadcastMessage("game_finished", this.getLatestState());
 		for (const socketUsername in this.sockets) {
-			if (!this.sockets.hasOwnProperty(socketUsername)) {
+			if (this.sockets[socketUsername] == null) {
 				return;
 			}
 			this.removeSocket(socketUsername);
@@ -242,7 +247,7 @@ export class ArenaRoom {
 		);
 		this.broadcastMessage("new_round", this.getLatestState());
 		setTimeout(() => {
-			retry(() => this.scheduleNextRound(roomID), 2);
+			this.scheduleNextRound(roomID);
 		}, durationBetweenLevels);
 	}
 
@@ -268,7 +273,7 @@ export class ArenaRoom {
 	// Sends message to [username]
 	sendMessage(type: MessageType, message: Object, username: string) {
 		for (const socketUsername in this.sockets) {
-			if (!this.sockets.hasOwnProperty(socketUsername)) {
+			if (this.sockets[socketUsername] == null) {
 				return;
 			}
 			if (socketUsername === username) {
@@ -281,7 +286,7 @@ export class ArenaRoom {
 	// Sends message to everyone except [username]
 	broadcastMessage(type: MessageType, message: Object, username?: string) {
 		for (const socketUsername in this.sockets) {
-			if (!this.sockets.hasOwnProperty(socketUsername)) {
+			if (this.sockets[socketUsername] == null) {
 				return;
 			}
 			if (socketUsername === username) {
@@ -302,14 +307,14 @@ export class ArenaRoom {
 		code?: number,
 		reason?: string
 	) {
-		if (
-			!this.sockets.hasOwnProperty(username) ||
-			this.sockets[username].readyState === WebSocket.READY_STATE_CLOSED ||
-			this.sockets[username].readyState === WebSocket.READY_STATE_CLOSING
-		) {
+		if (this.sockets[username] == null) {
 			return;
 		}
-		if (closeSocket === true) this.sockets[username].close(code, reason);
+		if (
+			closeSocket === true &&
+			this.sockets[username].readyState !== WebSocket.READY_STATE_CLOSED
+		)
+			this.sockets[username].close(code, reason);
 		delete this.sockets[username];
 	}
 
@@ -326,10 +331,8 @@ export class ArenaRoom {
 			this.setGameState(
 				produce(this.gameState, (game) => {
 					game.users = game.users.filter((user) => !users.includes(user));
-					for (const key of game.users) {
-						if (users.includes(key)) {
-							delete game.users_progress[key];
-						}
+					for (const key of users) {
+						delete game.users_progress[key];
 					}
 				})
 			),

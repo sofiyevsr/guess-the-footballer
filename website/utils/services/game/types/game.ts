@@ -39,8 +39,8 @@ export interface SinglePlayerData {
   clubName: string;
   clubImage: string;
   marketValue: number;
-  marketValueCurrency: "€";
-  marketValueNumeral: "m";
+  marketValueCurrency: string;
+  marketValueNumeral: string;
   playerMainPosition: string;
   achievements: {
     title: string;
@@ -72,9 +72,9 @@ export interface SinglePlayerData {
     newClubID: number; // -1
     newClubName: string;
     newClubImage: string;
-    transferFeeValue: number;
-    transferFeeCurrency: "€";
-    transferFeeNumeral: "m";
+    transferFeeValue: number; // -1
+    transferFeeCurrency: string;
+    transferFeeNumeral: string;
     date: string;
     season: string;
     isLoan: boolean;

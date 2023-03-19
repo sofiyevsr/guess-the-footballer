@@ -1,6 +1,11 @@
+import GameForm from "@cmpt/game/form";
+import GameStatusView from "@cmpt/game/multiplayer/gameStatusView";
+import GameView from "@cmpt/game/view";
+import type { CONNECTION_STATUS, JOIN_STATUS, Payload } from "@typ/multiplayer";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import { API_DOMAIN } from "utils/constants";
+import { throttledToast } from "utils/common";
+import { API_WS } from "utils/constants";
 
 export const MultiplayerGameView = () => {
   const {
@@ -8,28 +13,85 @@ export const MultiplayerGameView = () => {
     isReady,
   } = useRouter();
   const socketRef = useRef<WebSocket>();
-  const [message, setMessage] = useState("message");
-  useEffect(() => {
-    if (isReady === false || socketRef.current != null) return;
-    // TODO WIP
-    console.log("called");
-    socketRef.current = new WebSocket(`ws://${API_DOMAIN}/arena/join/${id}`);
-    socketRef.current.onerror = (e) => {
-      console.log("error: ", e);
+  const startupConnectionRef = useRef(false);
+  const [corrections, setCorrections] = useState<string | null>();
+  const [socketStatus, setSocketStatus] = useState<CONNECTION_STATUS>("idle");
+  const [joinStatus, setJoinStatus] = useState<JOIN_STATUS>("joining");
+  const [state, setState] = useState<Omit<Payload, "type">>();
+  const joinStatusRef = useRef(joinStatus);
+  joinStatusRef.current = joinStatus;
+
+  function connectWS() {
+    startupConnectionRef.current = true;
+    socketRef.current = new WebSocket(`${API_WS}/arena/join/${id}`);
+    socketRef.current.onerror = () => {};
+    socketRef.current.onopen = () => {
+      setSocketStatus("active");
     };
-    socketRef.current.onopen = (e) => {
-      console.log("open: ", e);
-    };
-    socketRef.current.onclose = (e) => {
+    socketRef.current.onclose = () => {
+      if (joinStatusRef.current === "joining") setJoinStatus("failed_join");
+      setSocketStatus("closed");
       delete socketRef.current;
-      console.log("close: ", e);
     };
     socketRef.current.onmessage = (e) => {
-      setMessage(e.data);
+      const { type, ...payload }: Payload = JSON.parse(e.data);
+      if (type === "error_occured") {
+        return throttledToast("Unexpected error occured");
+      } else if (type === "joined_room") {
+        setJoinStatus("joined");
+      } else if (type === "wrong_answer") {
+        const { corrections } = payload as unknown as {
+          corrections: string | null;
+        };
+        setCorrections(corrections);
+      }
+      setState(payload);
     };
+  }
+
+  useEffect(() => {
+    if (isReady === false || startupConnectionRef.current === true) return;
+    connectWS();
     return () => {
-      socketRef.current?.close();
+      socketRef.current?.close(1000, "User exited");
     };
   }, [isReady]);
-  return <div>{message}</div>;
+
+  if (
+    joinStatus !== "joined" ||
+    state?.game_state.progress == null ||
+    state.room_state.finished_at != null
+  )
+    return (
+      <GameStatusView
+        joinStatus={joinStatus}
+        gameState={state?.game_state}
+        roomState={state?.room_state}
+        connectionStatus={socketStatus}
+      />
+    );
+
+  const { current_player: player } = state.game_state.progress;
+
+  return (
+    <GameView
+      key={player.id}
+      player={player}
+      tipDuration={2}
+      // TODO add game state and default timer
+      defaultState={{ startedAt: 1 }}
+      form={
+        <GameForm
+          playerID={player.id}
+          playerName={player.playerName}
+          correctionsProp={corrections}
+          onAnswer={(answer) => {
+            socketRef.current?.send(JSON.stringify({ answer }));
+          }}
+        />
+      }
+    />
+    // TODO leaderboard view
+    // TODO room state view
+  );
 };

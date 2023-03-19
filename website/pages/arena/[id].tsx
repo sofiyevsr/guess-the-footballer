@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 import PublicLayout from "@cmpt/layout/public";
 import { MultiplayerGameView } from "@cmpt/pages/arenaRooms/multiplayerGameView";
 
-function ArenaRoom({}) {
+function ArenaRoom() {
   return (
     <>
       <Head>

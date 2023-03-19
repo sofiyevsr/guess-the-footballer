@@ -1,10 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
-import {
-  CalendarDaysIcon,
-  PuzzlePieceIcon,
-  UserGroupIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
+import CalendarDaysIcon from "@heroicons/react/20/solid/CalendarDaysIcon";
+import PuzzlePieceIcon from "@heroicons/react/20/solid/PuzzlePieceIcon";
+import UserGroupIcon from "@heroicons/react/20/solid/UserGroupIcon";
+import XMarkIcon from "@heroicons/react/20/solid/XMarkIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import clsx from "classnames";
@@ -85,7 +83,9 @@ const Sidebar = ({ children }: Props) => {
               href="/arena"
             >
               <UserGroupIcon className="h-10 w-10 text-yellow-500" />
-              <span className="uppercase ml-3 font-bold text-xl">Multiplayer</span>
+              <span className="uppercase ml-3 font-bold text-xl">
+                Multiplayer
+              </span>
             </Link>
           </li>
         </ul>
