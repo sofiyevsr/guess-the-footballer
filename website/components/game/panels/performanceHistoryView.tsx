@@ -58,7 +58,7 @@ function PerformanceHistoryView({ className, performances, children }: Props) {
       <h1 className="font-bold text-lg bg-base-100 text-center p-2 border-b rounded-t-xl">
         Performance history
       </h1>
-      <div className="overflow-auto rounded-b-xl bg-base-100">
+      <div className="overflow-auto rounded-b-xl bg-base-100 flex-1">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
@@ -101,7 +101,11 @@ function PerformanceHistoryView({ className, performances, children }: Props) {
           </motion.tbody>
         </table>
       </div>
-      {children}
+      {children && (
+        <div className="flex-1 overflow-y-scroll max-h-full mt-2 rounded-xl">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

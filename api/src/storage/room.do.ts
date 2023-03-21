@@ -45,7 +45,7 @@ const defaultGameState: GameState = {
 const maxLevels = 5;
 // Time to wait before incrementing level, in ms
 const durationBetweenLevels = 45 * 1000;
-const pointsOnRightAnswer = 100;
+const maxPointsPerLevel = 100;
 
 export class ArenaRoom {
 	private env: Env;
@@ -128,13 +128,18 @@ export class ArenaRoom {
 				if (corrections != null) {
 					return this.sendMessage("wrong_answer", { corrections }, username);
 				} else {
+					const timePassed =
+						Date.now() - this.gameState.progress.current_level_started_at;
+					const points = Math.floor(
+						maxPointsPerLevel * (1 - timePassed / durationBetweenLevels)
+					);
 					await this.setGameState(
 						produce(this.gameState, (state) => {
 							state.users_progress[username].answers.push({
 								level: state.progress!.current_level,
 								timestamp: Date.now(),
 							});
-							state.users_progress[username].points += pointsOnRightAnswer;
+							state.users_progress[username].points += points;
 						})
 					);
 					this.sendMessage("correct_answer", {}, username);

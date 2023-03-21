@@ -1,12 +1,14 @@
+import clsx from "classnames";
 import ClipboardIcon from "@heroicons/react/20/solid/ClipboardIcon";
 import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
   text: string;
   label: string;
+  className?: string;
 }
 
-export default function Clipboard({ text, label }: Props) {
+export default function Clipboard({ text, label, className }: Props) {
   const [message, setMessage] = useState(label);
   const timerRef = useRef<NodeJS.Timeout>();
 
@@ -19,7 +21,10 @@ export default function Clipboard({ text, label }: Props) {
   }, []);
   return (
     <div
-      className="flex items-center justify-between bg-black p-4 rounded-xl cursor-pointer hover:outline hover:outline-primary"
+      className={clsx(
+        "flex items-center justify-between bg-black p-4 rounded-xl cursor-pointer hover:outline hover:outline-primary",
+        className
+      )}
       onClick={async () => {
         if (timerRef.current != null) return;
         try {
@@ -34,7 +39,7 @@ export default function Clipboard({ text, label }: Props) {
         }, 3000);
       }}
     >
-      <p className="font-bold">{message}</p>
+      <p className="font-semibold text-[1rem]">{message}</p>
       <button className="btn btn-md btn-square p-3">
         <ClipboardIcon />
       </button>

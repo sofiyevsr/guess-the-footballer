@@ -35,7 +35,7 @@ function TransferHistoryView({ className, transfers, children }: Props) {
       <h1 className="font-bold text-lg text-center bg-base-100 p-2 border-b rounded-t-xl">
         Transfer history
       </h1>
-      <div className="overflow-auto rounded-b-xl bg-base-100">
+      <div className="overflow-auto rounded-b-xl bg-base-100 flex-1">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
@@ -103,7 +103,11 @@ function TransferHistoryView({ className, transfers, children }: Props) {
           </motion.tbody>
         </table>
       </div>
-      {children}
+      {children && (
+        <div className="flex-1 overflow-y-scroll max-h-full mt-2 rounded-xl">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

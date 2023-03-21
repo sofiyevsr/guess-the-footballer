@@ -1,7 +1,8 @@
 import GameForm from "@cmpt/game/form";
 import GameStatusView from "@cmpt/game/multiplayer/gameStatusView";
+import MultiplayerLeaderboard from "@cmpt/game/multiplayer/leaderboard";
 import GameView from "@cmpt/game/view";
-import type { CONNECTION_STATUS, JOIN_STATUS, Payload } from "@typ/multiplayer";
+import type { CONNECTION_STATUS, JOIN_STATUS, PAYLOAD } from "@typ/multiplayer";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
@@ -18,9 +19,10 @@ export const MultiplayerGameView = () => {
   const startupConnectionRef = useRef(false);
   const { data } = useMe();
   const [corrections, setCorrections] = useState<string | null>();
+  const [closeReason, setCloseReason] = useState<string>();
   const [socketStatus, setSocketStatus] = useState<CONNECTION_STATUS>("idle");
   const [joinStatus, setJoinStatus] = useState<JOIN_STATUS>("joining");
-  const [state, setState] = useState<Omit<Payload, "type">>();
+  const [state, setState] = useState<Omit<PAYLOAD, "type">>();
   const joinStatusRef = useRef(joinStatus);
   joinStatusRef.current = joinStatus;
 
@@ -31,13 +33,14 @@ export const MultiplayerGameView = () => {
     socketRef.current.onopen = () => {
       setSocketStatus("active");
     };
-    socketRef.current.onclose = () => {
+    socketRef.current.onclose = (e) => {
       if (joinStatusRef.current === "joining") setJoinStatus("failed_join");
       setSocketStatus("closed");
+      setCloseReason(e.reason);
       delete socketRef.current;
     };
     socketRef.current.onmessage = (e) => {
-      const { type, ...payload }: Payload = JSON.parse(e.data);
+      const { type, ...payload }: PAYLOAD = JSON.parse(e.data);
       if (type === "error_occured") {
         return throttledToast("Unexpected error occured");
       } else if (type === "wrong_answer") {
@@ -72,6 +75,7 @@ export const MultiplayerGameView = () => {
     return (
       <GameStatusView
         joinStatus={joinStatus}
+        closeReason={closeReason}
         gameState={state?.game_state}
         roomState={state?.room_state}
         connectionStatus={socketStatus}
@@ -97,6 +101,11 @@ export const MultiplayerGameView = () => {
       player={player}
       tipDuration={2}
       defaultState={{ startedAt: dayjs(levelStartedAt).format() }}
+      leftComponent={
+        <MultiplayerLeaderboard
+          users_progress={state.game_state.users_progress}
+        />
+      }
       form={
         <GameForm
           playerID={player.id}
@@ -110,7 +119,5 @@ export const MultiplayerGameView = () => {
         />
       }
     />
-    // TODO leaderboard view
-    // TODO room state view
   );
 };

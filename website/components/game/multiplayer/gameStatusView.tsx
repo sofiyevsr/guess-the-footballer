@@ -1,7 +1,10 @@
 import RocketLaunchIcon from "@heroicons/react/20/solid/RocketLaunchIcon";
-import { CONNECTION_STATUS, JOIN_STATUS, Payload } from "@typ/multiplayer";
+import { CONNECTION_STATUS, JOIN_STATUS, PAYLOAD } from "@typ/multiplayer";
+import Clipboard from "@cmpt/misc/clipboard";
 import Link from "next/link";
-import React, { Fragment, ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { WEBSITE_URL } from "utils/constants";
+import MultiplayerLeaderboard from "./leaderboard";
 
 interface LayoutProps {
   children?: ReactNode;
@@ -11,8 +14,9 @@ interface LayoutProps {
 interface Props {
   connectionStatus: CONNECTION_STATUS;
   joinStatus: JOIN_STATUS;
-  gameState: Payload["game_state"] | undefined;
-  roomState: Payload["room_state"] | undefined;
+  gameState: PAYLOAD["game_state"] | undefined;
+  roomState: PAYLOAD["room_state"] | undefined;
+  closeReason?: string;
 }
 
 function GameStatusView({
@@ -20,6 +24,7 @@ function GameStatusView({
   joinStatus,
   roomState,
   gameState,
+  closeReason,
 }: Props) {
   function Layout({ children, loading = true }: LayoutProps) {
     return (
@@ -38,28 +43,13 @@ function GameStatusView({
       </div>
     );
   }
-  // TODO room state
+
   if (roomState?.finished_at != null)
     return (
       <Layout loading={false}>
         <span>Game has finished</span>
         {gameState != null && (
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(gameState.users_progress).map(([key, value]) => (
-                <Fragment key={key}>
-                  <th>{key}</th>
-                  <td>{value.points}</td>
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+          <MultiplayerLeaderboard users_progress={gameState.users_progress} />
         )}
       </Layout>
     );
@@ -70,7 +60,12 @@ function GameStatusView({
     return (
       <Layout>
         <div>Failed to join the room</div>
-        <Link href="/arena" className="btn btn-primary my-4">Go back to rooms</Link>
+        {closeReason && closeReason.trim() !== "" && (
+          <div className="text-error">Reason of closure: {closeReason}</div>
+        )}
+        <Link href="/arena" className="btn btn-primary my-4">
+          Go back to rooms
+        </Link>
       </Layout>
     );
 
@@ -80,9 +75,14 @@ function GameStatusView({
   if (gameState.progress == null)
     return (
       <Layout>
-        <h1 className="font-bold my-2">Waiting for the room to fill</h1>
+        <h1 className="font-semibold my-2">
+          <span>Waiting for the room to fill</span>
+          {roomState && (
+            <span>{` (${roomState.current_size} / ${roomState.size}) `}</span>
+          )}
+        </h1>
         <div className="my-2">
-          <span>Current users - </span>
+          <span className="text-xl">Users: </span>
           {gameState.users.map((user) => (
             <span
               key={user}
@@ -91,6 +91,13 @@ function GameStatusView({
               {user}
             </span>
           ))}
+        </div>
+        <div className="my-2">
+          <Clipboard
+            text={`${WEBSITE_URL}/arena/${roomState?.id ?? ""}`}
+            label="Click to copy room's url"
+            className="p-2 min-w-[24rem]"
+          />
         </div>
       </Layout>
     );

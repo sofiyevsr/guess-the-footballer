@@ -70,7 +70,7 @@ const GameView = ({
 
   const timerInSeconds =
     defaultState == null
-      ? 0
+      ? 1
       : dayjs().diff(dayjs(defaultState.startedAt), "second");
 
   const shouldRevealTip =
@@ -101,7 +101,7 @@ const GameView = ({
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row lg:max-h-full">
+    <div className="flex flex-col lg:flex-row lg:h-full">
       <div className="mx-4 order-1 flex-1 flex items-center flex-col lg:order-2">
         <div className="my-1 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
@@ -133,7 +133,7 @@ const GameView = ({
       </PerformanceHistoryView>
       <TransferHistoryView
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
-        className="order-3 m-2 mb-20 lg:order-3 lg:w-[26rem]"
+        className="order-3 m-2 mb-24 lg:order-3 lg:w-[26rem]"
       >
         {rightComponent}
       </TransferHistoryView>

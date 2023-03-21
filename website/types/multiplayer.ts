@@ -16,10 +16,10 @@ export const PAYLOADTYPES = [
   "error_occured",
 ] as const;
 
-export type PayloadType = (typeof PAYLOADTYPES)[number];
+export type PAYLOADTYPE = (typeof PAYLOADTYPES)[number];
 
-export type Payload = {
-  type: PayloadType;
+export type PAYLOAD = {
+  type: PAYLOADTYPE;
   room_state: {
     id: string;
     private: number;
