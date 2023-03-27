@@ -30,7 +30,7 @@ function MultiplayerLeaderboard({ users_progress }: Props) {
             <th>{key}</th>
             <td>{value.points}</td>
             <td>
-              {key === winner[0] && (
+              {winner[1].points > 0 && key === winner[0] && (
                 <div className="badge badge-success">Winner</div>
               )}
             </td>

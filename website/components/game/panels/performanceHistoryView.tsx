@@ -86,9 +86,9 @@ function PerformanceHistoryView({ className, performances, children }: Props) {
                         className="inline-block h-full w-auto p-1 object-contain"
                       />
                     </div>
-                    <span className="font-bold align-middle">
+                    <div className="font-bold text-ellipsis overflow-hidden max-w-[11rem]">
                       {performance.competition.shortName}
-                    </span>
+                    </div>
                   </td>
                   <td>{performance.performance.matches}</td>
                   <td>{performance.performance.goals}</td>

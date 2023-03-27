@@ -30,7 +30,7 @@ function TodaysChallenge() {
     return (
       <div className="min-h-[16rem] full flex flex-col items-center justify-center px-4 text-center">
         <CompletedIcon width={200} height={200} />
-        <h1 className="text-4xl my-4">
+        <h1 className="text-2xl my-4 md:text-4xl">
           <span>{"You have completed today's challenge at "}</span>
           <span className="font-bold">
             {formatDate(gameState.finishedAt, "LT")}
@@ -38,7 +38,7 @@ function TodaysChallenge() {
         </h1>
         <button
           disabled={gameState == null}
-          className={clsx("btn btn-error text-white my-4 md:btn-wide", {
+          className={clsx("btn btn-primary text-white my-4 md:btn-wide", {
             loading: gameState == null,
           })}
           onClick={() => {

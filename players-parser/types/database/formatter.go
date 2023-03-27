@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -96,7 +97,7 @@ func (player *Player) FromProfile(profile response.ProfileResponse) {
 	player.LeagueLogo = image.AddImageToBulk(profile.PlayerProfile.LeagueLogo, profile.PlayerProfile.League)
 	player.ClubID = clubID
 	player.ClubName = profile.PlayerProfile.Club
-	player.ClubImage = image.AddImageToBulk(profile.PlayerProfile.ClubImage, profile.PlayerProfile.Club)
+	player.ClubImage = image.AddImageToBulk(profile.PlayerProfile.ClubImage, fmt.Sprintf("%s-%d", profile.PlayerProfile.Club, clubID))
 	player.MarketValue = utils.ParseTransferValue(profile.PlayerProfile.MarketValue)
 	player.MarketValueCurrency = profile.PlayerProfile.MarketValueCurrency
 	player.MarketValueNumeral = profile.PlayerProfile.MarketValueNumeral

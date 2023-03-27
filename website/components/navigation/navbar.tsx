@@ -19,7 +19,7 @@ const Navbar = () => {
         </label>
       </div>
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <a className="btn btn-ghost normal-case text-xl">Wordle</a>
+        <a className="btn btn-ghost normal-case text-xl">Guess The Footballer</a>
       </div>
     </div>
   );

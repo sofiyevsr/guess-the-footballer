@@ -19,7 +19,7 @@ function LocalPlayView({ players }: Props) {
         <h1 className="font-bold text-4xl my-4">
           Congratulations, you have successfully completed current level!
         </h1>
-        <h1 className="text-lg text-gray-400 my-4">
+        <h1 className="text-md text-gray-400 my-4 lg:text-lg">
           Questions for each difficulty are updated every 5 minutes, choose a difficulty to replay:
         </h1>
         <DifficultyButtons />

@@ -47,10 +47,13 @@ function GameStatusView({
   if (roomState?.finished_at != null)
     return (
       <Layout loading={false}>
-        <span>Game has finished</span>
+        <h1 className="text-lg font-bold">Game has finished</h1>
         {gameState != null && (
           <MultiplayerLeaderboard users_progress={gameState.users_progress} />
         )}
+        <Link href="/arena" className="btn btn-primary my-4">
+          Go back to rooms
+        </Link>
       </Layout>
     );
 

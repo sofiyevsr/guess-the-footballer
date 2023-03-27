@@ -48,7 +48,7 @@ const Sidebar = ({ children }: Props) => {
               href="/"
               className="btn btn-ghost h-full normal-case text-3xl text-center active:text-white"
             >
-              Wordle
+              Guess the Footballer
             </Link>
           </li>
           <li className="my-1">
