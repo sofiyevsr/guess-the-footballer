@@ -19,7 +19,7 @@ export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
 	c.res.headers.append("Vary", "Origin");
 
 	if (c.req.method !== "OPTIONS") {
-		return await next();
+		return next();
 	}
 	// Preflight
 	c.res.headers.append(
@@ -29,11 +29,9 @@ export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
 
 	c.res.headers.delete("Content-Length");
 	c.res.headers.delete("Content-Type");
-
-	c.res = new Response(null, {
+	return new Response(null, {
 		headers: c.res.headers,
 		status: 204,
 		statusText: c.res.statusText,
 	});
-	return c.res;
 };

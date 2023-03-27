@@ -14,16 +14,14 @@ app.route("/arena", routes.multiplayerRouter);
 app.route("/session", routes.sessionRouter);
 
 app.onError((error, c) => {
+	console.log(
+		`Following error occured: ${error.message}, stack: ${error.stack}`
+	);
+	// TODO correct error messages sent
 	if (error instanceof ZodError) {
-		c.status(400);
-		return c.json({ error: error.issues.map(({ message }) => message) });
-	} else {
-		console.log(
-			`Following error occured: ${error.message}, stack: \n${error.stack}`
-		);
+		return c.json({ error: error.issues.map(({ message }) => message) }, 400);
 	}
-	c.status(500);
-	return c.json({ error: "error_occured" });
+	return c.json({ error: "error_occured" }, 500);
 });
 
 export { ArenaRoom } from "./storage/room.do";

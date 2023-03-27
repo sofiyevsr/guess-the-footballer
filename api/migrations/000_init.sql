@@ -8,8 +8,8 @@ CREATE TABLE room (
     size                     INTEGER NOT NULL,
     current_size             INTEGER NOT NULL,
     creator_username         TEXT NOT NULL,
-    started_at               TEXT,
-    finished_at              TEXT,
+    started_at               INTEGER,
+    finished_at              INTEGER,
     created_at               INTEGER NOT NULL,
     FOREIGN KEY (creator_username) REFERENCES session (username)
 );
@@ -17,7 +17,7 @@ CREATE TABLE room (
 CREATE TABLE session (
     username    TEXT PRIMARY KEY,
     token       TEXT NOT NULL,
-    created_at  TEXT NOT NULL
+    created_at  INTEGER NOT NULL
 );
 
 CREATE TABLE room_session (

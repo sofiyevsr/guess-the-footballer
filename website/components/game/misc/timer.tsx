@@ -5,7 +5,10 @@ interface Props {
 }
 
 function GameTimer({ defaultValue }: Props) {
-  const [ticker, setTicker] = useState(defaultValue ?? 0);
+  const [ticker, setTicker] = useState(() => {
+    if (defaultValue === 0 || defaultValue == null) return 1;
+    return defaultValue;
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -14,7 +17,7 @@ function GameTimer({ defaultValue }: Props) {
     return clearInterval.bind(undefined, timer);
   }, []);
   return (
-    <div className="ring bg-base-300 p-4 rounded-full fixed bottom-6 right-6 z-10 countdown font-mono text-4xl">
+    <div className="ring bg-base-300 p-4 rounded-full fixed bottom-6 right-4 z-10 countdown font-mono text-4xl">
       <span style={{ "--value": Math.floor(ticker / 3600) } as CSSProperties} />
       <>:</>
       <span

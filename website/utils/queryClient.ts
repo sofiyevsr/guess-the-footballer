@@ -1,19 +1,21 @@
 import { QueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { throttledToast } from "./common";
 
 export const globalQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retryDelay: () => 500,
+      retry: 1,
       cacheTime: 0,
       staleTime: Infinity,
       onError: () => {
-        toast("Error occured while fetching data", { type: "error" });
+        throttledToast("Error occured while fetching data", { type: "error" });
       },
     },
     mutations: {
       onError: () => {
-        toast("Error occured while submitting data", { type: "error" });
+        throttledToast("Error occured while submitting data", {
+          type: "error",
+        });
       },
     },
   },

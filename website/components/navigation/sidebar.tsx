@@ -1,9 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
-import {
-  CalendarDaysIcon,
-  PuzzlePieceIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
+import CalendarDaysIcon from "@heroicons/react/20/solid/CalendarDaysIcon";
+import PuzzlePieceIcon from "@heroicons/react/20/solid/PuzzlePieceIcon";
+import UserGroupIcon from "@heroicons/react/20/solid/UserGroupIcon";
+import XMarkIcon from "@heroicons/react/20/solid/XMarkIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import clsx from "classnames";
@@ -49,7 +48,7 @@ const Sidebar = ({ children }: Props) => {
               href="/"
               className="btn btn-ghost h-full normal-case text-3xl text-center active:text-white"
             >
-              Wordle
+              Guess the Footballer
             </Link>
           </li>
           <li className="my-1">
@@ -74,6 +73,19 @@ const Sidebar = ({ children }: Props) => {
             >
               <PuzzlePieceIcon className="h-10 w-10 text-green-500" />
               <span className="uppercase ml-3 font-bold text-xl">Play</span>
+            </Link>
+          </li>
+          <li className="my-1">
+            <Link
+              className={clsx("flex items-center w-full h-full", {
+                "bg-primary": pathname.startsWith("/arena"),
+              })}
+              href="/arena"
+            >
+              <UserGroupIcon className="h-10 w-10 text-yellow-500" />
+              <span className="uppercase ml-3 font-bold text-xl">
+                Multiplayer
+              </span>
             </Link>
           </li>
         </ul>

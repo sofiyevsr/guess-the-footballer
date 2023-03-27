@@ -2,37 +2,68 @@ import SeparatedInput from "@cmpt/input/separated";
 import { useMutation } from "@tanstack/react-query";
 import produce from "immer";
 import clsx from "classnames";
-import React, { useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GameService } from "utils/services/game";
+import { throttledToast } from "utils/common";
 
 interface Props {
   playerName: string;
   playerID: number;
   onCorrectAnswer?: (answer: string) => void;
+  correctionsProp?: string | null;
+  correctAnswerText?: string;
+  isLoadingProp?: boolean;
+  onAnswer?: (answer: string) => void;
+  disabled?: boolean;
 }
 
-function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
+function GameForm({
+  playerName,
+  playerID,
+  onCorrectAnswer,
+  correctAnswerText,
+  disabled,
+  isLoadingProp,
+  correctionsProp,
+  onAnswer,
+}: Props) {
+  const firstInputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const words = useMemo(() => playerName.split(" "), [playerName]);
   const [answer, setAnswer] = useState<string[]>(Array(words.length).fill(""));
   const [errorMessage, setErrorMessage] = useState<string>();
   const {
-    data: corrections,
+    data: mutationCorrections,
     mutate,
-    isLoading,
+    isLoading: mutationIsLoading,
   } = useMutation({
     mutationFn: async (answer: string) => {
       const { corrections } = await GameService.submitAnswer(playerID, answer);
       if (corrections === null) {
         onCorrectAnswer?.(answer);
-        toast("Correct answer", { toastId: "correct_answer", type: "success" });
+        throttledToast("Correct answer", {
+          toastId: "correct_answer",
+          type: "success",
+        });
       } else {
-        toast(`Wrong answer`, { toastId: "wrong_answer", type: "error" });
+        throttledToast(`Wrong answer`, {
+          toastId: "wrong_answer",
+          type: "error",
+        });
       }
       return corrections;
     },
   });
+
+  useEffect(() => {
+    firstInputRef.current?.focus();
+  }, []);
+
+  const corrections =
+    typeof correctionsProp === "undefined"
+      ? mutationCorrections
+      : correctionsProp;
+  const isLoading = isLoadingProp ?? mutationIsLoading;
 
   return (
     <>
@@ -40,6 +71,7 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
         {words.map((name, index) => (
           <SeparatedInput
             key={index}
+            firstInputRef={index === 0 ? firstInputRef : undefined}
             buttonRef={buttonRef}
             length={name.length}
             containerClassName="my-2"
@@ -65,20 +97,26 @@ function GameForm({ playerName, playerID, onCorrectAnswer }: Props) {
       </div>
       <button
         ref={buttonRef}
-        className={clsx("btn btn-primary self-center my-2 md:btn-wide", {
+        className={clsx("btn btn-primary self-center my-2 disabled:text-white md:btn-wide", {
           loading: corrections === null,
         })}
-        disabled={isLoading || corrections === null}
+        disabled={isLoading || corrections === null || disabled}
         onClick={() => {
           const answerString = answer.join(" ");
           if (answerString.length !== playerName.length) {
             return setErrorMessage("Please enter an answer");
           }
           setErrorMessage(undefined);
-          mutate(answer.join(" "));
+          if (onAnswer != null) {
+            onAnswer(answerString);
+          } else {
+            mutate(answerString);
+          }
         }}
       >
-        Submit
+        {corrections === null && correctAnswerText != null
+          ? correctAnswerText
+          : "Submit"}
       </button>
     </>
   );

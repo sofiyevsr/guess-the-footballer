@@ -16,7 +16,7 @@ func ToAscii(str string) string {
 	if err != nil {
 		log.Fatalf("Error while transforming ascii: %s", err)
 	}
-  res = strings.ReplaceAll(res,"Ø","O")
-  res = strings.ReplaceAll(res,"ø","o")
+	res = strings.ReplaceAll(res, "Ø", "O")
+	res = strings.ReplaceAll(res, "ø", "o")
 	return res
 }

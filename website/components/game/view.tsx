@@ -1,8 +1,8 @@
-import TipCard from "@cmpt/card/tipCard";
+import TipsContainer from "@cmpt/containers/tipsContainer";
 import ProgressRadial from "@cmpt/progress/radial";
 import dayjs from "dayjs";
 import { produce } from "immer";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 import { shuffleArray } from "utils/common";
 import { SinglePlayerData } from "utils/services/game/types/game";
 import { getTips, SingleTip } from "utils/tips";
@@ -14,7 +14,6 @@ import TransferHistoryView from "./panels/transferHistoryView";
 export interface GameState {
   startedAt: string;
   finishedAt?: string;
-  currentProgress: ProgressState;
 }
 
 interface TipsState {
@@ -29,18 +28,22 @@ type ProgressState = {
 
 interface Props {
   player: SinglePlayerData;
-  onCorrectAnswer: (answer: string) => void;
-  syncState?: ({ currentProgress }: { currentProgress: ProgressState }) => void;
+  form?: ReactNode;
+  onCorrectAnswer?: (answer: string) => void;
+  tipDuration?: number;
   defaultState?: GameState;
+  leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
 }
-
-const STATE_SYNC_INTERVAL = 2000;
 
 const GameView = ({
   player,
   onCorrectAnswer,
   defaultState,
-  syncState,
+  form,
+  leftComponent,
+  rightComponent,
+  tipDuration = 3,
 }: Props) => {
   const [playerTips] = useState<TipsState>(() => ({
     general: shuffleArray(getTips(player)),
@@ -48,17 +51,26 @@ const GameView = ({
     transfers: shuffleArray(player.transferHistory),
   }));
 
-  const [currentProgress, setCurrentProgress] = useState<ProgressState>(
-    defaultState?.currentProgress ?? {
-      general: 1,
-      performances: 0,
-      transfers: 0,
-    }
-  );
+  const [currentProgress, setCurrentProgress] = useState<ProgressState>(() => {
+    if (defaultState == null)
+      return {
+        general: 1,
+        performances: 0,
+        transfers: 0,
+      };
+    const progress = Math.floor(
+      dayjs().diff(dayjs(defaultState.startedAt), "second") / tipDuration
+    );
+    return {
+      general: Math.min(Math.max(1, progress), playerTips.general.length),
+      performances: Math.min(progress, playerTips.performances.length),
+      transfers: Math.min(progress, playerTips.transfers.length),
+    };
+  });
 
   const timerInSeconds =
     defaultState == null
-      ? 0
+      ? 1
       : dayjs().diff(dayjs(defaultState.startedAt), "second");
 
   const shouldRevealTip =
@@ -68,17 +80,6 @@ const GameView = ({
 
   const stateRef = useRef({ currentProgress, playerTips });
   stateRef.current = { currentProgress, playerTips };
-
-  useEffect(() => {
-    if (syncState == null) return;
-    const timer = setInterval(() => {
-      syncState({
-        currentProgress: stateRef.current.currentProgress,
-      });
-    }, STATE_SYNC_INTERVAL);
-
-    return clearInterval.bind(undefined, timer);
-  }, [syncState]);
 
   const onEnd = useCallback(() => {
     const newProgress = produce(stateRef.current.currentProgress, (draft) => {
@@ -100,26 +101,26 @@ const GameView = ({
   }, []);
 
   return (
-    <div className="flex flex-col pb-20 h-full lg:flex-row lg:pb-0">
+    <div className="flex flex-col lg:flex-row lg:h-full">
       <div className="mx-4 order-1 flex-1 flex items-center flex-col lg:order-2">
-        <div className="my-2 h-6 text-center font-bold text-lg">
+        <div className="my-1 h-6 text-center font-bold text-lg">
           {shouldRevealTip === true && "Next tip will be revealed in"}
         </div>
-        <ProgressRadial disabled={!shouldRevealTip} seconds={3} onEnd={onEnd} />
-        <GameForm
-          playerID={player.id}
-          playerName={player.playerName}
-          onCorrectAnswer={onCorrectAnswer}
+        <ProgressRadial
+          disabled={!shouldRevealTip}
+          seconds={tipDuration}
+          onEnd={onEnd}
         />
-        <div className="flex-1 grid grid-cols-2 auto-rows-[10rem] w-full gap-4 my-4 overflow-y-scroll sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
-          {playerTips.general
-            .slice(0, currentProgress.general)
-            .map(({ id, title, text, children }) => (
-              <TipCard title={title} key={id} text={text}>
-                {children}
-              </TipCard>
-            ))}
-        </div>
+        {form ?? (
+          <GameForm
+            playerID={player.id}
+            playerName={player.playerName}
+            onCorrectAnswer={onCorrectAnswer}
+          />
+        )}
+        <TipsContainer
+          tips={playerTips.general.slice(0, currentProgress.general)}
+        />
       </div>
       <PerformanceHistoryView
         performances={playerTips.performances.slice(
@@ -127,11 +128,15 @@ const GameView = ({
           currentProgress.performances
         )}
         className="order-2 m-2 lg:order-1 lg:w-[26rem]"
-      />
+      >
+        {leftComponent}
+      </PerformanceHistoryView>
       <TransferHistoryView
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
-        className="order-3 m-2 lg:order-3 lg:w-[26rem]"
-      />
+        className="order-3 m-2 mb-24 lg:order-3 lg:w-[26rem]"
+      >
+        {rightComponent}
+      </TransferHistoryView>
       <GameTimer defaultValue={timerInSeconds} />
     </div>
   );

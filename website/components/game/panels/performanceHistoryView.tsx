@@ -1,13 +1,14 @@
-import React, { HTMLAttributes } from "react";
+import React, { HTMLAttributes, ReactNode } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types/game";
-import { ASSET_URL } from "utils/constants";
+import { STORAGE_URL } from "utils/constants";
 import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
   performances: SinglePlayerData["performanceData"];
   className?: HTMLAttributes<HTMLDivElement>["className"];
+  children?: ReactNode;
 }
 
 const container: AnimationProps["variants"] = {
@@ -51,18 +52,13 @@ const tips = [
   },
 ] as const;
 
-function PerformanceHistoryView({ className, performances }: Props) {
+function PerformanceHistoryView({ className, performances, children }: Props) {
   return (
-    <div
-      className={clsx(
-        "drop-shadow-2xl flex flex-col bg-base-100 rounded-xl",
-        className
-      )}
-    >
-      <h1 className="font-bold text-lg text-center p-2 border-b">
+    <div className={clsx("drop-shadow-xl flex flex-col", className)}>
+      <h1 className="font-bold text-lg bg-base-100 text-center p-2 border-b rounded-t-xl">
         Performance history
       </h1>
-      <div className="overflow-auto">
+      <div className="overflow-auto rounded-b-xl bg-base-100 flex-1">
         <table className="table w-full">
           <thead>
             <tr className="text-center">
@@ -83,16 +79,16 @@ function PerformanceHistoryView({ className, performances }: Props) {
                   <td className="text-left flex min-w-[12rem] items-center">
                     <div className="rounded-full bg-blue-500 ring-4 relative inline-block w-10 h-10 mx-2 overflow-hidden">
                       <Image
-                        src={ASSET_URL + "/" + performance.competition.image}
+                        src={STORAGE_URL + "/" + performance.competition.image}
                         alt={performance.competition.shortName + "-image"}
                         fill
                         sizes="70vw"
                         className="inline-block h-full w-auto p-1 object-contain"
                       />
                     </div>
-                    <span className="font-bold align-middle">
+                    <div className="font-bold text-ellipsis overflow-hidden max-w-[11rem]">
                       {performance.competition.shortName}
-                    </span>
+                    </div>
                   </td>
                   <td>{performance.performance.matches}</td>
                   <td>{performance.performance.goals}</td>
@@ -105,6 +101,11 @@ function PerformanceHistoryView({ className, performances }: Props) {
           </motion.tbody>
         </table>
       </div>
+      {children && (
+        <div className="flex-1 overflow-y-scroll max-h-full mt-2 rounded-xl">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
