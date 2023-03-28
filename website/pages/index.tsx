@@ -17,7 +17,7 @@ function Home() {
           alt="football player illustration"
           width={350}
           height={350}
-          className="object-contain w-auto"
+          className="object-contain"
         />
         <h1 className="mx-2 text-center text-md prose my-4 lg:mx-0 lg:max-w-[65%] lg:text-2xl xl:max-w-[50%]">
           {description}
