@@ -1,5 +1,12 @@
 import { api } from "../abstractions/api";
+import { gameDifficulties } from "../game/types/game";
 import { SingleRoom } from "./types";
+
+interface RoomInput {
+  size: string;
+  nonPublic: boolean;
+  difficulty: (typeof gameDifficulties)[number];
+}
 
 export const ArenaService = {
   getRooms: async (cursor?: number) => {
@@ -16,18 +23,12 @@ export const ArenaService = {
       .json<{ cursor?: number; rooms: SingleRoom[] }>();
     return response;
   },
-  createRoom: async ({
-    size,
-    nonPublic,
-  }: {
-    size: number;
-    nonPublic: boolean;
-  }) => {
+  createRoom: async ({ size, nonPublic, difficulty }: RoomInput) => {
     const response = await api
       .headers({
         "Content-Type": "application/json",
       })
-      .post({ size, private: nonPublic }, "/arena/rooms")
+      .post({ size, private: nonPublic, difficulty }, "/arena/rooms")
       .json<{ room: SingleRoom }>();
     return response;
   },

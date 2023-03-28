@@ -17,7 +17,8 @@ export const MyRooms = (props: { className?: string }) => {
     refetch,
     isRefetching,
   } = useInfiniteQuery(["my_rooms"], {
-    refetchInterval: 15 * 1000,
+    staleTime: 0,
+    cacheTime: Infinity,
     queryFn: ({ pageParam }) => ArenaService.getMyRooms(pageParam),
     getNextPageParam: (data) => data.cursor,
     enabled: user != null,

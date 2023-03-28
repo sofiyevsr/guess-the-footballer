@@ -47,7 +47,7 @@ function GameStatusView({
   if (roomState?.finished_at != null)
     return (
       <Layout loading={false}>
-        <h1 className="text-lg font-bold">Game has finished</h1>
+        <h1 className="text-lg font-bold my-2">Game has finished</h1>
         {gameState != null && (
           <MultiplayerLeaderboard users_progress={gameState.users_progress} />
         )}

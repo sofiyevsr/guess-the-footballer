@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { WretchError } from "wretch/resolver";
 import { throttledToast } from "./common";
 
 export const globalQueryClient = new QueryClient({
@@ -7,15 +8,31 @@ export const globalQueryClient = new QueryClient({
       retry: 1,
       cacheTime: 0,
       staleTime: Infinity,
-      onError: () => {
-        throttledToast("Error occured while fetching data", { type: "error" });
+      onError: (error) => {
+        const defaultError = "Error occured while fetching data";
+        if (error instanceof WretchError) {
+          throttledToast(error.json?.error ?? defaultError, {
+            type: "error",
+          });
+        } else {
+          throttledToast(defaultError, {
+            type: "error",
+          });
+        }
       },
     },
     mutations: {
-      onError: () => {
-        throttledToast("Error occured while submitting data", {
-          type: "error",
-        });
+      onError: (error) => {
+        const defaultError = "Error occured while submitting data";
+        if (error instanceof WretchError) {
+          throttledToast(error.json?.error ?? defaultError, {
+            type: "error",
+          });
+        } else {
+          throttledToast(defaultError, {
+            type: "error",
+          });
+        }
       },
     },
   },

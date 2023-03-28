@@ -36,14 +36,14 @@ export const SessionForm = () => {
   if (user != null) {
     return (
       <div>
-        <p>
-          <span className="font-bold">Username: </span>
-          {user.username}
-        </p>
-        <p>
-          <span className="font-bold">Joined: </span>
-          {formatDate(user.created_at, "LLL")}
-        </p>
+        <div>
+          <p className="font-bold">Username: </p>
+          <p className="prose">{user.username}</p>
+        </div>
+        <div>
+          <p className="font-bold">Joined: </p>
+          <p className="prose">{formatDate(user.created_at, "LLL")}</p>
+        </div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export const SessionForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="form-control w-full max-w-xs">
         <label className="label">
-          <span className="label-text">Create username</span>
+          <span className="label-text">Create session</span>
         </label>
         <input
           {...register("username", {
@@ -84,7 +84,7 @@ export const SessionForm = () => {
       <button
         type="submit"
         disabled={isSubmitting || isLoadingUser}
-        className={clsx("btn btn-primary my-2", {
+        className={clsx("btn btn-primary w-full my-2", {
           loading: isSubmitting || isLoadingUser,
         })}
       >

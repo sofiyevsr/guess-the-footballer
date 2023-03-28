@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS session;
-DROP TABLE IF EXISTS room_session;
 
 CREATE TABLE room (
     id                       TEXT PRIMARY KEY,
@@ -8,6 +7,7 @@ CREATE TABLE room (
     size                     INTEGER NOT NULL,
     current_size             INTEGER NOT NULL,
     creator_username         TEXT NOT NULL,
+    difficulty               TEXT NOT NULL,
     started_at               INTEGER,
     finished_at              INTEGER,
     created_at               INTEGER NOT NULL,
@@ -18,12 +18,4 @@ CREATE TABLE session (
     username    TEXT PRIMARY KEY,
     token       TEXT NOT NULL,
     created_at  INTEGER NOT NULL
-);
-
-CREATE TABLE room_session (
-    room_id           TEXT NOT NULL,
-    session_username  TEXT NOT NULL,
-    FOREIGN KEY (room_id) REFERENCES room (id),
-    FOREIGN KEY (session_username) REFERENCES session (username),
-    PRIMARY KEY (room_id, session_username)
 );

@@ -1,7 +1,8 @@
 import { Context, Hono } from "hono";
 import { produce } from "immer";
 import { DatabaseRoom, Env } from "../types";
-import { playerCount } from "../utils/constants";
+import { difficultyMappings, playerCount } from "../utils/constants";
+import { runInDev } from "../utils/misc/runInDev";
 import { handleWebSocketError } from "../utils/misc/websocket";
 import { getRandomNumber } from "../utils/random";
 import { retry } from "../utils/retry";
@@ -75,7 +76,7 @@ export class ArenaRoom {
 			const roomID = c.req.param("id");
 			this.roomData = await this.env.__D1_BETA__ARENA_DB
 				.prepare(
-					`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
+					`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at
            FROM room WHERE id = ?`
 				)
 				.bind(c.req.param("id"))
@@ -164,9 +165,11 @@ export class ArenaRoom {
 		});
 
 		this.router.onError((error, c) => {
-			console.log(
-				`Following error occured in room do: ${error.message}, stack: ${error.stack}`
-			);
+			runInDev(this.env, () => {
+				console.log(
+					`Following error occured in room do: ${error.message}, stack: ${error.stack}`
+				);
+			});
 			return c.json({ error: "error_occured" }, 500);
 		});
 	}
@@ -180,7 +183,7 @@ export class ArenaRoom {
 	}
 
 	async startGame(roomID: string) {
-		const randomID = getRandomNumber([1, playerCount]);
+		const randomID = getRandomNumber([1, this.getRoomDifficulty()]);
 		const player = await this.env.PLAYERSKV.get(`player:${randomID}`);
 		if (player == null) {
 			throw Error("Couldn't get a valid player");
@@ -243,7 +246,7 @@ export class ArenaRoom {
 		if (this.gameState.progress.current_level >= maxLevels) {
 			return this.finishGame(roomID);
 		}
-		const randomID = getRandomNumber([1, playerCount]);
+		const randomID = getRandomNumber([1, this.getRoomDifficulty()]);
 		const player = await this.env.PLAYERSKV.get(`player:${randomID}`);
 		if (player == null) {
 			throw Error("Couldn't get a valid player");
@@ -388,5 +391,11 @@ export class ArenaRoom {
 		)
 			return;
 		await retry(() => this.startGame(roomID), 2);
+	}
+
+	getRoomDifficulty(): number {
+		return this.roomData == null
+			? playerCount
+			: difficultyMappings[this.roomData.difficulty];
 	}
 }

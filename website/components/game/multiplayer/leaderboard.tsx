@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
 import { PAYLOAD } from "@typ/multiplayer";
+import BoltSlash from "@heroicons/react/20/solid/BoltSlashIcon";
 
 interface Props {
   users_progress: PAYLOAD["game_state"]["users_progress"];
+  active_users?: PAYLOAD["active_users"];
 }
 
-function MultiplayerLeaderboard({ users_progress }: Props) {
+function MultiplayerLeaderboard({ users_progress, active_users }: Props) {
   const winner = useMemo(() => {
     const users = Object.entries(users_progress);
     let maxUser = users[0];
@@ -22,17 +24,38 @@ function MultiplayerLeaderboard({ users_progress }: Props) {
           <th>Username</th>
           <th>Points</th>
           <th>Status</th>
+          <th>Answer Levels</th>
         </tr>
       </thead>
       <tbody>
         {Object.entries(users_progress).map(([key, value]) => (
           <tr key={key}>
-            <th>{key}</th>
+            <th>
+              <div className="flex gap-2 items-center">
+                <div>{key}</div>
+                {active_users != null && !active_users.includes(key) && (
+                  <div className="tooltip" data-tip="OFFLINE">
+                    <button className="btn btn-xs btn-error">
+                      <BoltSlash className="h-4 w-4 text-white" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </th>
             <td>{value.points}</td>
             <td>
               {winner[1].points > 0 && key === winner[0] && (
                 <div className="badge badge-success">Winner</div>
               )}
+            </td>
+            <td>
+              <div className="grid grid-cols-3">
+                {value.answers.map((answer) => (
+                  <div key={answer.level} className="badge badge-success m-1">
+                    {answer.level}
+                  </div>
+                ))}
+              </div>
             </td>
           </tr>
         ))}

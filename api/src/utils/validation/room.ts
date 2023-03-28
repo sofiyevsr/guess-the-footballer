@@ -1,6 +1,19 @@
 import { z } from "zod";
+import { difficultyLevels } from "../constants";
 
 export const roomSchema = z.object({
+	difficulty: z
+		.string({
+			required_error: "Difficulty is required",
+			invalid_type_error: "Difficulty must be a string",
+		})
+		.refine(
+			(str) =>
+				difficultyLevels.includes(str as (typeof difficultyLevels)[number]),
+			() => ({
+				message: "Invalid difficulty level",
+			})
+		),
 	size: z.coerce
 		.number({
 			required_error: "Room size is required",

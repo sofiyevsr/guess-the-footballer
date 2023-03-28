@@ -104,6 +104,7 @@ export const MultiplayerGameView = () => {
       leftComponent={
         <MultiplayerLeaderboard
           users_progress={state.game_state.users_progress}
+          active_users={state.active_users}
         />
       }
       form={

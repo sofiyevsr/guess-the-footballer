@@ -1,3 +1,5 @@
+import { difficultyLevels } from "../utils/constants";
+
 export interface Env {
 	__D1_BETA__ARENA_DB: D1Database;
 	PLAYERSKV: KVNamespace;
@@ -26,6 +28,7 @@ export interface DatabaseRoom {
 	size: number;
 	current_size: number;
 	creator_username: string;
+  difficulty: typeof difficultyLevels[number];
 	started_at?: number;
 	finished_at?: number;
 	created_at: number;

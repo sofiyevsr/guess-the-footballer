@@ -97,9 +97,13 @@ function GameForm({
       </div>
       <button
         ref={buttonRef}
-        className={clsx("btn btn-primary self-center my-2 disabled:text-white md:btn-wide", {
-          loading: corrections === null,
-        })}
+        className={clsx(
+          "btn btn-primary w-full p-1 self-center my-2 disabled:text-white md:btn-wide",
+          {
+            loading: corrections === null,
+            "disabled:bg-success": corrections === null && correctAnswerText != null,
+          }
+        )}
         disabled={isLoading || corrections === null || disabled}
         onClick={() => {
           const answerString = answer.join(" ");

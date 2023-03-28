@@ -20,7 +20,7 @@ multiplayerRouter.get("/rooms", async (c) => {
 			  };
 	const { results } = await c.env.__D1_BETA__ARENA_DB
 		.prepare(
-			`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
+			`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at
        FROM room WHERE private = 0 AND current_size < size AND started_at IS NULL ${statement}
        ORDER BY created_at DESC LIMIT ?`
 		)
@@ -53,7 +53,7 @@ multiplayerRouter.get("/my-rooms", session(), async (c) => {
 			  };
 	const { results } = await c.env.__D1_BETA__ARENA_DB
 		.prepare(
-			`SELECT id, creator_username, private, size, current_size, started_at, finished_at, created_at
+			`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at
        FROM room WHERE creator_username = ? ${statement}
        ORDER BY created_at DESC LIMIT ?`
 		)
@@ -74,16 +74,23 @@ multiplayerRouter.get("/my-rooms", session(), async (c) => {
 
 multiplayerRouter.post("/rooms", session(), async (c) => {
 	const body = await c.req.json();
-	const { size, private: nonPublic } = roomSchema.parse(body);
+	const { size, private: nonPublic, difficulty } = roomSchema.parse(body);
 	const roomID = c.env.ARENA_ROOM_DO.newUniqueId();
 	const id = roomID.toString();
 	const stm = c.env.__D1_BETA__ARENA_DB
 		.prepare(
-			`INSERT INTO room(id, creator_username, private, size, created_at, current_size)
-       VALUES(?, ?, ?, ?, ?, 0)
-       RETURNING id, creator_username, private, size, current_size, started_at, finished_at, created_at`
+			`INSERT INTO room(id, creator_username, private, size, difficulty, created_at, current_size)
+       VALUES(?, ?, ?, ?, ?, ?, 0)
+       RETURNING id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at`
 		)
-		.bind(id, c.get("user")!.username, cast(nonPublic), size, Date.now());
+		.bind(
+			id,
+			c.get("user")!.username,
+			cast(nonPublic),
+			size,
+			difficulty,
+			Date.now()
+		);
 	const room = await stm.first();
 	return c.json({ room });
 });

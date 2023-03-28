@@ -7,6 +7,7 @@ import { getRelativeTimeFromUnix } from "utils/common";
 import { useMe } from "utils/hooks/requests/useMe";
 import { useRouter } from "next/router";
 import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
+import { gameDifficultyNames } from "utils/services/game/types/game";
 
 interface Props {
   rooms: SingleRoom[];
@@ -30,7 +31,7 @@ export default function RoomsTable({
   const { data: user } = useMe();
   const { push } = useRouter();
   return (
-    <div className={clsx("max-w-xl overflow-x-auto", className)}>
+    <div className={clsx("max-w-2xl overflow-x-auto", className)}>
       <table className="table w-full">
         <thead>
           <tr>
@@ -50,6 +51,7 @@ export default function RoomsTable({
             <th>Creator&apos;s username</th>
             <th>Room size</th>
             <th>Visibility</th>
+            <th>Difficulty</th>
             <th>Created at</th>
           </tr>
         </thead>
@@ -77,6 +79,11 @@ export default function RoomsTable({
                 ) : (
                   <div className="badge badge-success">Public</div>
                 )}
+              </td>
+              <td>
+                <div className="badge badge-success">
+                  {gameDifficultyNames[room.difficulty]}
+                </div>
               </td>
               <td>{getRelativeTimeFromUnix(room.created_at)}</td>
             </tr>
