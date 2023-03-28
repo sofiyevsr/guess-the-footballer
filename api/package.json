@@ -6,6 +6,7 @@
   "main": "./dist/index.mjs",
   "scripts": {
     "dev": "miniflare --live-reload --debug --modules dist/index.mjs",
+    "build": "node esbuild.js",
     "deploy": "wrangler publish"
   },
   "dependencies": {
