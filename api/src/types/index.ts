@@ -1,6 +1,6 @@
 import { difficultyLevels } from "../utils/constants";
 
-export interface Env {
+export type Env = {
 	__D1_BETA__ARENA_DB: D1Database;
 	PLAYERSKV: KVNamespace;
 	ARENA_ROOM_DO: DurableObjectNamespace;

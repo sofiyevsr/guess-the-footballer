@@ -25,8 +25,8 @@ const container: AnimationProps["variants"] = {
 };
 
 const item: AnimationProps["variants"] = {
-  hidden: { opacity: 0, translateX: "-2rem" },
-  show: { opacity: 1, translateX: 0 },
+  hidden: { opacity: 0, x: "-2rem" },
+  show: { opacity: 1, x: 0 },
 };
 
 function TransferHistoryView({ className, transfers, children }: Props) {

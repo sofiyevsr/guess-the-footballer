@@ -1,6 +1,6 @@
 import SeparatedInput from "@cmpt/input/separated";
 import { useMutation } from "@tanstack/react-query";
-import produce from "immer";
+import { produce } from "immer";
 import clsx from "classnames";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GameService } from "utils/services/game";
@@ -101,7 +101,8 @@ function GameForm({
           "btn btn-primary w-full p-1 self-center my-2 disabled:text-white md:btn-wide",
           {
             loading: corrections === null,
-            "disabled:bg-success": corrections === null && correctAnswerText != null,
+            "disabled:bg-success":
+              corrections === null && correctAnswerText != null,
           }
         )}
         disabled={isLoading || corrections === null || disabled}

@@ -23,7 +23,7 @@ const Sidebar = ({ children }: Props) => {
     };
   }, [events]);
   return (
-    <div className="drawer drawer-mobile">
+    <div className="drawer lg:drawer-open">
       <input
         id="sidebar"
         type="checkbox"
@@ -34,13 +34,13 @@ const Sidebar = ({ children }: Props) => {
       <div className="drawer-content flex flex-col">{children}</div>
       <div className="drawer-side">
         <label htmlFor="sidebar" className="drawer-overlay" />
-        <ul className="menu bg-base-300 p-4 w-90">
+        <ul className="menu bg-base-300 p-4 w-90 h-full">
           <li>
             <a
               onClick={() => setDrawerOpen(false)}
               className="btn btn-primary drawer-button self-end lg:hidden"
             >
-              <XMarkIcon className="h-5 w-5 text-white" />
+              <XMarkIcon className="h-7 w-7 text-white" />
             </a>
           </li>
           <li className="py-2">

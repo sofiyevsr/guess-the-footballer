@@ -72,7 +72,7 @@ export class ArenaRoom {
 
 	registerRoutes() {
 		this.router.get("/arena/join/:id", async (c) => {
-			const username = c.req.query("username");
+			const username = c.req.query("username") as string;
 			const roomID = c.req.param("id");
 			this.roomData = await this.env.__D1_BETA__ARENA_DB
 				.prepare(

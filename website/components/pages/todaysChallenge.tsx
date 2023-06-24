@@ -5,7 +5,7 @@ import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
 import LoadingLayout from "@cmpt/layout/loading";
 import { useTodaysChallenge } from "utils/hooks/requests/useTodaysChallenge";
-import produce from "immer";
+import { produce } from "immer";
 import dayjs from "dayjs";
 import CompletedIcon from "@cmpt/icons/completed";
 import { formatDate } from "utils/common";

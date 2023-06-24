@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from "hono";
 import type { CustomEnvironment } from "../../types";
 
-export const cors: MiddlewareHandler<string, CustomEnvironment> = async (
+export const cors: MiddlewareHandler<CustomEnvironment> = async (
 	c,
 	next
 ) => {

@@ -9,8 +9,8 @@ interface Options {
 export function customCache({
 	duration = 10,
 	keepQueries = true,
-}: Options): MiddlewareHandler<string, CustomEnvironment> {
-	return async (c: Context<string, CustomEnvironment>, next: Next) => {
+}: Options): MiddlewareHandler<CustomEnvironment> {
+	return async (c: Context<CustomEnvironment>, next: Next) => {
 		let key = c.req.url;
 		if (keepQueries === false) {
 			key = c.req.url.split("?")[0];
