@@ -2,8 +2,9 @@ name = "football-wordle-api"
 main = "src/index.ts"
 compatibility_date = "2023-02-02"
 
+workers_dev=false
 kv_namespaces = [
-  { binding = "PLAYERSKV", id = "319677fc5b764528850e1b18d57f853c" }
+  { binding = "PLAYERSKV", id = "319677fc5b764528850e1b18d57f853c", preview_id = "c53c0b3d410d4ea3972b38732a82a054"}
 ]
 
 d1_databases = [
@@ -15,22 +16,9 @@ bindings = [
   { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
 ]
 
-[build]
-command = "node esbuild.js"
-
-[miniflare]
-kv_persist = true
-d1_persist = true
-durable_objects_persist = true
-
 [triggers]
 crons = ["0 0 * * *"]
 
 [[migrations]]
 tag = "v1"
 new_classes = ["ArenaRoom"]
-
-[env.production]
-kv_namespaces = [
-  { binding = "PLAYERSKV", id = "319677fc5b764528850e1b18d57f853c" }
-]
