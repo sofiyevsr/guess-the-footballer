@@ -46,6 +46,5 @@ func main() {
   utils.InitializeR2()
 	image.DownloadImages()
 	playerPool.WriteToFile("players")
-	playerPool.WriteToZip()
 	fmt.Printf("elapsed time %f \n", time.Now().Sub(start).Seconds())
 }
