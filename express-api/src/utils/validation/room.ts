@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { difficultyLevels } from "../constants";
+import { DifficultyType } from "utils/types";
 
 export const roomSchema = z.object({
 	difficulty: z
@@ -9,7 +10,7 @@ export const roomSchema = z.object({
 		})
 		.refine(
 			(str) =>
-				difficultyLevels.includes(str as (typeof difficultyLevels)[number]),
+				difficultyLevels.includes(str as DifficultyType),
 			() => ({
 				message: "Invalid difficulty level",
 			})

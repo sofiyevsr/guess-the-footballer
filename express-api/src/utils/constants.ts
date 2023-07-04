@@ -1,3 +1,5 @@
+import { DifficultyType } from "./types";
+
 export const difficultyLevels = [
 	"very-easy",
 	"easy",
@@ -12,7 +14,7 @@ export const difficultyMappings = {
 	medium: 300,
 	hard: 550,
 	"very-hard": 850,
-} as const satisfies { [key in (typeof difficultyLevels)[number]]: number };
+} as const satisfies { [key in DifficultyType]: number };
 
 export const playerCount = 850;
 

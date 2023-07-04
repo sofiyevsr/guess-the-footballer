@@ -6,7 +6,7 @@ export const players = pgTable("player", {
   data: json("data").notNull(),
 });
 
-export const dailyChallenge = pgTable("dailyChallenge", {
+export const dailyChallenge = pgTable("daily_challenge", {
   id: serial("id").primaryKey(),
   playerID: integer("player_id")
     .notNull()
@@ -14,7 +14,7 @@ export const dailyChallenge = pgTable("dailyChallenge", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const dailyChallengePlayerRelation = relations(
+export const dailyChallengeRelations = relations(
   dailyChallenge,
   ({ one }) => ({
     player: one(players, {

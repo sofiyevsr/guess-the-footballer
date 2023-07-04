@@ -1,6 +1,9 @@
 import { CronJob } from "cron";
 import { Express } from "express";
-import { dailyChallengeCronFn, dailyChallengeCronConfig } from "scheduled/dailyChallenge";
+import {
+  dailyChallengeCronFn,
+  dailyChallengeCronConfig,
+} from "scheduled/dailyChallenge";
 import { runInDev } from "utils/misc/runInDev";
 import { retry } from "utils/retry";
 

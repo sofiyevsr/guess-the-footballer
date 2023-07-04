@@ -6,6 +6,7 @@ import { answerSchema } from "../utils/validation/answer";
 import { dailyChallenge, players } from "db/schema";
 import { desc, eq, inArray } from "drizzle-orm";
 import db from "db";
+import { DifficultyType } from "utils/types";
 
 const r = Router();
 
@@ -17,7 +18,7 @@ r.get("/", async (req, res) => {
     difficultyMappings.hasOwnProperty(difficulty)
   ) {
     maxRange =
-      difficultyMappings[difficulty as keyof typeof difficultyMappings];
+      difficultyMappings[difficulty as DifficultyType];
   }
   const randomArr = generateRandomArray(10, [1, maxRange]);
   const result = await db
@@ -52,7 +53,7 @@ r.get("/challenge", async (_, res) => {
   return res.status(200).json(parsedData);
 });
 
-r.post("/answer/:id(d+)", async (req, res) => {
+r.post("/answer/:id", async (req, res) => {
   const id = Number(req.params.id);
   if (Number.isNaN(id)) {
     return res.status(404);

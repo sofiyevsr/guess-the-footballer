@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import errorHandler from "middlewares/errorHandler";
-import { healthRouter, playerRouter, sessionRouter } from "routes";
+import { arenaRouter, healthRouter, playerRouter, sessionRouter } from "routes";
 
 const app = express();
 
@@ -13,9 +13,10 @@ app.use(cookieParser());
 app.use(cors({ credentials: true, origin: process.env.ORIGIN }));
 app.use(helmet());
 
-app.use(healthRouter);
-app.use(sessionRouter);
-app.use(playerRouter);
+app.use("/health", healthRouter);
+app.use("/session", sessionRouter);
+app.use("/player", playerRouter);
+app.use("/arena", arenaRouter);
 app.use(errorHandler);
 
 export default app;
