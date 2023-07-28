@@ -66,9 +66,15 @@ const ProgressRadial = ({ disabled, seconds, onEnd }: Props) => {
           transition={{ ease: "easeInOut" }}
         />
       </svg>
-      <span className="countdown font-bold text-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <span style={{ "--value": ticker } as React.CSSProperties}></span>
-      </span>
+      {ticker < 60 ? (
+        <span className="countdown font-bold text-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <span style={{ "--value": ticker } as React.CSSProperties}></span>
+        </span>
+      ) : (
+        <span className="countdown font-bold text-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          {Math.floor(ticker / 60)}m
+        </span>
+      )}
     </div>
   );
 };

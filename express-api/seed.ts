@@ -11,7 +11,7 @@ interface JSONPlayer {
 const main = async () => {
   const raw = await fs.readFile("./seed_data/players-1690551177.json");
   const data: JSONPlayer[] = JSON.parse(raw.toString());
-  await db.insert(players).values(data);
+  // await db.insert(players).values(data);
   console.log("Wrote %d players", data.length);
   await dailyChallengeCronFn();
   console.log("Daily Challenge created");

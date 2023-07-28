@@ -61,11 +61,11 @@ export const SessionForm = () => {
               message: "Username length can be minimum 2",
             },
             maxLength: {
-              value: 32,
-              message: "Username length size can be maximum 32",
+              value: 24,
+              message: "Username length size can be maximum 24",
             },
           })}
-          maxLength={32}
+          maxLength={24}
           autoComplete="off"
           aria-invalid={errors.username ? "true" : "false"}
           type="text"

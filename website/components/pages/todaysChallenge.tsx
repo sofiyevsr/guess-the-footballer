@@ -66,6 +66,7 @@ function TodaysChallenge() {
           setGameState(newState);
         }}
         defaultState={gameState}
+        tipDuration={5 * 60}
       />
     </LoadingLayout>
   );

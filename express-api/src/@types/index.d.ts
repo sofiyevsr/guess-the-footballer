@@ -3,6 +3,7 @@ namespace NodeJS {
     PORT: number;
     NODE_ENV: "development" | "staging" | "production";
     DB_URL: string;
+    REDIS_URL: string;
     ORIGIN: string;
   }
 }

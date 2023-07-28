@@ -3,7 +3,7 @@ import { gameDifficulties } from "utils/services/game/types/game";
 export interface SingleRoom {
   id: string;
   creator_username: string;
-  private: 0 | 1;
+  private: boolean;
   size: number;
   current_size: number;
   difficulty: typeof gameDifficulties[number];

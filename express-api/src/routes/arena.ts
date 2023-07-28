@@ -7,6 +7,7 @@ import { rooms } from "db/schema/room";
 import db from "db";
 import { DifficultyType } from "utils/types";
 import { SQL, and, desc, eq, isNull, lt } from "drizzle-orm";
+import { limiterGenerator } from "utils/misc/rateLimiterFactory";
 
 const r = Router();
 
@@ -58,16 +59,22 @@ r.get("/my-rooms", authSession, async (req, res) => {
   return res.status(200).json(response);
 });
 
-r.post("/rooms", authSession, async (req, res) => {
-  const { size, private: nonPublic, difficulty } = roomSchema.parse(req.body);
-  const [room] = await db.insert(rooms).values({
-    size,
-    private: nonPublic,
-    difficulty: difficulty as DifficultyType,
-    current_size: 0,
-    creator_username: req.session!.username,
-  });
-  return res.status(201).json({ room });
-});
+r.post(
+  "/rooms",
+  limiterGenerator("create-room/ip", 10 * 60 * 1000, 10),
+  authSession,
+  limiterGenerator("create-room/username", 10 * 60 * 1000, 3, undefined, true),
+  async (req, res) => {
+    const { size, private: nonPublic, difficulty } = roomSchema.parse(req.body);
+    const [room] = await db.insert(rooms).values({
+      size,
+      private: nonPublic,
+      difficulty: difficulty as DifficultyType,
+      current_size: 0,
+      creator_username: req.session!.username,
+    });
+    return res.status(201).json({ room });
+  }
+);
 
 export default r;

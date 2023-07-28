@@ -85,12 +85,14 @@ export default function RoomsTable({
                   Join
                 </button>
               </th>
-              <td>{room.creator_username}</td>
+              <td>
+                <span className="font-bold text-xl">{room.creator_username}</span>
+              </td>
               <td>
                 {room.current_size} / {room.size}
               </td>
               <td>
-                {room.private === 1 ? (
+                {room.private === true ? (
                   <div className="badge badge-error">Private</div>
                 ) : (
                   <div className="badge badge-success">Public</div>
