@@ -9,16 +9,17 @@
     "run": "tsx index.ts",
     "watch": "tsx watch index.ts",
     "migrate": "tsx migrate.ts",
+    "seed": "tsx seed.ts",
     "generate": "drizzle-kit generate:pg"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "cron": "^2.3.1",
-    "dotenv": "^16.3.1",
     "drizzle-orm": "^0.27.0",
     "express": "5.0.0-beta.1",
     "helmet": "^7.0.0",
@@ -29,12 +30,14 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/cookie": "^0.5.1",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/cron": "^2.0.1",
     "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.4",
     "@types/node": "^20.3.1",
+    "@types/ws": "^8.5.5",
     "drizzle-kit": "^0.19.2",
     "morgan": "^1.10.0",
     "tsx": "^3.12.7",

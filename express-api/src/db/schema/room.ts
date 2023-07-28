@@ -9,16 +9,16 @@ import {
 } from "drizzle-orm/pg-core";
 import { difficultyLevels } from "utils/constants";
 
-const difficultyEnum = pgEnum("difficulty", difficultyLevels);
+export const difficultyEnum = pgEnum("difficulty", difficultyLevels);
 
 export const rooms = pgTable("room", {
   id: serial("id").primaryKey(),
   private: boolean("private").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
   size: integer("size").notNull(),
-  currentSize: integer("current_size").notNull(),
-  startedAt: timestamp("started_at"),
-  finishedAt: timestamp("finished_at"),
-  creatorUsername: varchar("creator_username"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  current_size: integer("current_size").notNull(),
+  started_at: timestamp("started_at"),
+  finished_at: timestamp("finished_at"),
+  creator_username: varchar("creator_username").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
 });

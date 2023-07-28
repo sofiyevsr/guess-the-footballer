@@ -10,12 +10,12 @@ import (
 	"github.com/sofiyevsr/transfer-parser/utils"
 )
 
-const allPlayersURL = "https://www.transfermarkt.com/api/overview/appPlayerMarketValue?limit="
-const transfersURL = "https://www.transfermarkt.com/api/transfers/AppPlayer/"
-const achievementsURL = "https://www.transfermarkt.com/api/erfolge/AppPlayer?id="
-const performanceURL = "https://www.transfermarkt.com/api/performanceSummery/appPlayer?fullCareer=true&id="
-const playerURL = "https://www.transfermarkt.com/api/profil/AppPlayer/"
-const shortPlayerURL = "https://www.transfermarkt.com/api/header/appPlayer?id="
+const allPlayersURL = "https://transfermarkt.com/api/overview/appPlayerMarketValue?limit="
+const transfersURL = "https://transfermarkt.com/api/transfers/AppPlayer/"
+const achievementsURL = "https://transfermarkt.com/api/erfolge/AppPlayer?id="
+const performanceURL = "https://transfermarkt.com/api/performanceSummery/appPlayer?fullCareer=true&id="
+const playerURL = "https://transfermarkt.com/api/profil/AppPlayer/"
+const shortPlayerURL = "https://transfermarkt.com/api/header/appPlayer?id="
 
 func GetPlayersByMarketValue() (response.PlayersResponse, error) {
 	res := response.PlayersResponse{}

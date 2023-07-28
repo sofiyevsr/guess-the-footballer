@@ -22,7 +22,7 @@ func main() {
 	start := time.Now()
 	bulk, err := api.GetPlayersByMarketValue()
 	if err != nil {
-		log.Fatalln("couldn't get players")
+		log.Fatalf("couldn't get players, %s", err)
 	}
 	length := len(bulk)
 	fmt.Printf("Starting to process %d players...\n", length)

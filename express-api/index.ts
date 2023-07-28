@@ -1,9 +1,6 @@
-import { config } from "dotenv";
 import app from "app";
 import startup from "startup";
 import handleRoomWS from "ws/room";
-
-config();
 
 const port = process.env.PORT || 3000;
 

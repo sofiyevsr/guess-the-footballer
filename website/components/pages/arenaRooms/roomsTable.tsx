@@ -7,7 +7,11 @@ import { getRelativeTimeFromUnix } from "utils/common";
 import { useMe } from "utils/hooks/requests/useMe";
 import { useRouter } from "next/router";
 import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
-import { gameDifficultyNames } from "utils/services/game/types/game";
+import {
+  gameDifficulties,
+  gameDifficultyNames,
+} from "utils/services/game/types/game";
+import classNames from "classnames";
 
 interface Props {
   rooms: SingleRoom[];
@@ -17,6 +21,18 @@ interface Props {
   isRefetching: boolean;
   refetch: () => void;
   className?: string;
+}
+
+function renderDifficultyBadge(difficulty: (typeof gameDifficulties)[number]) {
+  let className = "badge-success";
+  if (difficulty === "medium") className = "badge-warning";
+  if (difficulty === "hard" || difficulty === "very-hard")
+    className = "badge-error";
+  return (
+    <div className={classNames("badge", className)}>
+      {gameDifficultyNames[difficulty]}
+    </div>
+  );
 }
 
 export default function RoomsTable({
@@ -80,11 +96,7 @@ export default function RoomsTable({
                   <div className="badge badge-success">Public</div>
                 )}
               </td>
-              <td>
-                <div className="badge badge-success">
-                  {gameDifficultyNames[room.difficulty]}
-                </div>
-              </td>
+              <td>{renderDifficultyBadge(room.difficulty)}</td>
               <td>{getRelativeTimeFromUnix(room.created_at)}</td>
             </tr>
           ))}

@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  cookie:
+    specifier: ^0.5.0
+    version: 0.5.0
   cookie-parser:
     specifier: ^1.4.6
     version: 1.4.6
@@ -10,9 +13,6 @@ dependencies:
   cron:
     specifier: ^2.3.1
     version: 2.3.1
-  dotenv:
-    specifier: ^16.3.1
-    version: 16.3.1
   drizzle-orm:
     specifier: ^0.27.0
     version: 0.27.0(postgres@3.3.5)
@@ -39,6 +39,9 @@ dependencies:
     version: 3.21.4
 
 devDependencies:
+  '@types/cookie':
+    specifier: ^0.5.1
+    version: 0.5.1
   '@types/cookie-parser':
     specifier: ^1.4.3
     version: 1.4.3
@@ -57,6 +60,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.3.1
     version: 20.3.1
+  '@types/ws':
+    specifier: ^8.5.5
+    version: 8.5.5
   drizzle-kit:
     specifier: ^0.19.2
     version: 0.19.2
@@ -508,6 +514,10 @@ packages:
       '@types/express': 4.17.17
     dev: true
 
+  /@types/cookie@0.5.1:
+    resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
+    dev: true
+
   /@types/cors@2.8.13:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
@@ -585,6 +595,12 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
+      '@types/node': 20.3.1
+    dev: true
+
+  /@types/ws@8.5.5:
+    resolution: {integrity: sha512-lwhs8hktwxSjf9UaZ9tG5M03PGogvFaH8gUgLNbN9HKIg0dvv6q+gkSuJ8HN4/VbyxkuLzCjlN7GquQ0gUJfIg==}
+    dependencies:
       '@types/node': 20.3.1
     dev: true
 
@@ -699,6 +715,11 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
+  /cookie@0.5.0:
+    resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
   /cors@2.8.5:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
     engines: {node: '>= 0.10'}
@@ -772,11 +793,6 @@ packages:
     dependencies:
       heap: 0.2.7
     dev: true
-
-  /dotenv@16.3.1:
-    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
-    engines: {node: '>=12'}
-    dev: false
 
   /dreamopt@0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}

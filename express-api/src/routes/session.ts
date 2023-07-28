@@ -17,7 +17,7 @@ r.get("/me", authSession, async (req, res) => {
 r.get("/check-username", async (req, res) => {
   const username = sessionSchema.shape.username.parse(req.query["username"]);
   const [result] = await db
-    .select({ username: sessions.username, created_at: sessions.createdAt })
+    .select({ username: sessions.username, created_at: sessions.created_at })
     .from(sessions)
     .where(eq(sessions.username, username))
     .limit(1);

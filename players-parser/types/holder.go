@@ -14,7 +14,7 @@ import (
 )
 
 type KV struct {
-	Key   string `json:"key"`
+	Id    int    `json:"id"`
 	Value string `json:"value"`
 }
 
@@ -36,7 +36,7 @@ func (holder *PlayersHolder) WriteToFile(filename string) {
 		if err != nil {
 			log.Fatalf("Cannot encode json: %s, player data: %v", err, v)
 		}
-		kvData = append(kvData, KV{Key: fmt.Sprintf("player:%d", v.ID), Value: string(playerJSON)})
+		kvData = append(kvData, KV{Id: v.ID, Value: string(playerJSON)})
 	}
 	playersJSON, err := json.Marshal(kvData)
 	if err != nil {

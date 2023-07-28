@@ -14,8 +14,8 @@ r.get("/rooms", async (req, res) => {
   const cursor = cursorValidator.parse(req.query["cursor"]);
   const where: SQL[] = [
     eq(rooms.private, false),
-    lt(rooms.currentSize, rooms.size),
-    isNull(rooms.startedAt),
+    lt(rooms.current_size, rooms.size),
+    isNull(rooms.started_at),
   ];
   if (cursor != null && cursor > 0) {
     where.push(lt(rooms.id, cursor));
@@ -45,7 +45,7 @@ r.get("/my-rooms", authSession, async (req, res) => {
   const results = await db
     .select()
     .from(rooms)
-    .where(and(eq(rooms.creatorUsername, req.session!.username), ...where))
+    .where(and(eq(rooms.creator_username, req.session!.username), ...where))
     .limit(defaultPaginationLimit + 1)
     .orderBy(desc(rooms.id));
   const response: { rooms: typeof results; cursor?: number } = {
@@ -64,7 +64,8 @@ r.post("/rooms", authSession, async (req, res) => {
     size,
     private: nonPublic,
     difficulty: difficulty as DifficultyType,
-    currentSize: 0,
+    current_size: 0,
+    creator_username: req.session!.username,
   });
   return res.status(201).json({ room });
 });

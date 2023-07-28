@@ -11,13 +11,13 @@ export const dailyChallengeCronConfig = {
 export async function dailyChallengeCronFn() {
   console.log("running the daily challenge cron...");
   const [currentChallenge] = await db
-    .select({ playerID: dailyChallenge.playerID })
+    .select({ player_id: dailyChallenge.player_id })
     .from(dailyChallenge)
     .orderBy(desc(dailyChallenge.id))
     .limit(1);
   let randomID = getRandomNumber([1, playerCount]);
-  while (currentChallenge != null && randomID === currentChallenge.playerID) {
+  while (currentChallenge != null && randomID === currentChallenge.player_id) {
     randomID = getRandomNumber([1, playerCount]);
   }
-  await db.insert(dailyChallenge).values({ playerID: randomID });
+  await db.insert(dailyChallenge).values({ player_id: randomID });
 }

@@ -9,6 +9,6 @@ export const sessions = pgTable(
   {
     username: varchar("username", { length: 24 }).primaryKey(),
     token: varchar("token").notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    created_at: timestamp("created_at").notNull().defaultNow(),
   },
 );

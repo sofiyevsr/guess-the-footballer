@@ -26,8 +26,8 @@ r.get("/", async (req, res) => {
     .from(players)
     .where(inArray(players.id, randomArr));
   for (let i = 0, len = result.length; i < len; i++) {
-    const { data } = result[i];
-    const parsedData = JSON.parse(data as string);
+    const { value } = result[i];
+    const parsedData = JSON.parse(value as string);
     parsedData.playerName = mutateString(parsedData.playerName, "*");
     delete parsedData.foreignID;
     result[i] = parsedData;
@@ -40,14 +40,14 @@ r.get("/challenge", async (_, res) => {
     orderBy: desc(dailyChallenge.id),
     with: {
       player: {
-        columns: { data: true },
+        columns: { value: true },
       },
     },
   });
   if (currentChallenge == null) {
     return res.status(404);
   }
-  const parsedData = JSON.parse(currentChallenge.player.data as string);
+  const parsedData = JSON.parse(currentChallenge.player.value as string);
   parsedData.playerName = mutateString(parsedData.playerName, "*");
   delete parsedData.foreignID;
   return res.status(200).json(parsedData);
@@ -59,7 +59,7 @@ r.post("/answer/:id", async (req, res) => {
     return res.status(404);
   }
   const [player] = await db
-    .select({ data: players.data })
+    .select({ data: players.value })
     .from(players)
     .where(eq(players.id, id))
     .limit(1);
