@@ -2,7 +2,7 @@ import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import RedisClient from "ioredis";
 
-const client = new RedisClient({ path: process.env.REDIS_URL });
+const client = new RedisClient(process.env.REDIS_URL);
 
 export function limiterGenerator(
   prefix: string,

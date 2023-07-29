@@ -95,10 +95,9 @@ export const RoomForm = () => {
         <button
           type="submit"
           disabled={user == null}
-          className={clsx("btn btn-primary w-full my-2", {
-            loading: isSubmitting,
-          })}
+          className="btn btn-primary w-full my-2"
         >
+          {isSubmitting && <span className="loading loading-spinner" />}
           Create room
         </button>
         {user == null && (

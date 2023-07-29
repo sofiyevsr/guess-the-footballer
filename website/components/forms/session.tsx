@@ -84,10 +84,11 @@ export const SessionForm = () => {
       <button
         type="submit"
         disabled={isSubmitting || isLoadingUser}
-        className={clsx("btn btn-primary w-full my-2", {
-          loading: isSubmitting || isLoadingUser,
-        })}
+        className="btn btn-primary w-full my-2"
       >
+        {(isSubmitting || isLoadingUser) && (
+          <span className="loading loading-spinner" />
+        )}
         Submit
       </button>
     </form>

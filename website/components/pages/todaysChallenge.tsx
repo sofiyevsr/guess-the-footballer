@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import GameView from "@cmpt/game/view";
-import clsx from "classnames";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
 import LoadingLayout from "@cmpt/layout/loading";
@@ -38,13 +37,12 @@ function TodaysChallenge() {
         </h1>
         <button
           disabled={gameState == null}
-          className={clsx("btn btn-primary text-white my-4 md:btn-wide", {
-            loading: gameState == null,
-          })}
+          className="btn btn-primary text-white my-4 md:btn-wide"
           onClick={() => {
             setGameState(undefined);
           }}
         >
+          {gameState == null && <span className="loading loading-spinner" />}
           Replay
         </button>
       </div>
@@ -66,7 +64,6 @@ function TodaysChallenge() {
           setGameState(newState);
         }}
         defaultState={gameState}
-        tipDuration={5 * 60}
       />
     </LoadingLayout>
   );

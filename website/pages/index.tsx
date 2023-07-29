@@ -5,7 +5,7 @@ import Image from "next/image";
 import { NextSeo } from "next-seo";
 
 const description =
-  "Guess the Footballer is an online game that tests your knowledge of the world's top footballers. Players must guess their names from the clues provided. With an intuitive interface and lots of levels to choose from, Guess the Footballer is the ideal game for football fans and puzzle enthusiasts alike. Get ready for a daily dose of football fun! Guess the name of today's player right away with the clues revealed every 5 minutes!";
+  "Guess the Footballer is an online game that tests your knowledge of the world's top footballers. Players must guess their names from the clues provided. With an intuitive interface and lots of levels to choose from, Guess the Footballer is the ideal game for football fans and puzzle enthusiasts alike. Get ready for a daily dose of football fun! Guess the name of today's player right away with the clues revealed every 3 seconds!";
 
 function Home() {
   return (
