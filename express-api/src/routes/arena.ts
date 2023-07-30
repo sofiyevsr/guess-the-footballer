@@ -6,8 +6,9 @@ import { authSession } from "middlewares/session";
 import { rooms } from "db/schema/room";
 import db from "db";
 import { DifficultyType } from "utils/types";
-import { SQL, and, desc, eq, isNull, lt } from "drizzle-orm";
+import { SQL, and, desc, eq, isNull, lt, sql } from "drizzle-orm";
 import { limiterGenerator } from "utils/misc/rateLimiterFactory";
+import { nanoid } from "nanoid";
 
 const r = Router();
 
@@ -19,20 +20,23 @@ r.get("/rooms", async (req, res) => {
     isNull(rooms.started_at),
   ];
   if (cursor != null && cursor > 0) {
-    where.push(lt(rooms.id, cursor));
+    where.push(
+      sql`extract(epoch from ${rooms.created_at}) > ${cursor}`
+    );
   }
   const results = await db
     .select()
     .from(rooms)
     .where(and(...where))
     .limit(defaultPaginationLimit + 1)
-    .orderBy(desc(rooms.id));
+    .orderBy(desc(rooms.created_at));
   const response: { rooms: typeof results; cursor?: number } = {
     rooms: results,
   };
   if (results.length === defaultPaginationLimit + 1) {
     response.rooms = response.rooms.slice(0, -1);
-    response.cursor = response.rooms[response.rooms.length - 1].id;
+    response.cursor =
+      response.rooms[response.rooms.length - 1].created_at.getTime();
   }
   return res.status(200).json(response);
 });
@@ -41,20 +45,23 @@ r.get("/my-rooms", authSession, async (req, res) => {
   const cursor = cursorValidator.parse(req.query["cursor"]);
   const where: SQL[] = [];
   if (cursor != null && cursor > 0) {
-    where.push(lt(rooms.id, cursor));
+    where.push(
+      sql`extract(epoch from ${rooms.created_at}) > ${cursor}`
+    );
   }
   const results = await db
     .select()
     .from(rooms)
     .where(and(eq(rooms.creator_username, req.session!.username), ...where))
     .limit(defaultPaginationLimit + 1)
-    .orderBy(desc(rooms.id));
+    .orderBy(desc(rooms.created_at));
   const response: { rooms: typeof results; cursor?: number } = {
     rooms: results,
   };
   if (results.length === defaultPaginationLimit + 1) {
     response.rooms = response.rooms.slice(0, -1);
-    response.cursor = response.rooms[response.rooms.length - 1].id;
+    response.cursor =
+      response.rooms[response.rooms.length - 1].created_at.getTime();
   }
   return res.status(200).json(response);
 });
@@ -67,6 +74,7 @@ r.post(
   async (req, res) => {
     const { size, private: nonPublic, difficulty } = roomSchema.parse(req.body);
     const [room] = await db.insert(rooms).values({
+      id: nanoid(),
       size,
       private: nonPublic,
       difficulty: difficulty as DifficultyType,

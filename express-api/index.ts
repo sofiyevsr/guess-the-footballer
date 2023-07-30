@@ -1,6 +1,6 @@
 import app from "app";
 import startup from "startup";
-import handleRoomWS from "ws/room";
+import handleRoomWS from "ws/room.connector";
 
 const port = process.env.PORT || 3000;
 

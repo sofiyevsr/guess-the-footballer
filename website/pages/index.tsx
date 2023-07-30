@@ -5,7 +5,7 @@ import Image from "next/image";
 import { NextSeo } from "next-seo";
 
 const description =
-  "Guess the Footballer is an online game that tests your knowledge of the world's top footballers. Players must guess their names from the clues provided. With an intuitive interface and lots of levels to choose from, Guess the Footballer is the ideal game for football fans and puzzle enthusiasts alike. Get ready for a daily dose of football fun! Guess the name of today's player right away with the clues revealed every 3 seconds!";
+  "Guess the Footballer is an online game that tests your knowledge of the world's top footballers. Players must guess their names from the clues revealed every 3 seconds. With an intuitive interface and lots of levels to choose from, Guess the Footballer is the ideal game for football fans and puzzle enthusiasts alike. Get ready for a daily dose of football fun!";
 
 function Home() {
   return (
@@ -19,7 +19,7 @@ function Home() {
           height={350}
           className="object-contain"
         />
-        <h1 className="mx-2 text-center text-md prose my-4 lg:mx-0 lg:max-w-[65%] lg:text-2xl xl:max-w-[50%]">
+        <h1 className="mx-2 text-center text-md prose my-4 lg:mx-0 lg:max-w-[60%] lg:text-2xl xl:max-w-[45%]">
           {description}
         </h1>
         <Link

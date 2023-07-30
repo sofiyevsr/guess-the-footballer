@@ -1,5 +1,5 @@
 export NODE_ENV=development
 export PORT=8787
 export DB_URL=postgresql://user:secret@localhost:5432/guess_footballer
-export REDIS_URL=localhost:6379
+export REDIS_URL=redis://localhost:6379
 export ORIGIN=http://localhost:3000

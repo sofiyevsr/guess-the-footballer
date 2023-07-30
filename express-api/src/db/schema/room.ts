@@ -3,7 +3,6 @@ import {
   integer,
   pgEnum,
   pgTable,
-  serial,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -12,7 +11,7 @@ import { difficultyLevels } from "utils/constants";
 export const difficultyEnum = pgEnum("difficulty", difficultyLevels);
 
 export const rooms = pgTable("room", {
-  id: serial("id").primaryKey(),
+  id: varchar("id", { length: 21 }).primaryKey(),
   private: boolean("private").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
   size: integer("size").notNull(),

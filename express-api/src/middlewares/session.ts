@@ -19,7 +19,7 @@ export const authSession: RequestHandler = async (req, _, next) => {
 
 export const getSession = async (token: string) => {
   const [session] = await db
-    .select({ username: sessions.username, createdAt: sessions.created_at })
+    .select({ username: sessions.username, created_at: sessions.created_at })
     .from(sessions)
     .where(eq(sessions.token, token))
     .limit(1);

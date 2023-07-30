@@ -12,7 +12,7 @@ namespace Express {
   interface Request {
     session?: {
       username: string;
-      createdAt: Date;
+      created_at: Date;
     }
   }
 }
