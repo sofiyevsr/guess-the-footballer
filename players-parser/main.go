@@ -22,7 +22,7 @@ func main() {
 	start := time.Now()
 	bulk, err := api.GetPlayersByMarketValue()
 	if err != nil {
-		log.Fatalln("couldn't get players")
+		log.Fatalf("couldn't get players, %s", err)
 	}
 	length := len(bulk)
 	fmt.Printf("Starting to process %d players...\n", length)
@@ -46,6 +46,5 @@ func main() {
   utils.InitializeR2()
 	image.DownloadImages()
 	playerPool.WriteToFile("players")
-	playerPool.WriteToZip()
 	fmt.Printf("elapsed time %f \n", time.Now().Sub(start).Seconds())
 }

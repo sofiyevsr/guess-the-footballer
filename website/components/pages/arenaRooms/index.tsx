@@ -20,7 +20,7 @@ const ArenaRooms = () => {
             tips. Players can earn points by answering correctly, and the player
             with the highest score wins. It is a fun and engaging way to learn
             more about your favorite players and to challenge your friends to
-            see who knows the most
+            see who knows the most.
           </p>
         </div>
         <div className="flex flex-col flex-1 items-center justify-around p-4 rounded-xl outline outline-primary outline-4 md:flex-row lg:max-w-xl">

@@ -3,6 +3,7 @@ package image
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"sync"
@@ -23,6 +24,9 @@ func AddImageToBulk(url string, filename string) string {
 	filename = strings.ReplaceAll(filename, ".", "-")
 	filename = strings.ReplaceAll(filename, "/", "-")
 	filename = fmt.Sprintf("%s.png", strings.ToLower(filename))
+	if filename == ".png" {
+		filename = fmt.Sprint(rand.Int()) + ".png"
+	}
 	url = strings.ReplaceAll(url, "verysmall", "head")
 	url = strings.ReplaceAll(url, "small", "head")
 	url = strings.ReplaceAll(url, "middle", "head")

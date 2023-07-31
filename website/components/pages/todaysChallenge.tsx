@@ -1,11 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import GameView from "@cmpt/game/view";
-import clsx from "classnames";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
 import LoadingLayout from "@cmpt/layout/loading";
 import { useTodaysChallenge } from "utils/hooks/requests/useTodaysChallenge";
-import produce from "immer";
+import { produce } from "immer";
 import dayjs from "dayjs";
 import CompletedIcon from "@cmpt/icons/completed";
 import { formatDate } from "utils/common";
@@ -38,13 +37,12 @@ function TodaysChallenge() {
         </h1>
         <button
           disabled={gameState == null}
-          className={clsx("btn btn-primary text-white my-4 md:btn-wide", {
-            loading: gameState == null,
-          })}
+          className="btn btn-primary text-white my-4 md:btn-wide"
           onClick={() => {
             setGameState(undefined);
           }}
         >
+          {gameState == null && <span className="loading loading-spinner" />}
           Replay
         </button>
       </div>

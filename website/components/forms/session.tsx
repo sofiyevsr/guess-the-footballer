@@ -61,11 +61,11 @@ export const SessionForm = () => {
               message: "Username length can be minimum 2",
             },
             maxLength: {
-              value: 32,
-              message: "Username length size can be maximum 32",
+              value: 24,
+              message: "Username length size can be maximum 24",
             },
           })}
-          maxLength={32}
+          maxLength={24}
           autoComplete="off"
           aria-invalid={errors.username ? "true" : "false"}
           type="text"
@@ -84,10 +84,11 @@ export const SessionForm = () => {
       <button
         type="submit"
         disabled={isSubmitting || isLoadingUser}
-        className={clsx("btn btn-primary w-full my-2", {
-          loading: isSubmitting || isLoadingUser,
-        })}
+        className="btn btn-primary w-full my-2"
       >
+        {(isSubmitting || isLoadingUser) && (
+          <span className="loading loading-spinner" />
+        )}
         Submit
       </button>
     </form>

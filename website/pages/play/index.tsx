@@ -5,7 +5,7 @@ import { Lottie } from "@cmpt/misc/lottie";
 import { NextSeo } from "next-seo";
 
 const description =
-  "On this page, you'll be able to select from a range of difficulty levels, each containing 10 players to guess. Questions for each difficulty update every 5 minutes. As you progress, the players will become less well-known and have lower market value. So, are you ready to challenge yourself and become a football trivia master? Pick a difficulty level and get ready to play. Good luck!";
+  "On this page, you'll be able to select from a range of difficulty levels, each containing 10 players to guess. Difficulty leves are based on their market values (high market value corresponds to easier level). As you progress, the players will become less well-known and have lower market value. So, are you ready to challenge yourself and become a football trivia master? Pick a difficulty level and get ready to play. Good luck!";
 
 function PreLocalPlay() {
   return (
