@@ -102,7 +102,7 @@ function PerformanceHistoryView({ className, performances, children }: Props) {
         </table>
       </div>
       {children && (
-        <div className="flex-1 overflow-y-scroll max-h-full mt-2 rounded-xl">
+        <div className="overflow-y-scroll mt-2 rounded-xl">
           {children}
         </div>
       )}

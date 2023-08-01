@@ -11,18 +11,6 @@ import { Redis } from "ioredis";
 import { compareStrings, mutateString } from "utils/string";
 import db from "db";
 
-const PAYLOADTYPES = [
-  "game_started",
-  "game_finished",
-  "wrong_answer",
-  "correct_answer",
-  "new_correct_answer",
-  "new_round",
-  "user_dropped",
-  "user_joined",
-  "joined_room",
-  "error_occured",
-] as const;
 type MessageType = (typeof PAYLOADTYPES)[number];
 
 interface GameState {
@@ -40,6 +28,22 @@ interface GameState {
   };
 }
 
+const ROOM_STORE_PREFIX = "room-state-";
+const ARENA_JOB_PREFIX = "arena-jobs-";
+
+const PAYLOADTYPES = [
+  "game_started",
+  "game_finished",
+  "wrong_answer",
+  "correct_answer",
+  "new_correct_answer",
+  "new_round",
+  "user_dropped",
+  "user_joined",
+  "joined_room",
+  "error_occured",
+] as const;
+
 const defaultGameState: GameState = {
   users: [],
   progress: null,
@@ -55,13 +59,13 @@ export default class ArenaRoom {
   private finishCallback: () => void;
   private redis = new Redis();
   private jobQueue: Queue<{ username: string }>;
-
-  private roomID: string;
   private sockets: { [K in string]: WebSocket } = Object.create(null);
+
   // This variables should hold latest state ideally
   // GameState should be serializable
   private gameState: GameState = defaultGameState;
   private roomData: InferModel<typeof rooms>;
+  private roomID: string;
 
   constructor(
     roomID: string,
@@ -71,15 +75,19 @@ export default class ArenaRoom {
     this.finishCallback = finishCallback;
     this.roomID = roomID;
     this.roomData = room;
-    this.jobQueue = new Bull(`arena-jobs-${roomID}`, process.env.REDIS_URL);
-    retry(this.initGame.bind(this), 3)
+    this.jobQueue = new Bull(
+      ARENA_JOB_PREFIX + this.roomID,
+      process.env.REDIS_URL
+    );
+    retry(this.initRoom.bind(this), 3, "Init room")
       .then(() => {
         this.jobQueue.process(async ({ data: { username } }) => {
-          await this.processNewUser.call(this, username);
+          await this.processNewUser(username);
         });
       })
       .catch((e) => {
         console.log("Failed to initialize room, %s", e);
+        this.disposeSelf();
       });
   }
 
@@ -91,9 +99,59 @@ export default class ArenaRoom {
     this.jobQueue.add({ username: session.username }, { attempts: 2 });
   }
 
+  private async initRoom() {
+    const currentGame = await this.redis.get(ROOM_STORE_PREFIX + this.roomID);
+    if (currentGame == null) {
+      return;
+    }
+    try {
+      const parsedState = JSON.parse(currentGame);
+      this.gameState = parsedState;
+    } catch (_) {
+      console.warn("Invalid game state, ignoring");
+    }
+  }
+
+  private async startGame() {
+    const randomID = getRandomNumber([1, this.getRoomDifficulty()]);
+    const [player] = await db
+      .select({ data: players.value })
+      .from(players)
+      .where(eq(players.id, randomID))
+      .limit(1);
+    if (player == null) {
+      console.log("Couldn't get valid player, disposing room...");
+      return this.disposeSelf();
+    }
+    const startedAt = new Date();
+    await Promise.all([
+      this.setGameState(
+        produce(this.gameState, (state) => {
+          state.progress = {
+            current_level: 1,
+            current_player: player.data as string,
+            current_level_started_at: startedAt.getTime(),
+          };
+        })
+      ),
+      db
+        .update(rooms)
+        .set({ started_at: startedAt })
+        .where(eq(rooms.id, this.roomID)),
+    ]);
+    this.roomData = produce(this.roomData, (data) => {
+      if (!data) return;
+      data.started_at = startedAt;
+    });
+    this.broadcastMessage("game_started", this.getLatestState());
+    setTimeout(() => {
+      this.scheduleNextRound();
+    }, durationBetweenLevels);
+  }
+
   private async processNewUser(username: string) {
     const socket = this.sockets[username];
-    if (socket == null) throw Error("User not found");
+    if (socket == null) return;
     if (this.roomData == null) {
       return this.handleWebSocketError(username, "Room not found");
     }
@@ -112,7 +170,9 @@ export default class ArenaRoom {
       return this.handleWebSocketError(username, "Game already started");
     }
     socket.addEventListener("close", async () => {
-      this.removeSocket(username, false);
+      console.log("close called for username");
+      // Compare sockets to avoid race condition
+      if (this.sockets[username] === socket) delete this.sockets[username];
       await this.deleteUsersFromStorage([username]);
       this.broadcastMessage("user_dropped", this.getLatestState());
     });
@@ -158,59 +218,9 @@ export default class ArenaRoom {
         );
       }
     });
-    if (isUserNewcomer) await this.persistUser(username);
-    // TODO handle not newcomer, throw error
+    await this.persistUser(username);
     this.sendMessage("joined_room", this.getLatestState(), username);
     this.broadcastMessage("user_joined", this.getLatestState(), username);
-  }
-
-  private async initGame() {
-    const currentGame = await this.redis.get(`room-state-${this.roomID}`);
-    if (currentGame == null) {
-      return;
-    }
-    try {
-      const parsedState = JSON.parse(currentGame);
-      this.gameState = parsedState;
-    } catch (_) {
-      console.warn("Invalid game state, ignoring");
-    }
-  }
-
-  private async startGame() {
-    const randomID = getRandomNumber([1, this.getRoomDifficulty()]);
-    const [player] = await db
-      .select({ data: players.value })
-      .from(players)
-      .where(eq(players.id, randomID))
-      .limit(1);
-    if (player == null) {
-      throw Error("Couldn't get a valid player");
-    }
-    const startedAt = new Date();
-    await Promise.all([
-      this.setGameState(
-        produce(this.gameState, (state) => {
-          state.progress = {
-            current_level: 1,
-            current_player: player.data as string,
-            current_level_started_at: startedAt.getTime(),
-          };
-        })
-      ),
-      db
-        .update(rooms)
-        .set({ started_at: startedAt })
-        .where(eq(rooms.id, this.roomID)),
-    ]);
-    this.roomData = produce(this.roomData, (data) => {
-      if (!data) return;
-      data.started_at = startedAt;
-    });
-    this.broadcastMessage("game_started", this.getLatestState());
-    setTimeout(() => {
-      this.scheduleNextRound();
-    }, durationBetweenLevels);
   }
 
   private async finishGame() {
@@ -231,15 +241,7 @@ export default class ArenaRoom {
       room.finished_at = finishedAt;
     });
     this.broadcastMessage("game_finished", this.getLatestState());
-    for (const socketUsername in this.sockets) {
-      if (this.sockets[socketUsername] == null) {
-        return;
-      }
-      this.removeSocket(socketUsername);
-    }
-    this.finishCallback();
-    await retry(() => this.redis.del(`room-state-${this.roomID}`), 2);
-    await retry(() => this.jobQueue.close(), 2);
+    this.disposeSelf();
   }
 
   private async scheduleNextRound() {
@@ -255,7 +257,8 @@ export default class ArenaRoom {
       .where(eq(players.id, randomID))
       .limit(1);
     if (player == null) {
-      throw Error("Couldn't get a valid player");
+      console.log("Couldn't get valid player, disposing room...");
+      return this.disposeSelf();
     }
     await this.setGameState(
       produce(this.gameState, (state) => {
@@ -290,7 +293,8 @@ export default class ArenaRoom {
   private async setGameState(state: GameState) {
     await retry(
       () => this.redis.set(`room-state-${this.roomID}`, JSON.stringify(state)),
-      2
+      2,
+      "Set game state"
     );
     this.gameState = state;
   }
@@ -325,28 +329,6 @@ export default class ArenaRoom {
     }
   }
 
-  private saveSocket(username: string, socket: WebSocket) {
-    this.removeSocket(username, true, 1000, "New connection established");
-    this.sockets[username] = socket;
-  }
-
-  private removeSocket(
-    username: string,
-    closeSocket = true,
-    code?: number,
-    reason?: string
-  ) {
-    if (this.sockets[username] == null) {
-      return;
-    }
-    if (
-      closeSocket === true &&
-      this.sockets[username].readyState !== WebSocket.CLOSED
-    )
-      this.sockets[username].close(code, reason);
-    delete this.sockets[username];
-  }
-
   private async deleteUsersFromStorage(users: string[]) {
     // Drop user only if the game hasn't started
     if (this.roomData == null || this.roomData.started_at != null) return;
@@ -374,24 +356,21 @@ export default class ArenaRoom {
     if (this.gameState.users.includes(username)) {
       return;
     }
-    const newGameState = produce(this.gameState, (state) => {
-      state.users.push(username);
-      state.users_progress[username] = { points: 0, answers: [] };
-    });
     const [result] = await db
       .update(rooms)
       .set({ current_size: sql`${rooms.current_size} + 1` })
       .where(and(eq(rooms.id, this.roomID), lt(rooms.current_size, rooms.size)))
       .returning({ id: rooms.id });
     if (result == null) {
-      // TODO Probably failed to guard race condition, handle better
-      // Because no row is changed
-      // TODO rethink retries
-      throw Error("Race condition");
+      return;
     }
     this.roomData = produce(this.roomData, (data) => {
       if (!data) return;
       data.current_size += 1;
+    });
+    const newGameState = produce(this.gameState, (state) => {
+      state.users.push(username);
+      state.users_progress[username] = { points: 0, answers: [] };
     });
     await this.setGameState(newGameState);
     // Start game only if size is reached
@@ -400,11 +379,33 @@ export default class ArenaRoom {
       this.roomData.current_size < this.roomData.size
     )
       return;
-    await retry(this.startGame.bind(this), 2);
+    await retry(this.startGame.bind(this), 2, "Start game");
   }
 
   private getRoomDifficulty(): number {
     return difficultyMappings[this.roomData.difficulty];
+  }
+
+  private saveSocket(username: string, socket: WebSocket) {
+    this.removeSocket(username, true, 1000, "New connection established");
+    this.sockets[username] = socket;
+  }
+
+  private removeSocket(
+    username: string,
+    closeSocket = true,
+    code?: number,
+    reason?: string
+  ) {
+    if (this.sockets[username] == null) {
+      return;
+    }
+    if (
+      closeSocket === true &&
+      this.sockets[username].readyState !== WebSocket.CLOSED
+    )
+      this.sockets[username].close(code, reason);
+    delete this.sockets[username];
   }
 
   private handleWebSocketError(username: string, reason?: string) {
@@ -412,5 +413,23 @@ export default class ArenaRoom {
     if (socket == null) return;
     socket.close(1011, reason);
     delete this.sockets[username];
+  }
+
+  private async disposeSelf() {
+    for (const socketUsername in this.sockets) {
+      if (this.sockets[socketUsername] == null) {
+        return;
+      }
+      this.removeSocket(socketUsername);
+    }
+    this.finishCallback();
+    await Promise.all([
+      retry(
+        () => this.redis.del(ROOM_STORE_PREFIX + this.roomID),
+        2,
+        "Redis room delete"
+      ),
+      retry(() => this.jobQueue.close(), 2, "Job Queue close"),
+    ]);
   }
 }

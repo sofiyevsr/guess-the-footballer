@@ -31,18 +31,18 @@ wss.on("connection", async (socket, req) => {
     return handleError(socket, "Invalid room ID");
   }
   if (req.headers.cookie == null) {
-    return handleError(socket, "Couldn't get token from cookie");
+    return handleError(socket, "Couldn't get session, create one before joining room");
   }
   const { token } = cookie.parse(req.headers.cookie);
   if (token == null) {
-    return handleError(socket, "Token not found");
+    return handleError(socket, "Couldn't get session, create one before joining room");
   }
   let session: PromiseOf<ReturnType<typeof getSession>>;
   try {
     session = await getSession(token);
     if (session == null) throw Error();
   } catch (error) {
-    return handleError(socket, "Couldn't get session");
+    return handleError(socket, "Couldn't get session, create one before joining room");
   }
   try {
     const [room] = await db

@@ -47,7 +47,7 @@ export default function RoomsTable({
   const { data: user } = useMe();
   const { push } = useRouter();
   return (
-    <div className={clsx("max-w-2xl overflow-x-auto", className)}>
+    <div className={clsx("max-w-3xl overflow-x-auto", className)}>
       <table className="table w-full">
         <thead>
           <tr>
@@ -64,6 +64,7 @@ export default function RoomsTable({
                 />
               </button>
             </th>
+            <th>ID</th>
             <th>Creator&apos;s username</th>
             <th>Room size</th>
             <th>Visibility</th>
@@ -85,6 +86,9 @@ export default function RoomsTable({
                   Join
                 </button>
               </th>
+              <td>
+                <span>{room.id}</span>
+              </td>
               <td>
                 <span className="font-bold text-xl">{room.creator_username}</span>
               </td>

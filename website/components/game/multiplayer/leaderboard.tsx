@@ -24,7 +24,7 @@ function MultiplayerLeaderboard({ users_progress, active_users }: Props) {
           <th>Username</th>
           <th>Points</th>
           <th>Status</th>
-          <th>Answer Levels</th>
+          <th>Answered Levels</th>
         </tr>
       </thead>
       <tbody>

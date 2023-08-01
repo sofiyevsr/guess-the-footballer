@@ -34,7 +34,7 @@ export const MultiplayerGameView = () => {
       setSocketStatus("active");
     };
     socketRef.current.onclose = (e) => {
-      if (joinStatusRef.current === "joining") setJoinStatus("failed_join");
+      setJoinStatus("failed_join");
       setSocketStatus("closed");
       setCloseReason(e.reason);
       delete socketRef.current;
