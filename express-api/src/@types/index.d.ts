@@ -4,6 +4,7 @@ namespace NodeJS {
     NODE_ENV: "development" | "staging" | "production";
     DB_URL: string;
     REDIS_URL: string;
+    PLAYERS_FILENAME: string;
     ORIGIN: string;
   }
 }

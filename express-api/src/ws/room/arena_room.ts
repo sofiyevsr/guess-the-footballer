@@ -1,8 +1,8 @@
+import Bull, { Queue } from "bull";
 import { WebSocket } from "ws";
 import { InferModel, PromiseOf, and, eq, gt, lt, sql } from "drizzle-orm";
 import { getSession } from "middlewares/session";
 import { players, rooms } from "db/schema";
-import Bull, { Queue } from "bull";
 import { difficultyMappings } from "utils/constants";
 import { retry } from "utils/retry";
 import { produce } from "immer";
@@ -12,6 +12,15 @@ import { compareStrings, mutateString } from "utils/string";
 import db from "db";
 
 type MessageType = (typeof PAYLOADTYPES)[number];
+
+type JobQueue =
+  | {
+      type: "new_user";
+      username: string;
+    }
+  | {
+      type: "schedule_dispose" | "schedule_new_round";
+    };
 
 interface GameState {
   users: string[];
@@ -53,12 +62,13 @@ const defaultGameState: GameState = {
 const maxLevels = 5;
 // Time to wait before incrementing level, in ms
 const durationBetweenLevels = 45 * 1000;
+const roomAutoCloseDuration = 30 * 60 * 1000;
 const maxPointsPerLevel = 100;
 
 export default class ArenaRoom {
   private finishCallback: () => void;
-  private redis = new Redis();
-  private jobQueue: Queue<{ username: string }>;
+  private redis = new Redis(process.env.REDIS_URL, {});
+  private jobQueue: Queue<JobQueue>;
   private sockets: { [K in string]: WebSocket } = Object.create(null);
 
   // This variables should hold latest state ideally
@@ -77,12 +87,19 @@ export default class ArenaRoom {
     this.roomData = room;
     this.jobQueue = new Bull(
       ARENA_JOB_PREFIX + this.roomID,
-      process.env.REDIS_URL
+      process.env.REDIS_URL,
+      { defaultJobOptions: { removeOnFail: true, removeOnComplete: true } }
     );
     retry(this.initRoom.bind(this), 3, "Init room")
       .then(() => {
-        this.jobQueue.process(async ({ data: { username } }) => {
-          await this.processNewUser(username);
+        this.jobQueue.process(async ({ data }) => {
+          if (data.type === "new_user") {
+            await this.processNewUser(data.username);
+          } else if (data.type === "schedule_dispose") {
+            await this.disposeSelf();
+          } else if (data.type === "schedule_new_round") {
+            await this.handleNextRound();
+          }
         });
       })
       .catch((e) => {
@@ -96,7 +113,10 @@ export default class ArenaRoom {
     session: NonNullable<PromiseOf<ReturnType<typeof getSession>>>
   ) {
     this.saveSocket(session.username, socket);
-    this.jobQueue.add({ username: session.username }, { attempts: 2 });
+    this.jobQueue.add(
+      { type: "new_user", username: session.username },
+      { attempts: 2 }
+    );
   }
 
   private async initRoom() {
@@ -110,6 +130,10 @@ export default class ArenaRoom {
     } catch (_) {
       console.warn("Invalid game state, ignoring");
     }
+    this.jobQueue.add(
+      { type: "schedule_dispose" },
+      { attempts: 2, delay: roomAutoCloseDuration }
+    );
   }
 
   private async startGame() {
@@ -144,9 +168,7 @@ export default class ArenaRoom {
       data.started_at = startedAt;
     });
     this.broadcastMessage("game_started", this.getLatestState());
-    setTimeout(() => {
-      this.scheduleNextRound();
-    }, durationBetweenLevels);
+    this.scheduleNextRound();
   }
 
   private async processNewUser(username: string) {
@@ -170,7 +192,6 @@ export default class ArenaRoom {
       return this.handleWebSocketError(username, "Game already started");
     }
     socket.addEventListener("close", async () => {
-      console.log("close called for username");
       // Compare sockets to avoid race condition
       if (this.sockets[username] === socket) delete this.sockets[username];
       await this.deleteUsersFromStorage([username]);
@@ -244,7 +265,14 @@ export default class ArenaRoom {
     this.disposeSelf();
   }
 
-  private async scheduleNextRound() {
+  private scheduleNextRound() {
+    return this.jobQueue.add(
+      { type: "schedule_new_round" },
+      { attempts: 2, delay: durationBetweenLevels }
+    );
+  }
+
+  private async handleNextRound() {
     if (this.gameState.progress == null) return;
     // Check if new round is available
     if (this.gameState.progress.current_level >= maxLevels) {
@@ -271,9 +299,7 @@ export default class ArenaRoom {
       })
     );
     this.broadcastMessage("new_round", this.getLatestState());
-    setTimeout(() => {
-      this.scheduleNextRound();
-    }, durationBetweenLevels);
+    this.scheduleNextRound();
   }
 
   private getLatestState() {
@@ -292,7 +318,13 @@ export default class ArenaRoom {
 
   private async setGameState(state: GameState) {
     await retry(
-      () => this.redis.set(`room-state-${this.roomID}`, JSON.stringify(state)),
+      () =>
+        this.redis.set(
+          `room-state-${this.roomID}`,
+          JSON.stringify(state),
+          "EX",
+          roomAutoCloseDuration / 1000
+        ),
       2,
       "Set game state"
     );
@@ -387,13 +419,12 @@ export default class ArenaRoom {
   }
 
   private saveSocket(username: string, socket: WebSocket) {
-    this.removeSocket(username, true, 1000, "New connection established");
+    this.removeSocket(username, 1000, "New connection established");
     this.sockets[username] = socket;
   }
 
   private removeSocket(
     username: string,
-    closeSocket = true,
     code?: number,
     reason?: string
   ) {
@@ -401,8 +432,8 @@ export default class ArenaRoom {
       return;
     }
     if (
-      closeSocket === true &&
-      this.sockets[username].readyState !== WebSocket.CLOSED
+      this.sockets[username].readyState !== WebSocket.CLOSED &&
+      this.sockets[username].readyState !== WebSocket.CLOSING
     )
       this.sockets[username].close(code, reason);
     delete this.sockets[username];
