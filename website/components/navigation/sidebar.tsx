@@ -6,6 +6,7 @@ import XMarkIcon from "@heroicons/react/20/solid/XMarkIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import clsx from "classnames";
+import { LastDBUpdate } from "@cmpt/misc/lastDBUpdate";
 
 interface Props {
   children: ReactNode;
@@ -35,59 +36,68 @@ const Sidebar = ({ children }: Props) => {
       <div className="drawer-side">
         <label htmlFor="sidebar" className="drawer-overlay" />
         <ul className="menu bg-base-300 p-4 w-90 h-full">
-          <li>
-            <a
-              onClick={() => setDrawerOpen(false)}
-              className="btn btn-primary drawer-button self-end lg:hidden"
-            >
-              <XMarkIcon className="h-7 w-7 text-white" />
-            </a>
-          </li>
-          <li className="py-2">
-            <Link
-              href="/"
-              className="btn btn-ghost h-full normal-case text-3xl text-center active:text-white"
-            >
-              Guess the Footballer
-            </Link>
-          </li>
-          <li className="my-1">
-            <Link
-              className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname === "/" || pathname === "/challenge",
-              })}
-              href="/"
-            >
-              <CalendarDaysIcon className="h-10 w-10 text-red-500" />
-              <span className="uppercase ml-3 font-bold text-xl">
-                {"Today's challenge"}
-              </span>
-            </Link>
-          </li>
-          <li className="my-1">
-            <Link
-              className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname.startsWith("/play"),
-              })}
-              href="/play"
-            >
-              <PuzzlePieceIcon className="h-10 w-10 text-green-500" />
-              <span className="uppercase ml-3 font-bold text-xl">Play</span>
-            </Link>
-          </li>
-          <li className="my-1">
-            <Link
-              className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname.startsWith("/arena"),
-              })}
-              href="/arena"
-            >
-              <UserGroupIcon className="h-10 w-10 text-yellow-500" />
-              <span className="uppercase ml-3 font-bold text-xl">
-                Multiplayer
-              </span>
-            </Link>
-          </li>
+          <section className="flex-1">
+            <li>
+              <a
+                onClick={() => setDrawerOpen(false)}
+                className="btn btn-primary drawer-button self-end lg:hidden"
+              >
+                <XMarkIcon className="h-7 w-7 text-white" />
+              </a>
+            </li>
+            <li className="py-2">
+              <Link
+                href="/"
+                className="btn btn-ghost h-full normal-case text-3xl text-center active:text-white"
+              >
+                Guess the Footballer
+              </Link>
+            </li>
+            <li className="my-1">
+              <Link
+                className={clsx("flex items-center w-full h-full", {
+                  "bg-primary": pathname === "/" || pathname === "/challenge",
+                })}
+                href="/"
+              >
+                <CalendarDaysIcon className="h-10 w-10 text-red-500" />
+                <span className="uppercase ml-3 font-bold text-xl">
+                  {"Today's challenge"}
+                </span>
+              </Link>
+            </li>
+            <li className="my-1">
+              <Link
+                className={clsx("flex items-center w-full h-full", {
+                  "bg-primary": pathname.startsWith("/play"),
+                })}
+                href="/play"
+              >
+                <PuzzlePieceIcon className="h-10 w-10 text-green-500" />
+                <span className="uppercase ml-3 font-bold text-xl">Play</span>
+              </Link>
+            </li>
+            <li className="my-1">
+              <Link
+                className={clsx("flex items-center w-full h-full", {
+                  "bg-primary": pathname.startsWith("/arena"),
+                })}
+                href="/arena"
+              >
+                <UserGroupIcon className="h-10 w-10 text-yellow-500" />
+                <span className="uppercase ml-3 font-bold text-xl">
+                  Multiplayer
+                </span>
+              </Link>
+            </li>
+            <div className="my-1">
+              <LastDBUpdate />
+            </div>
+          </section>
+          <div className="flex justify-between items-center font-bold">
+            <h1 className="block font-bold text-lg">Contact: </h1>
+            <a className="link" href="mailto:guessfootballerapp@gmail.com">guessfootballerapp@gmail.com</a>
+          </div>
         </ul>
       </div>
     </div>

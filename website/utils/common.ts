@@ -19,6 +19,10 @@ export function shuffleArray<T>(array: T[]) {
   return newArr;
 }
 
+export function getUnixDateInUTC(date: number) {
+  return dayjs.unix(date).utc();
+}
+
 export function getTodayInUTC() {
   return dayjs().utc().format("DD-MM-YYYY");
 }

@@ -178,12 +178,7 @@ export default class ArenaRoom {
       return this.handleWebSocketError(username, "Room not found");
     }
     const isUserNewcomer = !this.gameState.users.includes(username);
-    if (this.roomData.finished_at != null) {
-      return this.handleWebSocketError(
-        username,
-        "Game in the room is finished"
-      );
-    } else if (
+    if (
       this.roomData.current_size >= this.roomData.size &&
       isUserNewcomer
     ) {

@@ -31,18 +31,27 @@ wss.on("connection", async (socket, req) => {
     return handleError(socket, "Invalid room ID");
   }
   if (req.headers.cookie == null) {
-    return handleError(socket, "Couldn't get session, create one before joining room");
+    return handleError(
+      socket,
+      "Couldn't get session, create one before joining room"
+    );
   }
   const { token } = cookie.parse(req.headers.cookie);
   if (token == null) {
-    return handleError(socket, "Couldn't get session, create one before joining room");
+    return handleError(
+      socket,
+      "Couldn't get session, create one before joining room"
+    );
   }
   let session: PromiseOf<ReturnType<typeof getSession>>;
   try {
     session = await getSession(token);
     if (session == null) throw Error();
   } catch (error) {
-    return handleError(socket, "Couldn't get session, create one before joining room");
+    return handleError(
+      socket,
+      "Couldn't get session, create one before joining room"
+    );
   }
   try {
     const [room] = await db
@@ -51,6 +60,9 @@ wss.on("connection", async (socket, req) => {
       .where(eq(rooms.id, roomID))
       .limit(1);
     if (room == null) throw Error();
+    if (room.finished_at != null) {
+      return handleError(socket, "Game in the room is finished");
+    }
     let arenaRoom = roomsMap[roomID];
     if (arenaRoom == null) {
       arenaRoom = new ArenaRoom(roomID, room, () => {
