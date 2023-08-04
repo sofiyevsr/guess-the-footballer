@@ -19,10 +19,10 @@ export const getMarketValueArray = (
   return [
     getRandomValue(
       currentRange[0],
-      marketValue - (marketValue - currentRange[0]) * 0.5
+      marketValue - (marketValue - currentRange[0]) * 0.6
     ),
     getRandomValue(
-      marketValue + (currentRange[1] - marketValue) * 0.5,
+      marketValue + (currentRange[1] - marketValue) * 0.6,
       currentRange[1]
     ),
   ] as [number, number];

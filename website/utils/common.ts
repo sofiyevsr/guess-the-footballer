@@ -24,23 +24,6 @@ export function getRandomValue(min = 0, max = 1) {
   return Math.floor(Math.random() * (max - min) + 1) + Math.floor(min);
 }
 
-export function getWeightedRandomValue(min = 0, max = 1) {
-  // Max number weighted accumulation can get to
-  let maxNumber = 0;
-  for (let i = min; i <= max; i++) {
-    maxNumber += i;
-  }
-  const randomNumber = getRandomValue(min, maxNumber);
-  let acc = 0;
-  for (let i = max; i >= min; i--) {
-    acc += i;
-    if (randomNumber <= acc) {
-      return i;
-    }
-  }
-  return getRandomValue(min, max);
-}
-
 export function getUnixDateInUTC(date: number) {
   return dayjs.unix(date).utc();
 }
