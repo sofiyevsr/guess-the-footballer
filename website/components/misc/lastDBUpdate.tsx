@@ -6,13 +6,13 @@ export const LastDBUpdate = () => {
   const { data } = useDBUpdateDate();
   if (data == null) return <></>;
   return (
-    <>
-      <span className="block p-0 font-bold text-center text-lg">
-        Date players&apos; database updated
+    <div className="flex justify-between">
+      <span className="p-0 font-bold text-md">
+        Date players&apos; database updated:
       </span>
-      <span className="block p-0 text-center">
+      <span className="p-0 text-center font-bold">
         {getUnixDateInUTC(data.date).format("LL")}
       </span>
-    </>
+    </div>
   );
 };

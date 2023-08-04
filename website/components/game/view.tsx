@@ -10,6 +10,7 @@ import GameForm from "./form";
 import GameTimer from "./misc/timer";
 import PerformanceHistoryView from "./panels/performanceHistoryView";
 import TransferHistoryView from "./panels/transferHistoryView";
+import MarketValueLine from "./marketValue";
 
 export interface GameState {
   startedAt: string;
@@ -110,6 +111,9 @@ const GameView = ({
           disabled={!shouldRevealTip}
           seconds={tipDuration}
           onEnd={onEnd}
+        />
+        <MarketValueLine
+          marketValue={player.marketValue}
         />
         {form ?? (
           <GameForm

@@ -90,13 +90,13 @@ const Sidebar = ({ children }: Props) => {
                 </span>
               </Link>
             </li>
-            <div className="my-1">
-              <LastDBUpdate />
-            </div>
           </section>
-          <div className="flex justify-between items-center font-bold">
-            <h1 className="block font-bold text-lg">Contact: </h1>
-            <a className="link" href="mailto:guessfootballerapp@gmail.com">guessfootballerapp@gmail.com</a>
+          <LastDBUpdate />
+          <div className="my-2 flex justify-between items-center font-bold">
+            <h1 className="block font-bold text-md">Contact: </h1>
+            <a className="link" href="mailto:guessfootballerapp@gmail.com">
+              guessfootballerapp@gmail.com
+            </a>
           </div>
         </ul>
       </div>

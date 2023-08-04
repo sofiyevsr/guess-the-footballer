@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { STORAGE_URL } from "./constants";
 import { SinglePlayerData } from "./services/game/types/game";
+import { getRandomValue } from "./common";
 
 export interface SingleTip {
   id: string;
@@ -8,6 +9,24 @@ export interface SingleTip {
   text?: string | JSX.Element;
   children?: JSX.Element;
 }
+
+export const getMarketValueArray = (
+  marketValue: number,
+  previousValues?: [number, number]
+) => {
+  const maxRange = [1, 200];
+  const currentRange = previousValues == null ? maxRange : [...previousValues];
+  return [
+    getRandomValue(
+      currentRange[0],
+      marketValue - (marketValue - currentRange[0]) * 0.5
+    ),
+    getRandomValue(
+      marketValue + (currentRange[1] - marketValue) * 0.5,
+      currentRange[1]
+    ),
+  ] as [number, number];
+};
 
 export const getTips = (player: SinglePlayerData): SingleTip[] => {
   const clubReplacement =
