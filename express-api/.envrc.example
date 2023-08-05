@@ -1,3 +1,4 @@
+export TS_NODE_BASEURL=./dist/src
 export NODE_ENV=development
 export PORT=8787
 export DB_URL=postgresql://user:secret@localhost:5432/guess_footballer
