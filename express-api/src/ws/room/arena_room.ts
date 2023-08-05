@@ -67,7 +67,7 @@ const maxPointsPerLevel = 100;
 
 export default class ArenaRoom {
   private finishCallback: () => void;
-  private redis = new Redis(process.env.REDIS_URL, {});
+  private redis = new Redis(process.env.REDIS_URL);
   private jobQueue: Queue<JobQueue>;
   private sockets: { [K in string]: WebSocket } = Object.create(null);
 
@@ -178,10 +178,7 @@ export default class ArenaRoom {
       return this.handleWebSocketError(username, "Room not found");
     }
     const isUserNewcomer = !this.gameState.users.includes(username);
-    if (
-      this.roomData.current_size >= this.roomData.size &&
-      isUserNewcomer
-    ) {
+    if (this.roomData.current_size >= this.roomData.size && isUserNewcomer) {
       return this.handleWebSocketError(username, "Room is full");
     } else if (this.roomData.started_at != null && isUserNewcomer) {
       return this.handleWebSocketError(username, "Game already started");
@@ -418,11 +415,7 @@ export default class ArenaRoom {
     this.sockets[username] = socket;
   }
 
-  private removeSocket(
-    username: string,
-    code?: number,
-    reason?: string
-  ) {
+  private removeSocket(username: string, code?: number, reason?: string) {
     if (this.sockets[username] == null) {
       return;
     }
