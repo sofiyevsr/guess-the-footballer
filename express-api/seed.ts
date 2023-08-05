@@ -1,3 +1,5 @@
+import db from "db";
+import { players } from "db/schema/player";
 import fs from "fs/promises";
 import { dailyChallengeCronFn } from "scheduled/dailyChallenge";
 
@@ -13,7 +15,7 @@ const main = async () => {
   }
   const raw = await fs.readFile(`./seed_data/${filename}`);
   const data: JSONPlayer[] = JSON.parse(raw.toString());
-  // await db.insert(players).values(data);
+  await db.insert(players).values(data);
   console.log("Wrote %d players", data.length);
   await dailyChallengeCronFn();
   console.log("Daily Challenge created");
