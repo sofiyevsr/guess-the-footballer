@@ -85,11 +85,10 @@ export default class ArenaRoom {
     this.finishCallback = finishCallback;
     this.roomID = roomID;
     this.roomData = room;
-    this.jobQueue = new Bull(
-      ARENA_JOB_PREFIX + this.roomID,
-      process.env.REDIS_URL,
-      { defaultJobOptions: { removeOnFail: true, removeOnComplete: true } }
-    );
+    this.jobQueue = new Bull(ARENA_JOB_PREFIX + this.roomID, {
+      redis: process.env.REDIS_URL,
+      defaultJobOptions: { removeOnFail: true, removeOnComplete: true },
+    });
     retry(this.initRoom.bind(this), 3, "Init room")
       .then(() => {
         this.jobQueue.process(async ({ data }) => {
