@@ -11,6 +11,7 @@ import RouterProgressBar from "@cmpt/progress/routerProgressBar";
 import { ToastContainer } from "react-toastify";
 import { DefaultSeo } from "next-seo";
 import seoDefaultConfig from "utils/seo";
+import Head from "next/head";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -27,22 +28,30 @@ const oswald = Oswald({
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page);
   return (
-    <QueryClientProvider client={globalQueryClient}>
-      <style jsx global>{`
-        html {
-          font-family: ${oswald.style.fontFamily};
-        }
-      `}</style>
-      <RouterProgressBar />
-      <DefaultSeo {...seoDefaultConfig} />
-      {getLayout(<Component {...pageProps} />)}
-      <ToastContainer
-        position="bottom-left"
-        theme="colored"
-        className="text-lg text-center font-bold"
-        autoClose={2000}
-      />
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+        />
+      </Head>
+      <QueryClientProvider client={globalQueryClient}>
+        <style jsx global>{`
+          html {
+            font-family: ${oswald.style.fontFamily};
+          }
+        `}</style>
+        <RouterProgressBar />
+        <DefaultSeo {...seoDefaultConfig} />
+        {getLayout(<Component {...pageProps} />)}
+        <ToastContainer
+          position="bottom-left"
+          theme="colored"
+          className="text-lg text-center font-bold"
+          autoClose={2000}
+        />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </>
   );
 }
