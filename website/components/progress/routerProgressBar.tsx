@@ -15,13 +15,11 @@ function RouterProgressBar() {
   };
 
   useEffect(() => {
-    let unmounted = false;
     const animate = (width: string, duration: number, delay?: number) => {
-      if (unmounted) {
-        return;
-      }
-      control.stop();
-      control.start({ width, transition: { duration, delay } });
+      try {
+        control.stop();
+        control.start({ width, transition: { duration, delay } });
+      } catch (_) {}
     };
 
     const work = () => {
@@ -58,7 +56,6 @@ function RouterProgressBar() {
     router.events.on("routeChangeError", handleStop);
 
     return () => {
-      unmounted = true;
       router.events.off("routeChangeStart", handleStart);
       router.events.off("routeChangeComplete", handleStop);
       router.events.off("routeChangeError", handleStop);

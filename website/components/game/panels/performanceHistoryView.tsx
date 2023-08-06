@@ -55,6 +55,11 @@ const tips = [
 function PerformanceHistoryView({ className, performances, children }: Props) {
   return (
     <div className={clsx("drop-shadow-xl flex flex-col", className)}>
+      {children && (
+        <div className="overflow-y-scroll rounded-xl">
+          {children}
+        </div>
+      )}
       <h1 className="font-bold text-lg bg-base-100 text-center p-2 border-b rounded-t-xl">
         Performance history
       </h1>
@@ -101,11 +106,6 @@ function PerformanceHistoryView({ className, performances, children }: Props) {
           </motion.tbody>
         </table>
       </div>
-      {children && (
-        <div className="overflow-y-scroll mt-2 rounded-xl">
-          {children}
-        </div>
-      )}
     </div>
   );
 }
