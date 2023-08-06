@@ -30,10 +30,6 @@ const seoDefaultConfig: DefaultSeoProps = {
       sizes: "16x16",
       href: "/favicon-16x16.png",
     },
-    {
-      rel: "manifest",
-      href: "/manifest.webmanifest",
-    },
   ],
 };
 

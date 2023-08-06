@@ -32,7 +32,7 @@ const Sidebar = ({ children }: Props) => {
         checked={drawerOpen}
         onChange={({ currentTarget: { checked } }) => setDrawerOpen(checked)}
       />
-      <div className="drawer-content flex flex-col">{children}</div>
+      <div className="min-h-[100vh] drawer-content flex flex-col overflow-auto">{children}</div>
       <div className="drawer-side">
         <label htmlFor="sidebar" className="drawer-overlay" />
         <ul className="menu bg-base-300 p-4 w-90 h-full">

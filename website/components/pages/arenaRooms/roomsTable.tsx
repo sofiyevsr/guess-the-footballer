@@ -29,7 +29,7 @@ function renderDifficultyBadge(difficulty: (typeof gameDifficulties)[number]) {
   if (difficulty === "hard" || difficulty === "very-hard")
     className = "badge-error";
   return (
-    <div className={classNames("badge", className)}>
+    <div className={classNames("badge w-[5rem]", className)}>
       {gameDifficultyNames[difficulty]}
     </div>
   );
