@@ -12,6 +12,7 @@ import { ToastContainer } from "react-toastify";
 import { DefaultSeo } from "next-seo";
 import seoDefaultConfig from "utils/seo";
 import Head from "next/head";
+import { Analytics } from '@vercel/analytics/react';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -44,6 +45,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         <RouterProgressBar />
         <DefaultSeo {...seoDefaultConfig} />
         {getLayout(<Component {...pageProps} />)}
+        <Analytics />
         <ToastContainer
           position="bottom-left"
           theme="colored"
