@@ -15,7 +15,7 @@ type UpgradeHandler = (
 ) => void;
 
 const roomsMap: { [key: string]: ArenaRoom } = Object.create(null);
-const JoinRoomURL = "/arena/join/";
+const JoinRoomURL = "/ws/arena/join/";
 const wss = new WebSocketServer({ noServer: true });
 
 wss.on("connection", async (socket, req) => {
