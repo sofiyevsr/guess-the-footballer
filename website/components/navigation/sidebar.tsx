@@ -57,13 +57,13 @@ const Sidebar = ({ children }: Props) => {
           <li className="my-1">
             <Link
               className={clsx("flex items-center w-full h-full", {
-                "bg-primary": pathname === "/" || pathname === "/challenge",
+                "bg-primary": pathname === "/challenge",
               })}
-              href="/"
+              href="/challenge"
             >
               <CalendarDaysIcon className="h-10 w-10 text-red-500" />
               <span className="uppercase ml-3 font-bold text-xl">
-                {"Today's challenge"}
+                Today&apos;s challenge
               </span>
             </Link>
           </li>

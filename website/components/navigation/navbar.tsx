@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Navbar = () => {
   return (
     <div className="navbar bg-base-100 relative lg:hidden">
@@ -19,7 +21,12 @@ const Navbar = () => {
         </label>
       </div>
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <a className="btn btn-ghost normal-case text-xl">Guess The Footballer</a>
+        <Link
+          href="/"
+          className="btn btn-ghost h-full normal-case text-xl text-center active:text-white sm:text-3xl"
+        >
+          Guess the Footballer
+        </Link>
       </div>
     </div>
   );
