@@ -4,7 +4,6 @@ import {
   FocusEvent,
   KeyboardEvent,
   RefObject,
-  useEffect,
 } from "react";
 import clsx from "classnames";
 import { useState } from "react";
@@ -149,7 +148,7 @@ const SeparatedInput = ({
           ref={index === 0 ? firstInputRef : undefined}
           variants={item}
           className={clsx(
-            "input max-w-[3.5rem] shrink text-white font-bold border-blue-400 border-2",
+            "input p-0 h-12 w-10 text-white text-center font-bold border-blue-400 border-2 sm:w-14 sm:h-16 lg:text-2xl",
             {
               "border-red-500": compare?.charAt(index) === "*",
               "border-green-500":

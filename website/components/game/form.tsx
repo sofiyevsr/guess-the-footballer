@@ -67,14 +67,14 @@ function GameForm({
 
   return (
     <>
-      <div className="flex flex-col w-full items-center overflow-x-auto">
+      <div className="flex flex-col w-full items-center overflow-x-auto no-scrollbar">
         {words.map((name, index) => (
           <SeparatedInput
             key={index}
             firstInputRef={index === 0 ? firstInputRef : undefined}
             buttonRef={buttonRef}
             length={name.length}
-            containerClassName="my-2"
+            containerClassName="my-1"
             className="mx-1"
             compare={corrections?.split(" ")[index]}
             onChange={(value: string) => {
@@ -93,7 +93,7 @@ function GameForm({
             }}
           />
         ))}
-        <div className="text-red-500 h-6">{errorMessage}</div>
+        <div className="text-red-500">{errorMessage}</div>
       </div>
       <button
         ref={buttonRef}
