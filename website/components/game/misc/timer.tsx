@@ -17,7 +17,7 @@ function GameTimer({ defaultValue }: Props) {
     return clearInterval.bind(undefined, timer);
   }, []);
   return (
-    <div className="ring bg-base-300 p-4 rounded-full fixed bottom-6 right-4 z-10 countdown font-mono text-4xl">
+    <div className="ring bg-base-300 p-3 rounded-full fixed bottom-6 right-4 z-10 countdown text-lg font-mono font-bold md:text-2xl">
       <span style={{ "--value": Math.floor(ticker / 3600) } as CSSProperties} />
       <>:</>
       <span

@@ -137,7 +137,7 @@ const GameView = ({
       </PerformanceHistoryView>
       <TransferHistoryView
         transfers={playerTips.transfers.slice(0, currentProgress.transfers)}
-        className="order-3 m-2 mb-24 lg:order-3 lg:w-[26rem]"
+        className="order-3 m-2 mb-16 lg:mb-20 lg:order-3 lg:w-[26rem]"
       >
         {rightComponent}
       </TransferHistoryView>
