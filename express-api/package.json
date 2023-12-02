@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
+    "start": "node -r tsconfig-paths/register dist/index.js",
     "run": "tsx index.ts",
     "watch": "tsx watch index.ts",
     "migrate": "tsx migrate.ts",

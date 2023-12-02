@@ -84,7 +84,7 @@ export const RoomForm = () => {
         </div>
         <div className="form-control">
           <label className="cursor-pointer label">
-            <span className="label-text">Private (Not listed in rooms)</span>
+            <span className="label-text">Private (Not listed publicly)</span>
           </label>
           <input
             {...register("nonPublic")}

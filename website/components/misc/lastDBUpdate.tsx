@@ -8,7 +8,7 @@ export const LastDBUpdate = () => {
   return (
     <div className="flex justify-between">
       <span className="p-0 font-bold text-md">
-        Date players&apos; database updated:
+        Players&apos; database updated:
       </span>
       <span className="p-0 text-center font-bold">
         {getUnixDateInUTC(data.date).format("LL")}
