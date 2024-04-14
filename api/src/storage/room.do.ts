@@ -109,55 +109,6 @@ export class ArenaRoom {
 
 			const { 0: client, 1: server } = new WebSocketPair();
 			this.state.acceptWebSocket(server);
-			server.addEventListener("close", async () => {
-				this.removeSocket(username, false);
-				await this.state.blockConcurrencyWhile(
-					this.deleteUsersFromStorage.bind(this, [username])
-				);
-				this.broadcastMessage("user_dropped", this.getLatestState());
-			});
-			server.addEventListener("error", () => {
-				this.sendMessage("error_occured", {}, username);
-			});
-			server.addEventListener("message", async (message) => {
-				// Check if game started, user is known and hasn't gave right answer before
-				if (
-					this.gameState.progress == null ||
-					this.gameState.users_progress[username] == null ||
-					this.gameState.users_progress[username].answers.some(
-						(answer) => answer.level === this.gameState.progress!.current_level
-					)
-				)
-					return;
-				const { answer } = JSON.parse(message.data.toString());
-				const corrections = compareStrings(
-					JSON.parse(this.gameState.progress.current_player).playerName,
-					answer
-				);
-				if (corrections != null) {
-					return this.sendMessage("wrong_answer", { corrections }, username);
-				} else {
-					const timePassed =
-						Date.now() - this.gameState.progress.current_level_started_at;
-					const points = Math.floor(
-						maxPointsPerLevel * (1 - timePassed / durationBetweenLevels)
-					);
-					await this.setGameState(
-						produce(this.gameState, (state) => {
-							state.users_progress[username].answers.push({
-								level: state.progress!.current_level,
-								timestamp: Date.now(),
-							});
-							state.users_progress[username].points += points;
-						})
-					);
-					this.sendMessage("correct_answer", {}, username);
-					return this.broadcastMessage(
-						"new_correct_answer",
-						this.getLatestState()
-					);
-				}
-			});
 			if (isUserNewcomer)
 				await this.state.blockConcurrencyWhile(
 					this.persistUser.bind(this, username, roomID)
@@ -402,5 +353,57 @@ export class ArenaRoom {
 		return this.roomData == null
 			? playerCount
 			: difficultyMappings[this.roomData.difficulty];
+	}
+
+	async webSocketMessage(ws: WebSocket, message: ArrayBuffer | string) {
+		const username = ws.deserializeAttachment();
+		// Check if game started, user is known and hasn't gave right answer before
+		if (
+			this.gameState.progress == null ||
+			this.gameState.users_progress[username] == null ||
+			this.gameState.users_progress[username].answers.some(
+				(answer) => answer.level === this.gameState.progress!.current_level
+			)
+		)
+			return;
+		const { answer } = JSON.parse(message.toString());
+		const corrections = compareStrings(
+			JSON.parse(this.gameState.progress.current_player).playerName,
+			answer
+		);
+		if (corrections != null) {
+			return this.sendMessage("wrong_answer", { corrections }, username);
+		} else {
+			const timePassed =
+				Date.now() - this.gameState.progress.current_level_started_at;
+			const points = Math.floor(
+				maxPointsPerLevel * (1 - timePassed / durationBetweenLevels)
+			);
+			await this.setGameState(
+				produce(this.gameState, (state) => {
+					state.users_progress[username].answers.push({
+						level: state.progress!.current_level,
+						timestamp: Date.now(),
+					});
+					state.users_progress[username].points += points;
+				})
+			);
+			this.sendMessage("correct_answer", {}, username);
+			return this.broadcastMessage("new_correct_answer", this.getLatestState());
+		}
+	}
+
+	async webSocketClose(ws: WebSocket) {
+		const username = ws.deserializeAttachment();
+		this.removeSocket(username, false);
+		await this.state.blockConcurrencyWhile(
+			this.deleteUsersFromStorage.bind(this, [username])
+		);
+		this.broadcastMessage("user_dropped", this.getLatestState());
+	}
+
+	websocketError(ws: WebSocket) {
+		const username = ws.deserializeAttachment();
+		this.sendMessage("error_occured", {}, username);
 	}
 }
