@@ -63,6 +63,12 @@ export class ArenaRoom {
 		this.env = env;
 		this.storage = state.storage;
 		this.registerRoutes();
+		this.state.getWebSockets().forEach((webSocket) => {
+			// The constructor may have been called when waking up from hibernation,
+			// so get previously serialized metadata for any existing WebSockets.
+			let username: string = webSocket.deserializeAttachment();
+			this.sockets[username] = webSocket;
+		});
 		state.blockConcurrencyWhile(this.initGame.bind(this));
 	}
 
@@ -102,7 +108,7 @@ export class ArenaRoom {
 			}
 
 			const { 0: client, 1: server } = new WebSocketPair();
-			server.accept();
+			this.state.acceptWebSocket(server);
 			server.addEventListener("close", async () => {
 				this.removeSocket(username, false);
 				await this.state.blockConcurrencyWhile(
@@ -313,6 +319,7 @@ export class ArenaRoom {
 	}
 
 	saveSocket(username: string, socket: WebSocket) {
+		socket.serializeAttachment(username);
 		this.removeSocket(username, true, 1000, "New connection established");
 		this.sockets[username] = socket;
 	}
