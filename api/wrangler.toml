@@ -21,3 +21,9 @@ crons = ["0 0 * * *"]
 [[migrations]]
 tag = "v1"
 new_classes = ["ArenaRoom"]
+
+[vars]
+WEB_URL = "https://api.guessthefootballer.com"
+ORIGIN = "https://guessthefootballer.com"
+ENVIRONMENT = "production"
+PLAYERS_FILENAME = "players-1713077307.json"
