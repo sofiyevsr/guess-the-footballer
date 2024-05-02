@@ -86,7 +86,7 @@ export class ArenaRoom {
 			}, 0);
 			this.roomData = await this.env.ARENA_DB.prepare(
 				`UPDATE room SET current_size = ?
-         WHERE id = ?
+         WHERE id = ? AND current_size < size
 				 RETURNING id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at`
 			)
 				.bind(activeSockets + 1, c.req.param("id"))
@@ -103,11 +103,6 @@ export class ArenaRoom {
 					c as Context,
 					"Game in the room is finished"
 				);
-			} else if (
-				this.roomData.current_size >= this.roomData.size &&
-				isUserNewcomer
-			) {
-				return handleWebSocketError(c as Context, "Room is full");
 			} else if (this.roomData.started_at != null && isUserNewcomer) {
 				return handleWebSocketError(c as Context, "Game already started");
 			}
