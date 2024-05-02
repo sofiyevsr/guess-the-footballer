@@ -80,11 +80,16 @@ export class ArenaRoom {
 		this.router.get("/arena/join/:id", async (c) => {
 			const username = c.req.query("username");
 			const roomID = c.req.param("id");
+			const activeSockets = this.state.getWebSockets().reduce((acc, curr) => {
+				if (curr.readyState === WebSocket.READY_STATE_OPEN) acc++;
+				return acc;
+			}, 0);
 			this.roomData = await this.env.ARENA_DB.prepare(
-				`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at
-           FROM room WHERE id = ?`
+				`UPDATE room SET current_size = ?
+         WHERE id = ?
+				 RETURNING id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at`
 			)
-				.bind(c.req.param("id"))
+				.bind(activeSockets + 1, c.req.param("id"))
 				.first<DatabaseRoom | null>();
 			if (username == null) {
 				return handleWebSocketError(c as Context, "Username not found");
@@ -323,21 +328,6 @@ export class ArenaRoom {
 		const newGameState = produce(this.gameState, (state) => {
 			state.users.push(username);
 			state.users_progress[username] = { points: 0, answers: [] };
-		});
-		const result = await this.env.ARENA_DB.prepare(
-			"UPDATE room SET current_size = current_size + 1 WHERE current_size < size AND id = ? RETURNING id"
-		)
-			.bind(roomID)
-			.first();
-		if (result == null) {
-			// TODO Probably failed to guard race condition, handle better
-			// Because no row is changed
-			// TODO rethink retries
-			throw Error("Race condition");
-		}
-		this.roomData = produce(this.roomData, (data) => {
-			if (!data) return;
-			data.current_size += 1;
 		});
 		await this.setGameState(newGameState);
 		// Start game only if size is reached
