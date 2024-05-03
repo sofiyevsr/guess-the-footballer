@@ -80,16 +80,11 @@ export class ArenaRoom {
 		this.router.get("/arena/join/:id", async (c) => {
 			const username = c.req.query("username");
 			const roomID = c.req.param("id");
-			const activeSockets = this.state.getWebSockets().reduce((acc, curr) => {
-				if (curr.readyState === WebSocket.READY_STATE_OPEN) acc++;
-				return acc;
-			}, 0);
 			this.roomData = await this.env.ARENA_DB.prepare(
-				`UPDATE room SET current_size = ?
-         WHERE id = ? AND current_size < size
-				 RETURNING id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at`
+				`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at from room
+				 WHERE id = ? AND current_size < size`
 			)
-				.bind(activeSockets + 1, c.req.param("id"))
+				.bind(c.req.param("id"))
 				.first<DatabaseRoom | null>();
 			if (username == null) {
 				return handleWebSocketError(c as Context, "Username not found");
@@ -109,10 +104,27 @@ export class ArenaRoom {
 
 			const { 0: client, 1: server } = new WebSocketPair();
 			this.state.acceptWebSocket(server);
-			if (isUserNewcomer)
+			if (isUserNewcomer) {
+				const activeSockets = this.state.getWebSockets().reduce((acc, curr) => {
+					if (curr.readyState === WebSocket.READY_STATE_OPEN) acc++;
+					return acc;
+				}, 0);
+
+				const result = await this.env.ARENA_DB.prepare(
+					`UPDATE room SET current_size = ?
+         	 WHERE id = ? AND current_size < size
+					 RETURNING id`
+				)
+					.bind(activeSockets, c.req.param("id"))
+					.first();
+				if (result)
+					this.roomData = produce(this.roomData, (data) => {
+						data.current_size = activeSockets;
+					});
 				await this.state.blockConcurrencyWhile(
 					this.persistUser.bind(this, username, roomID)
 				);
+			}
 			this.saveSocket(username, server);
 			this.sendMessage("joined_room", this.getLatestState(), username);
 			this.broadcastMessage("user_joined", this.getLatestState(), username);
