@@ -10,6 +10,8 @@ import { throttledToast } from "utils/common";
 import { API_WS } from "utils/constants";
 import { useMe } from "utils/hooks/requests/useMe";
 
+const HEARTBEAT_INTERVAL = 10000;
+
 export const MultiplayerGameView = () => {
   const {
     query: { id },
@@ -40,6 +42,7 @@ export const MultiplayerGameView = () => {
       delete socketRef.current;
     };
     socketRef.current.onmessage = (e) => {
+      if (e.data === "pong") return;
       const { type, ...payload }: PAYLOAD = JSON.parse(e.data);
       if (type === "error_occured") {
         return throttledToast("Unexpected error occured");
@@ -62,8 +65,12 @@ export const MultiplayerGameView = () => {
   useEffect(() => {
     if (isReady === false || startupConnectionRef.current === true) return;
     connectWS();
+    const interval = setInterval(() => {
+      socketRef.current?.send("ping");
+    }, HEARTBEAT_INTERVAL);
     return () => {
       socketRef.current?.close(1000, "User exited");
+      clearInterval(interval);
     };
   }, [isReady]);
 

@@ -63,6 +63,9 @@ export class ArenaRoom {
 		this.env = env;
 		this.storage = state.storage;
 		this.registerRoutes();
+		this.state.setWebSocketAutoResponse(
+			new WebSocketRequestResponsePair("ping", "pong")
+		);
 		this.state.getWebSockets().forEach((webSocket) => {
 			// The constructor may have been called when waking up from hibernation,
 			// so get previously serialized metadata for any existing WebSockets.
@@ -356,6 +359,7 @@ export class ArenaRoom {
 		const username = ws.deserializeAttachment();
 		// Check if game started, user is known and hasn't gave right answer before
 		if (
+			message === "ping" ||
 			this.gameState.progress == null ||
 			this.gameState.users_progress[username] == null ||
 			this.gameState.users_progress[username].answers.some(
