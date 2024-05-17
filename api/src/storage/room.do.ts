@@ -407,12 +407,12 @@ export class ArenaRoom {
 		await this.state.blockConcurrencyWhile(
 			this.deleteUsersFromStorage.bind(this, usernames)
 		);
-		this.broadcastMessage("user_dropped", this.getLatestState());
 	}
 
 	async webSocketClose(ws: WebSocket) {
 		const username: string = ws.deserializeAttachment();
 		this.dropUsers([username]);
+		this.broadcastMessage("user_dropped", this.getLatestState());
 	}
 
 	websocketError(ws: WebSocket) {
