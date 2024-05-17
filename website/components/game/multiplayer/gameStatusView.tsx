@@ -89,7 +89,7 @@ function GameStatusView({
           {gameState.users.map((user) => (
             <span
               key={user}
-              className="badge badge-success badge-lg text-lg font-bold uppercase"
+              className="mx-1 badge badge-success badge-lg text-lg font-bold uppercase"
             >
               {user}
             </span>

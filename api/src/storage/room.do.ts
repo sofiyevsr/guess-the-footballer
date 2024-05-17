@@ -83,6 +83,14 @@ export class ArenaRoom {
 		this.router.get("/arena/join/:id", async (c) => {
 			const username = c.req.query("username");
 			const roomID = c.req.param("id");
+			const usersToDrop: string[] = [];
+			const users = this.gameState.users;
+			for (let i = 0; i < users.length; i++) {
+				if (this.sockets[users[i]] == null) {
+					usersToDrop.push(users[i]);
+				}
+			}
+			await this.dropUsers(usersToDrop);
 			this.roomData = await this.env.ARENA_DB.prepare(
 				`SELECT id, creator_username, private, size, current_size, difficulty, started_at, finished_at, created_at from room
 				 WHERE id = ? AND current_size < size`
@@ -394,13 +402,17 @@ export class ArenaRoom {
 		}
 	}
 
-	async webSocketClose(ws: WebSocket) {
-		const username = ws.deserializeAttachment();
-		this.removeSocket(username, false);
+	async dropUsers(usernames: string[]) {
+		usernames.forEach((username) => this.removeSocket(username, false));
 		await this.state.blockConcurrencyWhile(
-			this.deleteUsersFromStorage.bind(this, [username])
+			this.deleteUsersFromStorage.bind(this, usernames)
 		);
 		this.broadcastMessage("user_dropped", this.getLatestState());
+	}
+
+	async webSocketClose(ws: WebSocket) {
+		const username: string = ws.deserializeAttachment();
+		this.dropUsers([username]);
 	}
 
 	websocketError(ws: WebSocket) {
