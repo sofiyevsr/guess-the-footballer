@@ -1,0 +1,28 @@
+name = "football-wordle-api"
+main = "src/index.ts"
+compatibility_date = "2024-04-03"
+
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer", database_id = "76bfd738-4814-4804-83b0-dbf1356aff8a", migrations_dir = "./drizzle" }
+]
+
+[durable_objects]
+bindings = [
+  { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
+]
+
+[triggers]
+crons = ["0 0 * * *"]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ArenaRoom"]
+
+[[r2_buckets]]
+binding = 'R2_STORAGE' 
+bucket_name = 'guessthefootballer'
+
+[vars]
+WEB_URL = "https://api.guessthefootballer.com"
+ORIGIN = "https://guessthefootballer.com"
+ENVIRONMENT = "production"
