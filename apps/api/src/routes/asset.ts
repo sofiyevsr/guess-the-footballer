@@ -30,9 +30,10 @@ assetRouter.post("/", async (c) => {
 		!["image/png", "image/jpg", "image/jpeg", "image/webp"].includes(
 			body["file"].type
 		)
+		|| body["file"].size > 1e6
 	) {
 		throw new ApiError(
-			"Image with format of png, jpg, jpeg or webp and with size less than 3mb is expected"
+			"Image with format of png, jpg, jpeg or webp and with size less than 1mb is expected"
 		);
 	}
 	const filename = nanoid(32) + "." + body["file"].type.replace("image/", "");

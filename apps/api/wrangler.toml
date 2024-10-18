@@ -14,11 +14,9 @@ bindings = [
   { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
 ]
 
-[[d1_databases]]
-binding = "ARENA_DB"
-database_name = "guessthefootballer"
-database_id = "76bfd738-4814-4804-83b0-dbf1356aff8a"
-migrations_dir = "./drizzle"
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer", database_id = "76bfd738-4814-4804-83b0-dbf1356aff8a", migrations_dir = "./drizzle" }
+]
 
 [[r2_buckets]]
 binding = 'R2_STORAGE' 
@@ -35,11 +33,10 @@ bindings = [
   { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
 ]
 
-[[env.staging.d1_databases]]
-binding = "ARENA_DB"
-database_name = "guessthefootballer_staging"
-database_id = "d22b399b-a57a-41d3-8d35-3c4870c4d57f"
-migrations_dir = "./drizzle"
+[env.staging]
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer_staging", database_id = "d22b399b-a57a-41d3-8d35-3c4870c4d57f", migrations_dir = "./drizzle" }
+]
 
 [[env.staging.r2_buckets]]
 binding = 'R2_STORAGE' 
