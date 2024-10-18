@@ -3,8 +3,8 @@ import { PAYLOAD } from "@typ/multiplayer";
 import BoltSlash from "@heroicons/react/20/solid/BoltSlashIcon";
 
 interface Props {
-  users_progress: PAYLOAD["game_state"]["users_progress"];
-  active_users?: PAYLOAD["active_users"];
+  users_progress: PAYLOAD["gameState"]["usersProgress"];
+  active_users?: PAYLOAD["activeUsers"];
 }
 
 function MultiplayerLeaderboard({ users_progress, active_users }: Props) {

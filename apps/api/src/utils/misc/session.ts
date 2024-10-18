@@ -6,7 +6,7 @@ export function setTokenCookie(c: Context, token: string) {
 	yearFromNow.setFullYear(new Date().getFullYear() + 1);
 	setCookie(c, "token", token, {
 		path: "/",
-		secure: c.env.ENVIRONMENT === "production",
+		secure: c.env.ENVIRONMENT !== "development",
 		httpOnly: true,
 		expires: yearFromNow,
 	});

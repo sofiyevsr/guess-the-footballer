@@ -44,7 +44,7 @@ assetRouter.post("/", async (c) => {
 });
 
 assetRouter.get("/r2/:key", async (c) => {
-	if (c.env.ENVIRONMENT === "production")
+	if (c.env.ENVIRONMENT !== "development")
 		return new Response(undefined, { status: 404 });
 	const key = c.req.param("key");
 	const file = await c.env.R2_STORAGE.get(key);

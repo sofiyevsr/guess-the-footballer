@@ -7,7 +7,7 @@ export interface Env extends Record<string, unknown> {
 	R2_STORAGE: R2Bucket;
 	ARENA_DB: D1Database;
 	ARENA_ROOM_DO: DurableObjectNamespace;
-	ENVIRONMENT: "development" | "production";
+	ENVIRONMENT: "development" | "production" | "staging";
 	STORAGE_URL: string;
 	ORIGIN: string;
 	WEB_URL: string;
