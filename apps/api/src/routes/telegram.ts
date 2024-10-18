@@ -16,6 +16,7 @@ telegramRouter.post("/", async (c) => {
 		return c.status(500);
 	}
 	const { message } = (await c.req.json()) as TelegramBody;
+	console.log("Message: ", message);
 	if (
 		message.from?.id !== Number(c.env.TELEGRAM_CHAT_ID) ||
 		message.chat.id !== Number(c.env.TELEGRAM_CHAT_ID)
