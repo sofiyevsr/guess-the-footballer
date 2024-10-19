@@ -32,6 +32,7 @@ export interface TelegramMessage {
 
 class TelegramService {
 	private baseUrl: string;
+	private readonly maxMessageLength = 4096;
 	constructor(token: string) {
 		this.baseUrl = "https://api.telegram.org/bot" + token;
 	}
@@ -60,15 +61,20 @@ class TelegramService {
 		return data;
 	}
 	async sendMessage(chatId: string, text: string) {
-		const data = await ky
-			.post(this.baseUrl + "/sendMessage", {
-				json: {
-					chat_id: chatId,
-					text,
-				},
-			})
-			.json();
-		return data;
+		const promises = [] as Promise<unknown>[];
+		for (let len = 0; len < text.length; len += this.maxMessageLength - 1) {
+			promises.push(
+				ky
+					.post(this.baseUrl + "/sendMessage", {
+						json: {
+							chat_id: chatId,
+							text: text.substring(len, len + this.maxMessageLength - 1),
+						},
+					})
+					.json()
+			);
+		}
+		return Promise.all(promises);
 	}
 }
 

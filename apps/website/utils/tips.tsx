@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { STORAGE_URL } from "./constants";
 import { SinglePlayerData } from "./services/game/types";
 import { getRandomValue } from "./common";
 
@@ -43,7 +42,7 @@ export const getTips = (player: SinglePlayerData): SingleTip[] => {
           children: (
             <div className="relative w-24 h-24 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <Image
-                src={STORAGE_URL + "/" + player.clubImage}
+                src={player.clubImage}
                 alt="club_tip_image"
                 width={80}
                 height={80}
@@ -102,7 +101,7 @@ export const getTips = (player: SinglePlayerData): SingleTip[] => {
       children: (
         <div className="relative w-24 h-24 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Image
-            src={STORAGE_URL + "/" + player.countryImage}
+            src={player.countryImage}
             alt="tip_image"
             width={80}
             height={80}

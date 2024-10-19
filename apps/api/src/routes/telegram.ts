@@ -5,35 +5,59 @@ import TelegramService from "../services/telegram";
 import { getPlayersFromTransfermarkt } from "../services/transfermarkt";
 import { CustomEnvironment } from "../types";
 import { TelegramBody } from "../types/telegram";
+import { PlayerData } from "../services/transfermarkt/_types";
 
 const telegramRouter = new Hono<CustomEnvironment>();
 
 telegramRouter.post("/", async (c) => {
+	const t = new TelegramService(c.env.TELEGRAM_BOT_TOKEN);
 	if (
 		c.req.header("X-Telegram-Bot-Api-Secret-Token") !==
 		c.env.TELEGRAM_SECRET_TOKEN
 	) {
-		return c.status(500);
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Token doesn't match");
+		return c.text("", 200);
 	}
 	const { message } = (await c.req.json()) as TelegramBody;
-	console.log("Message: ", message);
+
+	if (Date.now() - message.date * 1000 > 60 * 1000) {
+		await t.sendMessage(
+			c.env.TELEGRAM_CHAT_ID,
+			"Message is older than 1 minute, skipping..."
+		);
+		return c.text("", 200);
+	}
 	if (
 		message.from?.id !== Number(c.env.TELEGRAM_CHAT_ID) ||
 		message.chat.id !== Number(c.env.TELEGRAM_CHAT_ID)
-	)
-		return c.status(500);
+	) {
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Chat ID doesn't match");
+		return c.text("", 200);
+	}
+	if (message.text !== "yes") {
+		await t.sendMessage(
+			c.env.TELEGRAM_CHAT_ID,
+			`Message is not yes, ${message.text}`
+		);
+		return c.text("", 200);
+	}
 	const reply = message.reply_to_message?.text;
-	if (!reply) return c.status(500);
+	if (!reply) {
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Reply is empty");
+		return c.text("", 200);
+	}
 	const parsedReply: InferSelectModel<typeof gameList> = JSON.parse(reply);
-	if (!parsedReply.playerIDs) return c.status(500);
+	if (!parsedReply.playerIDs) {
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "PlayerIDs is empty");
+		return c.text("", 200);
+	}
 	const db = c.get("db");
-	const t = new TelegramService(c.env.TELEGRAM_BOT_TOKEN);
 	const list = await db.query.gameList.findFirst({
 		where: eq(gameList.id, parsedReply.id),
 	});
 	if (!list) {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "List not found");
-		return c.status(500);
+		return c.text("", 200);
 	}
 	await t.sendMessage(
 		c.env.TELEGRAM_CHAT_ID,
@@ -41,16 +65,28 @@ telegramRouter.post("/", async (c) => {
 			parsedReply.playerIDs.split(",").length
 		} players`
 	);
-	const data = await getPlayersFromTransfermarkt(
-		parsedReply.playerIDs.split(","),
-		c.env.R2_STORAGE
-	).catch(async (err) => {
+	let data: PlayerData[];
+	try {
+		data = await getPlayersFromTransfermarkt(parsedReply.playerIDs.split(","));
 		await t.sendMessage(
 			c.env.TELEGRAM_CHAT_ID,
-			`Failed working on ${parsedReply.id}`
+			`Got with ${data.length} players out of ${
+				parsedReply.playerIDs.split(",").length
+			}, starting images`
 		);
-		throw err;
-	});
+	} catch (error) {
+		await t.sendMessage(
+			c.env.TELEGRAM_CHAT_ID,
+			`Failed working on ${parsedReply.id}, ${JSON.stringify(error)}`
+		);
+		return c.text("", 200);
+	}
+	await t.sendMessage(
+		c.env.TELEGRAM_CHAT_ID,
+		`Resolved with ${data.length} players out of ${
+			parsedReply.playerIDs.split(",").length
+		}`
+	);
 	await db.transaction(async (trx) => {
 		await trx
 			.insert(player)
@@ -73,7 +109,7 @@ telegramRouter.post("/", async (c) => {
 		c.env.TELEGRAM_CHAT_ID,
 		`Done working on ${parsedReply.id} with ${data.length} players`
 	);
-	return c.status(200);
+	return c.text("", 200);
 });
 
 export default telegramRouter;

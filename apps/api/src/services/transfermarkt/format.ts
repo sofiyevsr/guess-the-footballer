@@ -1,4 +1,3 @@
-import { ImageHolder } from "../../utils/imageHolder";
 import { shuffleArray } from "../../utils/misc/common";
 import {
 	AchievementsResponse,
@@ -11,7 +10,6 @@ import { removeDiacritics } from "./_utils/ascii";
 import { parseInteger, parseTransferValue } from "./_utils/parse";
 
 export default function formatPlayerData(player: RawPlayerData) {
-	const imageHolder = new ImageHolder();
 	const formattedPlayer: PlayerData = {
 		id: parseInteger(player.profile.playerProfile.playerID),
 		playerName: removeDiacritics(player.profile.playerProfile.playerName),
@@ -38,37 +36,21 @@ export default function formatPlayerData(player: RawPlayerData) {
 		playerMainPosition: player.profile.playerProfile.playerMainPosition,
 		marketValueNumeral: player.profile.playerProfile.marketValueNumeral,
 		marketValueCurrency: player.profile.playerProfile.marketValueCurrency,
-		clubImage: imageHolder.addImage(
-			player.profile.playerProfile.club,
-			player.profile.playerProfile.clubImage
-		),
-		leagueLogo: imageHolder.addImage(
-			player.profile.playerProfile.league,
-			player.profile.playerProfile.leagueLogo
-		),
-		countryImage: imageHolder.addImage(
-			player.profile.playerProfile.country,
-			player.profile.playerProfile.countryImage
-		),
-		internationalTeamImage: imageHolder.addImage(
-			player.profile.playerProfile.internationalTeam,
-			player.profile.playerProfile.internationalTeamImage
-		),
+		clubImage: player.profile.playerProfile.clubImage,
+		leagueLogo: player.profile.playerProfile.leagueLogo,
+		countryImage: player.profile.playerProfile.countryImage,
+		internationalTeamImage: player.profile.playerProfile.internationalTeamImage,
 		transferHistory: [],
 		achievements: [],
 		performanceData: [],
 	};
-	formatTransfers(player.transfers, formattedPlayer, imageHolder);
+	formatTransfers(player.transfers, formattedPlayer);
 	formatAchievements(player.achievements, formattedPlayer);
-	formatPerformances(player.performances, formattedPlayer, imageHolder);
-	return { formattedPlayer, imageHolder };
+	formatPerformances(player.performances, formattedPlayer);
+	return formattedPlayer;
 }
 
-function formatTransfers(
-	transfers: TransfersResponse,
-	player: PlayerData,
-	imageHolder: ImageHolder
-) {
+function formatTransfers(transfers: TransfersResponse, player: PlayerData) {
 	player.transferHistory = shuffleArray(
 		transfers.transferHistory.map((transfer) => ({
 			season: transfer.season,
@@ -81,14 +63,8 @@ function formatTransfers(
 			newClubID: parseInteger(transfer.newClubID),
 			transferFeeValue: parseTransferValue(transfer.transferFeeValue),
 			isLoan: transfer.loan === "ist",
-			oldClubImage: imageHolder.addImage(
-				transfer.oldClubName,
-				transfer.oldClubImage
-			),
-			newClubImage: imageHolder.addImage(
-				transfer.newClubName,
-				transfer.newClubImage
-			),
+			oldClubImage: transfer.oldClubImage,
+			newClubImage: transfer.newClubName,
 		}))
 	);
 }
@@ -107,8 +83,7 @@ function formatAchievements(
 
 function formatPerformances(
 	performances: PerformancesResponse,
-	player: PlayerData,
-	imageHolder: ImageHolder
+	player: PlayerData
 ) {
 	player.performanceData = shuffleArray(
 		performances.competitionPerformanceSummery.reduce(
@@ -130,7 +105,7 @@ function formatPerformances(
 							id: competition.id,
 							shortName: competition.shortName,
 							name: competition.name,
-							image: imageHolder.addImage(competition.name, competition.image),
+							image: competition.image,
 						},
 					});
 				return acc;

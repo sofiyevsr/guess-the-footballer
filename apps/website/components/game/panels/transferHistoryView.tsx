@@ -2,7 +2,6 @@ import React, { HTMLAttributes, ReactNode } from "react";
 import clsx from "classnames";
 import Image from "next/image";
 import { SinglePlayerData } from "utils/services/game/types";
-import { STORAGE_URL } from "utils/constants";
 import { AnimationProps, motion } from "framer-motion";
 
 interface Props {
@@ -54,7 +53,7 @@ function TransferHistoryView({ className, transfers, children }: Props) {
                   <td>
                     <div className="relative inline-block w-10 h-10 mx-2 overflow-hidden">
                       <Image
-                        src={STORAGE_URL + "/" + transfer.oldClubImage}
+                        src={transfer.oldClubImage}
                         alt={transfer.oldClubName + "-image"}
                         fill
                         sizes="70vw"
@@ -66,7 +65,7 @@ function TransferHistoryView({ className, transfers, children }: Props) {
                   <td>
                     <div className="relative inline-block w-10 h-10 mx-2 overflow-hidden">
                       <Image
-                        src={STORAGE_URL + "/" + transfer.newClubImage}
+                        src={transfer.newClubImage}
                         alt={transfer.newClubName + "-image"}
                         fill
                         sizes="70vw"
