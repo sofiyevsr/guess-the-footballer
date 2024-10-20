@@ -98,6 +98,16 @@ function GameForm({
         <div className="text-red-500">{errorMessage}</div>
       </div>
       <div className="flex flex-col gap-2 lg:flex-row">
+        {onSkip && (
+          <button
+            className={
+              "btn btn-danger w-full p-1 self-center my-2 disabled:text-white md:btn-wide"
+            }
+            onClick={onSkip}
+          >
+            Skip
+          </button>
+        )}
         <button
           ref={buttonRef}
           className={clsx(
@@ -126,16 +136,6 @@ function GameForm({
             ? correctAnswerText
             : "Submit"}
         </button>
-        {onSkip && (
-          <button
-            className={
-              "btn btn-warning w-full p-1 self-center my-2 disabled:text-white md:btn-wide"
-            }
-            onClick={onSkip}
-          >
-            Skip
-          </button>
-        )}
       </div>
     </>
   );

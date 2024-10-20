@@ -15,14 +15,14 @@ function GameListItem({ item, onClick }: Props) {
         <Image
           src={STORAGE_URL + "/" + item.imageKey}
           alt={item.name + " image"}
-          height={40}
-          width={40}
-          className="h-10 w-10 object-contain"
+          height={80}
+          width={80}
+          className="h-20 w-20 object-contain"
         />
       </figure>
       <div className="card-body p-0">
         <h2 className="card-title">{item.name}</h2>
-        <p className="text-primary-content/70 min-h-24 text-ellipsis line-clamp-4">
+        <p className="text-sm text-primary-content/70 min-h-24 text-ellipsis line-clamp-4">
           {item.description}
         </p>
         <div className="card-actions">
