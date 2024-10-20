@@ -11,8 +11,9 @@ function LocalPlay() {
   const {
     query: { rounds, listID },
   } = useRouter();
-  const { data, isError, refetch, isLoading } = useQuery({
+  const { data, isError, refetch, isLoading, isPaused } = useQuery({
     queryKey: ["local_play", rounds, listID],
+    enabled: !!rounds && !!listID,
     queryFn: () =>
       GameService.getPlayers({
         rounds: rounds as string,
@@ -23,7 +24,11 @@ function LocalPlay() {
   return (
     <>
       <NextSeo />
-      <LoadingLayout isLoading={isLoading} isError={isError} refetch={refetch}>
+      <LoadingLayout
+        isLoading={isLoading || isPaused}
+        isError={isError}
+        refetch={refetch}
+      >
         <LocalPlayView players={data!} />
       </LoadingLayout>
     </>
