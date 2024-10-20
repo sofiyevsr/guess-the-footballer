@@ -64,7 +64,7 @@ function formatTransfers(transfers: TransfersResponse, player: PlayerData) {
 			transferFeeValue: parseTransferValue(transfer.transferFeeValue),
 			isLoan: transfer.loan === "ist",
 			oldClubImage: transfer.oldClubImage,
-			newClubImage: transfer.newClubName,
+			newClubImage: transfer.newClubImage,
 		}))
 	);
 }

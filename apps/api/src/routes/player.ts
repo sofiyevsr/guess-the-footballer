@@ -29,12 +29,13 @@ playerRouter.get("/", zValidator("query", gameListParamsSchema), async (c) => {
 		.select()
 		.from(player)
 		.where(inArray(player.id, randomArr));
+	const response = [];
 	for (let i = 0, len = players.length; i < len; i++) {
-		const { data } = players[i];
+		const { data, ...rest } = players[i];
 		data.playerName = mutateString(data.playerName, "*");
-		players[i].data = data;
+		response.push({ ...rest, ...data });
 	}
-	return c.json(players);
+	return c.json(response);
 });
 
 playerRouter.get(
@@ -71,9 +72,11 @@ playerRouter.get(
 		if (challenge == null) {
 			return c.notFound();
 		}
-		const { data } = challenge.player;
+		const { data, ...rest } = challenge.player;
 		data.playerName = mutateString(data.playerName, "*");
-		return c.json(data);
+		const response = [];
+		response.push({ ...rest, ...data });
+		return c.json(response);
 	}
 );
 
