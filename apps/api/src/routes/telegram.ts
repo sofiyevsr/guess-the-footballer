@@ -6,6 +6,7 @@ import { getPlayersFromTransfermarkt } from "../services/transfermarkt";
 import { CustomEnvironment } from "../types";
 import { TelegramBody } from "../types/telegram";
 import { PlayerData } from "../services/transfermarkt/_types";
+import { batchInsert } from "../utils/misc/common";
 
 const telegramRouter = new Hono<CustomEnvironment>();
 
@@ -20,10 +21,10 @@ telegramRouter.post("/", async (c) => {
 	}
 	const { message } = (await c.req.json()) as TelegramBody;
 
-	if (Date.now() - message.date * 1000 > 60 * 1000) {
+	if (Date.now() - message.date * 1000 > 10 * 1000) {
 		await t.sendMessage(
 			c.env.TELEGRAM_CHAT_ID,
-			"Message is older than 1 minute, skipping..."
+			"Message is older than 10 seconds, skipping..."
 		);
 		return c.text("", 200);
 	}
@@ -72,7 +73,7 @@ telegramRouter.post("/", async (c) => {
 			c.env.TELEGRAM_CHAT_ID,
 			`Got with ${data.length} players out of ${
 				parsedReply.playerIDs.split(",").length
-			}, starting images`
+			}`
 		);
 	} catch (error) {
 		await t.sendMessage(
@@ -87,24 +88,31 @@ telegramRouter.post("/", async (c) => {
 			parsedReply.playerIDs.split(",").length
 		}`
 	);
-	await db.transaction(async (trx) => {
-		await trx
-			.insert(player)
-			.values(
+	try {
+		await Promise.all(
+			batchInsert(
 				data.map((player) => ({
 					id: player.id.toString(),
 					data: player,
 				}))
+			).map((data) =>
+				db
+					.insert(player)
+					.values(data)
+					.onConflictDoUpdate({
+						target: player.id,
+						set: { data: sql`excluded.data`, createdAt: sql`(unixepoch())` },
+					})
 			)
-			.onConflictDoUpdate({
-				target: player.id,
-				set: { data: sql`excluded.data`, createdAt: sql`(unixepoch())` },
-			});
-		await trx
+		);
+		await db
 			.update(gameList)
 			.set({ approvedAt: sql`(unixepoch())` })
 			.where(eq(gameList.id, parsedReply.id));
-	});
+	} catch (error) {
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, `error db ${error}`);
+		return c.text("", 200);
+	}
 	await t.sendMessage(
 		c.env.TELEGRAM_CHAT_ID,
 		`Done working on ${parsedReply.id} with ${data.length} players`
