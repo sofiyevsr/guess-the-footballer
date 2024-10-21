@@ -65,62 +65,71 @@ telegramRouter.post("/", async (c) => {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "List not found");
 		return c.text("", 200);
 	}
-	await t.sendMessage(
-		c.env.TELEGRAM_CHAT_ID,
-		`Starting to work on ${parsedReply.id} with ${
-			parsedReply.playerIDs.split(",").length
-		} players`
-	);
-	let data: PlayerData[];
-	try {
-		data = await getPlayersFromTransfermarkt(parsedReply.playerIDs.split(","));
-		await t.sendMessage(
-			c.env.TELEGRAM_CHAT_ID,
-			`Got with ${data.length} players out of ${
-				parsedReply.playerIDs.split(",").length
-			}`
-		);
-	} catch (error) {
-		await t.sendMessage(
-			c.env.TELEGRAM_CHAT_ID,
-			`Failed working on ${parsedReply.id}, ${JSON.stringify(error)}`
-		);
-		return c.text("", 200);
-	}
-	await t.sendMessage(
-		c.env.TELEGRAM_CHAT_ID,
-		`Resolved with ${data.length} players out of ${
-			parsedReply.playerIDs.split(",").length
-		}`
-	);
-	try {
-		await Promise.all(
-			batchInsert(
-				data.map((player) => ({
-					id: player.id.toString(),
-					data: player,
-				}))
-			).map((data) =>
-				db
-					.insert(player)
-					.values(data)
-					.onConflictDoUpdate({
-						target: player.id,
-						set: { data: sql`excluded.data`, createdAt: sql`(unixepoch())` },
-					})
-			)
-		);
-		await db
-			.update(gameList)
-			.set({ approvedAt: sql`(unixepoch())` })
-			.where(eq(gameList.id, parsedReply.id));
-	} catch (error) {
-		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, `error db ${error}`);
-		return c.text("", 200);
-	}
-	await t.sendMessage(
-		c.env.TELEGRAM_CHAT_ID,
-		`Done working on ${parsedReply.id} with ${data.length} players`
+	c.executionCtx.waitUntil(
+		(async () => {
+			await t.sendMessage(
+				c.env.TELEGRAM_CHAT_ID,
+				`Starting to work on ${parsedReply.id} with ${
+					parsedReply.playerIDs.split(",").length
+				} players`
+			);
+			let data: PlayerData[];
+			try {
+				data = await getPlayersFromTransfermarkt(
+					parsedReply.playerIDs.split(",")
+				);
+				await t.sendMessage(
+					c.env.TELEGRAM_CHAT_ID,
+					`Got with ${data.length} players out of ${
+						parsedReply.playerIDs.split(",").length
+					}`
+				);
+			} catch (error) {
+				await t.sendMessage(
+					c.env.TELEGRAM_CHAT_ID,
+					`Failed working on ${parsedReply.id}, ${JSON.stringify(error)}`
+				);
+				return c.text("", 200);
+			}
+			await t.sendMessage(
+				c.env.TELEGRAM_CHAT_ID,
+				`Resolved with ${data.length} players out of ${
+					parsedReply.playerIDs.split(",").length
+				}`
+			);
+			try {
+				await Promise.all(
+					batchInsert(
+						data.map((player) => ({
+							id: player.id.toString(),
+							data: player,
+						}))
+					).map((data) =>
+						db
+							.insert(player)
+							.values(data)
+							.onConflictDoUpdate({
+								target: player.id,
+								set: {
+									data: sql`excluded.data`,
+									createdAt: sql`(unixepoch())`,
+								},
+							})
+					)
+				);
+				await db
+					.update(gameList)
+					.set({ approvedAt: sql`(unixepoch())` })
+					.where(eq(gameList.id, parsedReply.id));
+			} catch (error) {
+				await t.sendMessage(c.env.TELEGRAM_CHAT_ID, `error db ${error}`);
+				return c.text("", 200);
+			}
+			await t.sendMessage(
+				c.env.TELEGRAM_CHAT_ID,
+				`Done working on ${parsedReply.id} with ${data.length} players`
+			);
+		})()
 	);
 	return c.text("", 200);
 });
