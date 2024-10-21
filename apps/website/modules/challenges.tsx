@@ -71,7 +71,7 @@ function Challenges() {
       <div className="my-1 h-2">
         {isLoading && <progress className="progress w-32 h-full" />}
       </div>
-      <div className="grid grid-cols-8 my-8 gap-4">
+      <div className="grid grid-cols-3 my-8 gap-4 sm:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
         {monthData.map(({ day, data, isSolved }) => (
           <Link
             key={day}

@@ -97,7 +97,7 @@ function GameForm({
         ))}
         <div className="text-red-500">{errorMessage}</div>
       </div>
-      <div className="flex flex-col gap-2 lg:flex-row">
+      <div className="flex gap-2">
         {onSkip && (
           <button
             className={
