@@ -9,7 +9,7 @@ export async function getPlayersFromTransfermarkt(ids: string[]) {
 			const player = await transfermarktAPI.getPlayerData(id);
 			return formatPlayerData(player);
 		},
-		{ concurrency: 20 }
+		{ concurrency: 10 }
 	);
 	return players;
 }
