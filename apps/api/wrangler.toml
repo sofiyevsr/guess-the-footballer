@@ -1,0 +1,49 @@
+name = "guess-the-footballer-api"
+main = "src/index.ts"
+compatibility_date = "2024-04-03"
+
+[triggers]
+crons = ["0 0 * * *"]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ArenaRoom"]
+
+[durable_objects]
+bindings = [
+  { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
+]
+
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer", database_id = "76bfd738-4814-4804-83b0-dbf1356aff8a", migrations_dir = "./drizzle" }
+]
+
+[[r2_buckets]]
+binding = 'R2_STORAGE' 
+bucket_name = 'football-wordle'
+
+[vars]
+WEB_URL = "https://api.guessthefootballer.com"
+ORIGIN = "https://guessthefootballer.com"
+ENVIRONMENT = "production"
+STORAGE_URL = "https://static.guessthefootballer.com"
+
+[env.staging.durable_objects]
+bindings = [
+  { name = "ARENA_ROOM_DO", class_name = "ArenaRoom" },
+]
+
+[env.staging]
+d1_databases = [
+  { binding = "ARENA_DB", database_name = "guessthefootballer_staging", database_id = "d22b399b-a57a-41d3-8d35-3c4870c4d57f", migrations_dir = "./drizzle" }
+]
+
+[[env.staging.r2_buckets]]
+binding = 'R2_STORAGE' 
+bucket_name = 'football-wordle-staging'
+
+[env.staging.vars]
+WEB_URL = "https://staging-api.guessthefootballer.com"
+ORIGIN = "https://staging.guess-the-footballer.pages.dev"
+ENVIRONMENT = "staging"
+STORAGE_URL = "https://staging-static.guessthefootballer.com"

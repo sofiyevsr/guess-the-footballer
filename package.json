@@ -1,0 +1,12 @@
+{
+  "name": "wordle-football",
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "turbo": "^2.1.2"
+  },
+  "scripts": {
+    "vercel-build": "next build"
+  },
+  "packageManager": "pnpm@9.9.0"
+}
