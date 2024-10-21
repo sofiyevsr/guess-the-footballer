@@ -21,6 +21,11 @@ telegramRouter.post("/", async (c) => {
 	}
 	const { message } = (await c.req.json()) as TelegramBody;
 
+	if (!message) {
+		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Message is null");
+		return c.text("", 200);
+	}
+
 	if (Date.now() - message.date * 1000 > 10 * 1000) {
 		await t.sendMessage(
 			c.env.TELEGRAM_CHAT_ID,

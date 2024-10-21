@@ -3,7 +3,6 @@ import { ZodError } from "zod";
 import routes from "./routes";
 import { CustomEnvironment } from "./types";
 import { cors } from "./utils/middlewares/customCors";
-import { runInDev } from "./utils/misc/runInDev";
 import { getDB } from "./db";
 import { ApiError } from "./utils/error";
 
@@ -26,16 +25,14 @@ const app = rawApp
 app.route("/telegram", routes.telegramRouter);
 
 app.onError((error, c) => {
-	runInDev(c.env, () => {
+	if (error instanceof ZodError && error.issues.length > 0) {
+		return c.json({ error: error.issues[0].message }, 400);
+	} else if (error instanceof ApiError) {
+		return c.json({ error: error.message }, error.status);
+	} else {
 		console.log(
 			`Following error occured: ${error.message}, stack: ${error.stack}`
 		);
-	});
-	if (error instanceof ZodError && error.issues.length > 0) {
-		return c.json({ error: error.issues[0].message }, 400);
-	}
-	if (error instanceof ApiError) {
-		return c.json({ error: error.message }, error.status);
 	}
 	return c.json({ error: "Unexpected error" }, 500);
 });

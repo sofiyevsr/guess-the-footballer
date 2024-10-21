@@ -1,6 +1,6 @@
 name = "guess-the-footballer-api"
 main = "src/index.ts"
-compatibility_date = "2024-04-03"
+compatibility_date = "2024-09-02"
 
 [triggers]
 crons = ["0 0 * * *"]
