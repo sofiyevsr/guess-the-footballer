@@ -82,7 +82,7 @@ telegramRouter.post("/", async (c) => {
 				data = await getPlayersFromTransfermarkt(ids);
 				await t.sendMessage(
 					c.env.TELEGRAM_CHAT_ID,
-					`Got with ${data.length} players out of ${ids.length}`
+					`Resolved with ${data.length} players out of ${rawIDs.length}`
 				);
 			} catch (error) {
 				await t.sendMessage(
@@ -91,10 +91,6 @@ telegramRouter.post("/", async (c) => {
 				);
 				return c.text("", 200);
 			}
-			await t.sendMessage(
-				c.env.TELEGRAM_CHAT_ID,
-				`Resolved with ${data.length} players out of ${ids.length}`
-			);
 			try {
 				await Promise.all(
 					chunkArray(
