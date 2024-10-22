@@ -40,13 +40,15 @@ telegramRouter.post("/", async (c) => {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Chat ID doesn't match");
 		return c.text("", 200);
 	}
-	if (message.text !== "yes") {
+	const args = message.text?.split(" ");
+	if (args?.[0] !== "yes") {
 		await t.sendMessage(
 			c.env.TELEGRAM_CHAT_ID,
-			`Message is not yes, ${message.text}`
+			`Message is not yes, args: ${args}`
 		);
 		return c.text("", 200);
 	}
+
 	const reply = message.reply_to_message?.text;
 	if (!reply) {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Reply is empty");
@@ -67,22 +69,19 @@ telegramRouter.post("/", async (c) => {
 	}
 	c.executionCtx.waitUntil(
 		(async () => {
+			const offset = Number.isNaN(Number(args?.[1])) ? 0 : Number(args?.[1]);
+			const ids = parsedReply.playerIDs.split(",").slice(offset, offset + 50);
+
 			await t.sendMessage(
 				c.env.TELEGRAM_CHAT_ID,
-				`Starting to work on ${parsedReply.id} with ${
-					parsedReply.playerIDs.split(",").length
-				} players`
+				`Starting to work on ${parsedReply.id} with ${ids.length} players, offset ${offset}`
 			);
 			let data: PlayerData[];
 			try {
-				data = await getPlayersFromTransfermarkt(
-					parsedReply.playerIDs.split(",")
-				);
+				data = await getPlayersFromTransfermarkt(ids);
 				await t.sendMessage(
 					c.env.TELEGRAM_CHAT_ID,
-					`Got with ${data.length} players out of ${
-						parsedReply.playerIDs.split(",").length
-					}`
+					`Got with ${data.length} players out of ${ids.length}`
 				);
 			} catch (error) {
 				await t.sendMessage(

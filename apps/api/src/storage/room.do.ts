@@ -1,7 +1,6 @@
 import { Context, Hono } from "hono";
 import { produce } from "immer";
 import { Env } from "../types";
-import { runInDev } from "../utils/misc/runInDev";
 import { handleWebSocketError } from "../utils/misc/websocket";
 import { getRandomItemsFromArray } from "../utils/random";
 import { retry } from "../utils/retry";
@@ -57,7 +56,6 @@ const defaultGameState: GameState = {
 const maxPointsPerLevel = 100;
 
 export class ArenaRoom {
-	private env: Env;
 	private state: DurableObjectState;
 	private storage: DurableObjectStorage;
 	private sockets: { [K in string]: WebSocket } = Object.create(null);
@@ -70,7 +68,6 @@ export class ArenaRoom {
 
 	constructor(state: DurableObjectState, env: Env) {
 		this.state = state;
-		this.env = env;
 		this.storage = state.storage;
 		this.db = getDB(env.ARENA_DB);
 		this.registerRoutes();
@@ -156,11 +153,9 @@ export class ArenaRoom {
 		});
 
 		this.router.onError((error, c) => {
-			runInDev(this.env, () => {
-				console.log(
-					`Following error occured in room do: ${error.message}, stack: ${error.stack}`
-				);
-			});
+			console.log(
+				`Following error occured in room do: ${error.message}, stack: ${error.stack}`
+			);
 			return c.json({ error: "error_occured" }, 500);
 		});
 	}
@@ -209,7 +204,6 @@ export class ArenaRoom {
 	}
 
 	async finishGame(roomID: string) {
-		console.log("finishing game")
 		const finishedAt = Date.now();
 		await Promise.all([
 			this.db
@@ -265,7 +259,7 @@ export class ArenaRoom {
 				state.progress = {
 					currentLevel: state.progress.currentLevel + 1,
 					currentPlayer: JSON.stringify(
-						this.players![state.progress.currentLevel + 1].data
+						this.players![state.progress.currentLevel].data
 					),
 					currentLevelStartedAt: Date.now(),
 				};
