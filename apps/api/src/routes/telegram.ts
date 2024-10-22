@@ -6,7 +6,7 @@ import { getPlayersFromTransfermarkt } from "../services/transfermarkt";
 import { CustomEnvironment } from "../types";
 import { TelegramBody } from "../types/telegram";
 import { PlayerData } from "../services/transfermarkt/_types";
-import { batchInsert } from "../utils/misc/common";
+import { chunkArray } from "../utils/misc/common";
 
 const telegramRouter = new Hono<CustomEnvironment>();
 
@@ -99,7 +99,7 @@ telegramRouter.post("/", async (c) => {
 			);
 			try {
 				await Promise.all(
-					batchInsert(
+					chunkArray(
 						data.map((player) => ({
 							id: player.id.toString(),
 							data: player,

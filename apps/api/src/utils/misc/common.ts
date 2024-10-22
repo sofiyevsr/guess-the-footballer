@@ -7,7 +7,7 @@ export function shuffleArray<T>(array: T[]) {
 	return newArr;
 }
 
-export function batchInsert<T>(items: T[], chunkSize = 32) {
+export function chunkArray<T>(items: T[], chunkSize = 32) {
 	const arr: T[][] = [];
 	for (let i = 0; i < items.length; i += chunkSize) {
 		arr.push(items.slice(i, i + chunkSize));

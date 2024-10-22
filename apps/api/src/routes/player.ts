@@ -74,8 +74,7 @@ playerRouter.get(
 		}
 		const { data, ...rest } = challenge.player;
 		data.playerName = mutateString(data.playerName, "*");
-		const response = [];
-		response.push({ ...rest, ...data });
+		const response = { ...rest, ...data };
 		return c.json(response);
 	}
 );

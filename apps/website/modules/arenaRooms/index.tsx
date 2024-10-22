@@ -17,9 +17,8 @@ const ArenaRooms = () => {
         <div className="text-center flex flex-col flex-1 items-center justify-center p-4 rounded-xl rounded-b-none border-2 border-gray-500 w-full lg:rounded-bl-xl lg:rounded-r-none">
           <h1 className="my-4 font-bold text-xl">Multiplayer Mode</h1>
           <p className="prose">
-            Multiplayer mode allows players to join or create a room. Every 45
-            seconds, players will be asked football player questions based on
-            tips. Players can earn points by answering correctly, and the player
+            Multiplayer mode allows players to join or create a room.
+            Players can earn points by answering correctly, and the player
             with the highest score wins. It is a fun and engaging way to learn
             more about your favorite players and to challenge your friends to
             see who knows the most.

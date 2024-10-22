@@ -411,7 +411,7 @@ export class ArenaRoom {
 				Date.now() - this.gameState.progress.currentLevelStartedAt;
 			const points = Math.floor(
 				maxPointsPerLevel *
-					(1 - timePassed / this.roomData!.durationBetweenLevels)
+					(1 - timePassed / (this.roomData!.durationBetweenLevels * 1000))
 			);
 			await this.setGameState(
 				produce(this.gameState, (state) => {
