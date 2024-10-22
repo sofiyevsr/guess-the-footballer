@@ -48,7 +48,6 @@ playerRouter.get(
 			year: input?.year ?? now.getUTCFullYear(),
 			month: input?.month ?? now.getUTCMonth(),
 		});
-		// TODO rethink dates with dayjs in UTC
 		const challenges = await c.get("db").query.dailyChallenge.findMany({
 			orderBy: asc(dailyChallenge.createdAt),
 			where: and(

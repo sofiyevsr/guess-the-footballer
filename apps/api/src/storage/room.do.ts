@@ -209,6 +209,7 @@ export class ArenaRoom {
 	}
 
 	async finishGame(roomID: string) {
+		console.log("finishing game")
 		const finishedAt = Date.now();
 		await Promise.all([
 			this.db
@@ -367,8 +368,8 @@ export class ArenaRoom {
 			),
 		]);
 		this.roomData = produce(this.roomData, (room) => {
-			if (room == null || room.currentSize === 0) return;
-			room.currentSize--;
+			if (room == null) return;
+			room.currentSize = Math.max(room.currentSize - 1, 0);
 		});
 	}
 
