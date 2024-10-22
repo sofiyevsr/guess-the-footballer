@@ -71,7 +71,7 @@ telegramRouter.post("/", async (c) => {
 		(async () => {
 			const offset = Number.isNaN(Number(args?.[1])) ? 0 : Number(args?.[1]);
 			const rawIDs = parsedReply.playerIDs.split(",");
-			const ids = rawIDs.slice(offset, offset + 50);
+			const ids = rawIDs.slice(offset, offset + 100);
 
 			await t.sendMessage(
 				c.env.TELEGRAM_CHAT_ID,
@@ -126,7 +126,7 @@ telegramRouter.post("/", async (c) => {
 			}
 			await t.sendMessage(
 				c.env.TELEGRAM_CHAT_ID,
-				`Done working on ${parsedReply.id} with ${data.length} players`
+				`Done working on ${parsedReply.id} with offset ${offset}`
 			);
 		})()
 	);
