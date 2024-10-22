@@ -29,6 +29,7 @@ function Challenge() {
       <GameView
         player={data!}
         onCorrectAnswer={() => {
+          window.sa_event?.("daily_challenge_solved");
           markChallengeAsSolved(Number(id));
           push("/challenges");
           throttledToast("Successfully solved the challenge", {

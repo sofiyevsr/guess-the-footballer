@@ -15,6 +15,7 @@ function LocalPlayView({ players }: Props) {
 
   function goToNextStage() {
     if (progress >= players.length - 1) {
+      window.sa_event?.("local_game_finished");
       push("/play");
       throttledToast("You have finished the challenge", {
         type: "success",
