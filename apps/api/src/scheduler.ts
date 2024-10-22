@@ -9,7 +9,7 @@ import { ApiError } from "./utils/error";
 async function handleEvent(_: ScheduledEvent, env: Env) {
 	const db = getDB(env.ARENA_DB);
 	const top100List = await db.query.gameList.findFirst({
-		where: eq(gameList.id, "top100"),
+		where: eq(gameList.id, "top200"),
 	});
 	if (top100List == null) return;
 	const playerIDs = top100List.playerIDs.split(",");
