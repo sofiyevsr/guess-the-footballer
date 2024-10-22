@@ -97,11 +97,11 @@ function GameForm({
         ))}
         <div className="text-red-500">{errorMessage}</div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 self-stretch">
         {onSkip && (
           <button
             className={
-              "btn btn-danger w-full p-1 self-center my-2 disabled:text-white md:btn-wide"
+              "btn btn-danger w-full p-1 self-center my-2 disabled:text-white flex-1 md:btn-wide"
             }
             onClick={onSkip}
           >
@@ -111,7 +111,7 @@ function GameForm({
         <button
           ref={buttonRef}
           className={clsx(
-            "btn btn-primary w-full p-1 self-center my-2 disabled:text-white md:btn-wide",
+            "btn btn-primary w-full p-1 self-center my-2 disabled:text-white flex-1 md:btn-wide",
             {
               "disabled:bg-success":
                 corrections === null && correctAnswerText != null,
