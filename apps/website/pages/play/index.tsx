@@ -40,15 +40,15 @@ function PreLocalPlay() {
           </label>
         </div>
         <div className="flex-1 w-full max-w-full relative">
-          <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <AnimatePresence initial={false} mode="popLayout">
             {list === "official" && (
               <motion.div key="official">
-                <OfficialListsView />
+                <OfficialListsView direction={direction} />
               </motion.div>
             )}
             {list === "community" && (
               <motion.div key="community">
-                <CommunityListsView />
+                <CommunityListsView direction={direction} />
               </motion.div>
             )}
           </AnimatePresence>

@@ -10,11 +10,12 @@ import Select from "react-select";
 import { GameListFormData } from "./_utils/_types";
 
 interface Props {
+  direction: number;
   isSubmitting: boolean;
   goBack: () => void;
 }
 
-function GameListStep2({ isSubmitting, goBack }: Props) {
+function GameListFormStep2({ direction, isSubmitting, goBack }: Props) {
   const { setValue, watch } = useFormContext<GameListFormData>();
   const isFirstRender = useIsFirstRender();
   const [query, setQuery] = useDebouncedValue("", 500);
@@ -28,7 +29,7 @@ function GameListStep2({ isSubmitting, goBack }: Props) {
   const value = watch("playerIds");
 
   return (
-    <RevealAnimation>
+    <RevealAnimation direction={direction}>
       <Select
         instanceId={"player search input"}
         onInputChange={(input) => setQuery(input)}
@@ -119,4 +120,4 @@ function GameListStep2({ isSubmitting, goBack }: Props) {
   );
 }
 
-export default GameListStep2;
+export default GameListFormStep2;

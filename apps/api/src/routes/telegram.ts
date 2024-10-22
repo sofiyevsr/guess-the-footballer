@@ -1,4 +1,4 @@
-import { eq, InferSelectModel, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { gameList, player } from "../db/schemas";
 import TelegramService from "../services/telegram";
@@ -54,7 +54,7 @@ telegramRouter.post("/", async (c) => {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "Reply is empty");
 		return c.text("", 200);
 	}
-	const parsedReply: InferSelectModel<typeof gameList> = JSON.parse(reply);
+	const parsedReply: { id: string; playerIDs: string } = JSON.parse(reply);
 	if (!parsedReply.playerIDs) {
 		await t.sendMessage(c.env.TELEGRAM_CHAT_ID, "PlayerIDs is empty");
 		return c.text("", 200);

@@ -6,7 +6,7 @@ import { GameListService } from "@utils/services/gameList";
 import { toast } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 import GameListFormStep1 from "./step1";
-import GameListStep2 from "./step2";
+import GameListFormStep2 from "./step2";
 import gameListSchema from "@utils/validations/gameListInput";
 import { GameListFormData } from "./_utils/_types";
 
@@ -50,10 +50,11 @@ const GameListForm = () => {
           creativity and challenge the community with unique selections that
           test their football knowledge and skills!
         </p>
-        <AnimatePresence custom={direction} mode="popLayout">
+        <AnimatePresence mode="popLayout">
           {currentStep === 1 && (
             <motion.div key="step-1" className="overflow-hidden">
               <GameListFormStep1
+              direction={direction}
                 goForward={() => {
                   setDirection(1);
                   setCurrentStep((step) => {
@@ -66,7 +67,8 @@ const GameListForm = () => {
           )}
           {currentStep === 2 && (
             <motion.div key="step-2" className="overflow-hidden">
-              <GameListStep2
+              <GameListFormStep2
+              direction={direction}
                 goBack={() => {
                   setDirection(-1);
                   setCurrentStep((step) => {

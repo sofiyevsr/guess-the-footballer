@@ -44,14 +44,14 @@ gameListRouter.post("/", zValidator("json", gameListSchema), async (c) => {
 			ipAddress,
 			playerIDs: input.playerIds.join(","),
 		})
-		.returning();
+		.returning({ id: gameList.id, playerIds: gameList.playerIDs });
 	const t = new TelegramService(c.env.TELEGRAM_BOT_TOKEN);
 	const promises = [
 		t.sendMessage(c.env.TELEGRAM_CHAT_ID, JSON.stringify(newGameList)),
 		t.sendPhoto(
 			c.env.TELEGRAM_CHAT_ID,
-			newGameList.name,
-			c.env.STORAGE_URL + "/" + newGameList.imageKey
+			input.name,
+			c.env.STORAGE_URL + "/" + input.imageKey
 		),
 	];
 	c.executionCtx.waitUntil(Promise.all(promises));

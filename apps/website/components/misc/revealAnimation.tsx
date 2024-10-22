@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import React, { PropsWithChildren } from "react";
 
 interface Props extends PropsWithChildren {
+  direction: number;
   className?: string;
 }
 
 const variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
+    x: direction < 0 ? "100%" : "-100%",
     opacity: 0,
   }),
   center: {
@@ -21,9 +22,10 @@ const variants = {
   }),
 };
 
-function RevealAnimation({ children, className }: Props) {
+function RevealAnimation({ direction, children, className }: Props) {
   return (
     <motion.div
+      custom={direction}
       className={clsx(className)}
       variants={variants}
       transition={{ type: "tween" }}

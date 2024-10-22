@@ -8,10 +8,11 @@ import clsx from "clsx";
 import { PlaySettingsModal } from "./playSettingsModal";
 
 interface Props {
+  direction: number;
   className?: string;
 }
 
-function CommunityListsView({ className }: Props) {
+function CommunityListsView({ direction, className }: Props) {
   const [listID, setListID] = useState<string>();
   const { data, isLoading, isError, refetch } = useInfiniteQuery(
     ["community_lists"],
@@ -31,6 +32,7 @@ function CommunityListsView({ className }: Props) {
   return (
     <>
       <RevealAnimation
+        direction={direction}
         className={clsx(className, "py-4 self-stretch mx-4 md:mx-12", {
           "grid gap-4 grid-cols-1 md:grid-col-3 lg:grid-cols-4":
             !isLoading && !isError,

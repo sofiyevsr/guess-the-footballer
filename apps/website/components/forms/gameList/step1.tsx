@@ -9,10 +9,11 @@ import { STORAGE_URL } from "@utils/constants";
 import { GameListFormData } from "./_utils/_types";
 
 interface Props {
+  direction: number;
   goForward: () => void;
 }
 
-function GameListFormStep1({ goForward }: Props) {
+function GameListFormStep1({ goForward, direction }: Props) {
   const {
     watch,
     formState: { errors },
@@ -31,7 +32,7 @@ function GameListFormStep1({ goForward }: Props) {
   const imageKey = watch("imageKey");
 
   return (
-    <RevealAnimation>
+    <RevealAnimation direction={direction}>
       <div className="flex flex-col md:gap-4 md:flex-row">
         <div className="form-control flex-1 md:whitespace-nowrap">
           <label className="cursor-pointer label">
