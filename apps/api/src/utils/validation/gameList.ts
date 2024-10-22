@@ -30,8 +30,8 @@ export const gameListSchema = z.object({
 		.min(4, {
 			message: "Player ids array should have at least 4 item",
 		})
-		.max(400, {
-			message: "Player ids array can have maximum 400 items",
+		.max(1000, {
+			message: "Player ids array can have maximum 1000 items",
 		}),
 });
 

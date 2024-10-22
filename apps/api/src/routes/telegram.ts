@@ -70,7 +70,8 @@ telegramRouter.post("/", async (c) => {
 	c.executionCtx.waitUntil(
 		(async () => {
 			const offset = Number.isNaN(Number(args?.[1])) ? 0 : Number(args?.[1]);
-			const ids = parsedReply.playerIDs.split(",").slice(offset, offset + 50);
+			const rawIDs = parsedReply.playerIDs.split(",");
+			const ids = rawIDs.slice(offset, offset + 50);
 
 			await t.sendMessage(
 				c.env.TELEGRAM_CHAT_ID,
@@ -92,9 +93,7 @@ telegramRouter.post("/", async (c) => {
 			}
 			await t.sendMessage(
 				c.env.TELEGRAM_CHAT_ID,
-				`Resolved with ${data.length} players out of ${
-					parsedReply.playerIDs.split(",").length
-				}`
+				`Resolved with ${data.length} players out of ${ids.length}`
 			);
 			try {
 				await Promise.all(
@@ -116,10 +115,15 @@ telegramRouter.post("/", async (c) => {
 							})
 					)
 				);
-				await db
-					.update(gameList)
-					.set({ approvedAt: sql`(unixepoch())` })
-					.where(eq(gameList.id, parsedReply.id));
+				const officialArg = Number(args?.[2]);
+				if (offset + ids.length >= rawIDs.length)
+					await db
+						.update(gameList)
+						.set({
+							approvedAt: sql`(unixepoch())`,
+							official: officialArg === 1,
+						})
+						.where(eq(gameList.id, parsedReply.id));
 			} catch (error) {
 				await t.sendMessage(c.env.TELEGRAM_CHAT_ID, `error db ${error}`);
 				return c.text("", 200);
