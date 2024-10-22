@@ -44,7 +44,7 @@ gameListRouter.post("/", zValidator("json", gameListSchema), async (c) => {
 			ipAddress,
 			playerIDs: input.playerIds.join(","),
 		})
-		.returning({ id: gameList.id, playerIds: gameList.playerIDs });
+		.returning({ id: gameList.id, playerIDs: gameList.playerIDs });
 	const t = new TelegramService(c.env.TELEGRAM_BOT_TOKEN);
 	const promises = [
 		t.sendMessage(c.env.TELEGRAM_CHAT_ID, JSON.stringify(newGameList)),
