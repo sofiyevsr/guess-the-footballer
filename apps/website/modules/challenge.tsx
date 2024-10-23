@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import GameView from "@cmpt/game/view";
 import { GameService } from "utils/services/game";
 import { useQuery } from "@tanstack/react-query";
@@ -13,12 +13,18 @@ function Challenge() {
     push,
   } = useRouter();
 
-  const enabled = !Number.isNaN(Number(id)) && !!Number(id);
+  const [enabled, setEnabled] = useState(false);
   const { data, isError, refetch, isLoading } = useQuery({
     queryKey: ["challenge", id],
     queryFn: () => GameService.getChallenge(Number(id)),
     enabled,
   });
+
+  useEffect(() => {
+    const isEnabled = !Number.isNaN(Number(id)) && !!Number(id);
+    if (!isEnabled) return;
+    setEnabled(isEnabled);
+  }, [id]);
 
   return (
     <LoadingLayout
