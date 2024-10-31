@@ -23,13 +23,13 @@ export const PlaySettingsModal = ({ listID, setListID }: Props) => {
   }
 
   return (
-    <div
-      className={clsx("modal modal-bottom sm:modal-middle", {
+    <dialog
+      className={clsx("modal max-lg:modal-bottom", {
         "modal-open": listID != null,
       })}
     >
       <div className="modal-backdrop" onClick={onClose} />
-      <div className="modal-box">
+      <div className="modal-box flex flex-col">
         <label className="font-bold text-lg">Pick the number of rounds</label>
         <select
           className={clsx("mt-4 select select-bordered w-full max-w-xs", {
@@ -67,6 +67,6 @@ export const PlaySettingsModal = ({ listID, setListID }: Props) => {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
