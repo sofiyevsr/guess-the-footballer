@@ -53,7 +53,7 @@ export default function RoomsView({
               alt={room.list.name + " image"}
               height={80}
               width={80}
-              className="object-contain bg-white p-1 rounded-lg"
+              className="object-contain bg-white p-1 rounded-lg w-20 h-20"
             />
           </figure>
           <div className="card-body items-center text-center pt-4">
