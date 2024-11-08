@@ -53,14 +53,12 @@ multiplayerRouter.get(
 	session(),
 	zValidator("query", cursorValidator),
 	async (c) => {
-		const thirtyMinutesAgo = new Date(new Date().getTime() - 30 * 60 * 1000);
 		const { cursor } = c.req.valid("query");
 		const rooms = await c.get("db").query.room.findMany({
 			with: {
 				list: { columns: { name: true, imageKey: true, official: true } },
 			},
 			where: and(
-				gte(room.createdAt, thirtyMinutesAgo),
 				eq(room.creatorUsername, c.get("user")!.username),
 				cursor != null && cursor !== 0
 					? lt(room.createdAt, new Date(cursor))

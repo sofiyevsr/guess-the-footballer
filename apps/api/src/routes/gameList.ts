@@ -114,10 +114,7 @@ gameListRouter.get(
 gameListRouter.get("/official", async (c) => {
 	const gameLists = await c.get("db").query.gameList.findMany({
 		columns: { ipAddress: false, playerIDs: false },
-		where: and(
-			eq(gameList.official, true),
-			isNotNull(gameList.approvedAt),
-		),
+		where: and(eq(gameList.official, true), isNotNull(gameList.approvedAt)),
 	});
 	return c.json({ gameLists });
 });
