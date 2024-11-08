@@ -112,13 +112,11 @@ gameListRouter.get(
 );
 
 gameListRouter.get("/official", async (c) => {
-	const thirtyMinutesAgo = new Date(new Date().getTime() - 30 * 60 * 1000);
 	const gameLists = await c.get("db").query.gameList.findMany({
 		columns: { ipAddress: false, playerIDs: false },
 		where: and(
 			eq(gameList.official, true),
 			isNotNull(gameList.approvedAt),
-			gte(gameList.createdAt, thirtyMinutesAgo)
 		),
 	});
 	return c.json({ gameLists });
@@ -128,13 +126,11 @@ gameListRouter.get(
 	"/community",
 	zValidator("query", cursorValidator),
 	async (c) => {
-		const thirtyMinutesAgo = new Date(new Date().getTime() - 30 * 60 * 1000);
 		const { cursor } = c.req.valid("query");
 		const gameLists = await c.get("db").query.gameList.findMany({
 			columns: { ipAddress: false, playerIDs: false },
 			orderBy: desc(gameList.createdAt),
 			where: and(
-				gte(gameList.createdAt, thirtyMinutesAgo),
 				isNotNull(gameList.approvedAt),
 				eq(gameList.official, false),
 				cursor != null && cursor !== 0

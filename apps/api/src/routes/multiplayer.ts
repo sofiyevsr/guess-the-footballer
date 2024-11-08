@@ -6,7 +6,7 @@ import { handleWebSocketError } from "../utils/misc/websocket";
 import { roomSchema } from "../utils/validation/room";
 import { cursorValidator, idValidator } from "../utils/validation/utils";
 import { room } from "../db/schemas";
-import { and, desc, eq, isNull, lt } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, lt } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 
 const multiplayerRouter = new Hono<CustomEnvironment>();
@@ -15,12 +15,14 @@ multiplayerRouter.get(
 	"/rooms",
 	zValidator("query", cursorValidator),
 	async (c) => {
+		const thirtyMinutesAgo = new Date(new Date().getTime() - 30 * 60 * 1000);
 		const { cursor } = c.req.valid("query");
 		const rooms = await c.get("db").query.room.findMany({
 			with: {
 				list: { columns: { name: true, imageKey: true, official: true } },
 			},
 			where: and(
+				gte(room.createdAt, thirtyMinutesAgo),
 				eq(room.private, false),
 				lt(room.currentSize, room.size),
 				isNull(room.startedAt),
@@ -51,12 +53,14 @@ multiplayerRouter.get(
 	session(),
 	zValidator("query", cursorValidator),
 	async (c) => {
+		const thirtyMinutesAgo = new Date(new Date().getTime() - 30 * 60 * 1000);
 		const { cursor } = c.req.valid("query");
 		const rooms = await c.get("db").query.room.findMany({
 			with: {
 				list: { columns: { name: true, imageKey: true, official: true } },
 			},
 			where: and(
+				gte(room.createdAt, thirtyMinutesAgo),
 				eq(room.creatorUsername, c.get("user")!.username),
 				cursor != null && cursor !== 0
 					? lt(room.createdAt, new Date(cursor))
