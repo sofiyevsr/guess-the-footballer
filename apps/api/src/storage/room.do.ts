@@ -11,6 +11,7 @@ import { getDB } from "../db";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schemas";
 import { ApiError } from "../utils/error";
+import { sa } from "../services/simpleanalytics";
 
 const PAYLOADTYPES = [
 	"game_started",
@@ -65,8 +66,10 @@ export class ArenaRoom {
 	private roomData: RoomState | undefined = undefined;
 	private players: Players | undefined = undefined;
 	private router = new Hono();
+	private env: Env;
 
 	constructor(state: DurableObjectState, env: Env) {
+		this.env = env;
 		this.state = state;
 		this.storage = state.storage;
 		this.db = getDB(env.ARENA_DB);
@@ -177,6 +180,7 @@ export class ArenaRoom {
 		const startedAt = Date.now();
 		const players = await this.getRandomPlayers();
 		await Promise.all([
+			sa.logEvent("multiplayer_game_started", this.env.ORIGIN),
 			this.setPlayers(players),
 			this.setGameState(
 				produce(this.gameState, (state) => {
@@ -206,6 +210,7 @@ export class ArenaRoom {
 	async finishGame(roomID: string) {
 		const finishedAt = Date.now();
 		await Promise.all([
+			sa.logEvent("multiplayer_game_finished", this.env.ORIGIN),
 			this.db
 				.update(room)
 				.set({ finishedAt: new Date(finishedAt) })
