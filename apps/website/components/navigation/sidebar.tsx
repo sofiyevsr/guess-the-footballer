@@ -102,7 +102,7 @@ const Sidebar = ({ children }: Props) => {
             </Link>
           </div>
           <div className="my-2 flex justify-between items-center font-bold">
-            <h1 className="block font-bold text-md">Contact: </h1>
+            <p className="block font-bold text-md">Contact: </p>
             <a className="link" href="mailto:guessfootballerapp@gmail.com">
               guessfootballerapp@gmail.com
             </a>

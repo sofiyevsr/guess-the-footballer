@@ -6,6 +6,7 @@ import LoadingLayout from "@cmpt/layout/loading";
 import LocalPlayView from "@modules/play/localPlayView";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
+import seoDefaultConfig from "@utils/seo";
 
 function LocalPlay() {
   const {
@@ -23,7 +24,10 @@ function LocalPlay() {
 
   return (
     <>
-      <NextSeo />
+      <NextSeo
+        title="Play infinite game"
+        description={"Play infinite game | " + seoDefaultConfig.description}
+      />
       <LoadingLayout
         isLoading={isLoading || isPaused}
         isError={isError}
